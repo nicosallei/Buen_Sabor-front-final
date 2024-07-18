@@ -43,7 +43,7 @@ function getItem(
 const allItems: MenuItem[] = [
   getItem("/empresas", "EMPRESA", "2", <BankOutlined />),
   getItem("/graficos", "GRAFICO", "13", <FundProjectionScreenOutlined />),
-  // getItem("/pedidos", "PEDIDOS", "3", <FundProjectionScreenOutlined />),
+  getItem("/pedidos", "PEDIDOS", "3", <FundProjectionScreenOutlined />),
   getItem("/productos", "PRODUCTOS", "sub1", <ShoppingCartOutlined />, [
     getItem("/productos", "LISTA DE PRODUCTOS", "4"),
     getItem("/categorias", "CATEGORIAS", "5"),
@@ -51,17 +51,16 @@ const allItems: MenuItem[] = [
   getItem("/promociones", "PROMOCIONES", "6", <FireOutlined />),
   getItem("/empleados", "EMPLEADOS", "sub2", <TeamOutlined />, [
     getItem("/empleados", "LISTA DE EMPLEADOS", "7"),
-    // getItem("/roles", "ROLES", "8"),
   ]),
   getItem("/insumos", "INSUMOS", "9", <InboxOutlined />),
-  //getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
+  getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
   getItem("/unidadMedida", "Unidad de Medida", "11", <GoldOutlined />),
-  // getItem(
-  //   "/estadistica",
-  //   "ESTADISTICA",
-  //   "12",
-  //   <FundProjectionScreenOutlined />
-  // ),
+  getItem(
+    "/estadistica",
+    "ESTADISTICA",
+    "12",
+    <FundProjectionScreenOutlined />
+  ),
 ];
 
 const App: React.FC = () => {

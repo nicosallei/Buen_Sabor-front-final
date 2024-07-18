@@ -26,6 +26,7 @@ import LoginHandler from "../components/ui/LoginHandler";
 import EmpleadoProfileCard from "../components/pages/perfil/EmpleadoProfileCard";
 import Graficos from "../components/pages/estadistica/Graficos";
 import withRoleCheck from "../controlAcceso/withRoleCheck";
+import CompraPromociones from "../components/pages/compra/promociones/CompraPromociones";
 
 const Rutas: React.FC = () => {
   return (
@@ -114,6 +115,10 @@ const Rutas: React.FC = () => {
       <Route
         path="/compra/productos/:categoriaId"
         element={<AuthenticationGuard component={CompraProductos} />}
+      />
+      <Route
+        path="/compra/promociones/:sucursalId"
+        element={<AuthenticationGuard component={CompraPromociones} />}
       />
       <Route
         path="/estadistica"
