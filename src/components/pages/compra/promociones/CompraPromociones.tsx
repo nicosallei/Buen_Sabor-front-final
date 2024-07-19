@@ -5,6 +5,10 @@ import { Card, Button, Modal, List, Avatar, Typography } from "antd";
 import { obtenerPromociones } from "../../../../service/PromocionService";
 import { useAuth0 } from "@auth0/auth0-react";
 import SinImagen from "../../../../assets/sin-imagen.jpg";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../../redux/Store";
+import { addToCarrito } from "../../../../redux/slice/Carrito.slice";
+import { toast } from "react-toastify";
 
 interface Promocion {
   id: number;
@@ -19,13 +23,16 @@ interface Promocion {
   imagen: string;
   promocionDetallesDto: IPromocionDetallesDto[];
   cantidadMaximaDisponible: number;
+  sucursal: any;
 }
+
 interface IPromocionDetallesDto {
   id: number;
   eliminado: boolean;
   cantidad: number;
   articuloManufacturadoDto: IArticuloPromocionDto;
 }
+
 interface IArticuloPromocionDto {
   id: number;
   eliminado: boolean;
@@ -35,21 +42,29 @@ interface IArticuloPromocionDto {
   tiempoEstimadoMinutos: number;
   preparacion: string;
   codigo: string;
-  imagen: ImagenArticulo;
+  imagenes: ImagenArticulo[];
+  sucursal: any;
+  categoria: any;
+  cantidadMaximaCompra?: number;
 }
+
 interface ImagenArticulo {
+  id: number;
   url: string;
 }
 
 const CompraPromociones = () => {
   const navigate = useNavigate();
   const { sucursalId } = useParams();
-
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const { getAccessTokenSilently } = useAuth0();
   const [modalOpen, setModalOpen] = useState(false);
   const [promocionSeleccionada, setPromocionSeleccionada] =
     useState<Promocion | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+  const pedidoRealizado = useSelector(
+    (state: RootState) => state.pedido.pedidoRealizado
+  );
 
   useEffect(() => {
     const cargarPromociones = async () => {
@@ -59,14 +74,44 @@ const CompraPromociones = () => {
         if (!isNaN(idNumerico)) {
           const data = await obtenerPromociones(idNumerico, token);
 
-          const promocionesObtenidas = data.map((promocion: any) => ({
-            ...promocion,
-            imagen: promocion.imagen
+          const promocionesObtenidas = data.map((promocion: any) => {
+            // Adjust the image URL
+            const imagen = promocion.imagen
               ? `http://localhost:8080/images/${promocion.imagen
                   .split("\\")
                   .pop()}`
-              : SinImagen,
-          }));
+              : SinImagen;
+
+            // Map through the promotion details
+            const promocionDetallesDto = promocion.promocionDetallesDto.map(
+              (detalle: any) => {
+                // Find the corresponding articuloManufacturadoCantidad
+                const articuloCantidad =
+                  promocion.articulosManufacturadosCantidad.find(
+                    (item: any) =>
+                      item.articuloManufacturadoId ===
+                      detalle.articuloManufacturadoDto.id
+                  );
+
+                // Set cantidadMaximaDisponible
+                return {
+                  ...detalle,
+                  articuloManufacturadoDto: {
+                    ...detalle.articuloManufacturadoDto,
+                    cantidadMaximaCompra: articuloCantidad
+                      ? articuloCantidad.cantidadMaximaDisponible
+                      : 0,
+                  },
+                };
+              }
+            );
+
+            return {
+              ...promocion,
+              imagen,
+              promocionDetallesDto,
+            };
+          });
 
           setPromociones(promocionesObtenidas);
         }
@@ -76,7 +121,7 @@ const CompraPromociones = () => {
     };
 
     cargarPromociones();
-  }, [sucursalId]);
+  }, [sucursalId, getAccessTokenSilently]);
 
   const handleOpenModal = (promocion: Promocion) => {
     setPromocionSeleccionada(promocion);
@@ -89,6 +134,40 @@ const CompraPromociones = () => {
 
   const volverACategorias = () => {
     navigate(-1);
+  };
+
+  const agregarPromocionAlCarrito = (promocion: Promocion) => {
+    if (pedidoRealizado) {
+      toast.warning(
+        "No puedes agregar más productos después de realizar un pedido."
+      );
+      return;
+    }
+
+    const productoSinStock = promocion.promocionDetallesDto.find(
+      (detalle) =>
+        detalle.cantidad >
+        (detalle.articuloManufacturadoDto.cantidadMaximaCompra || 0)
+    );
+
+    if (productoSinStock) {
+      toast.error(
+        "No se puede agregar la promoción al carrito. Uno de los productos no tiene stock suficiente."
+      );
+      return;
+    }
+
+    promocion.promocionDetallesDto.forEach((detalle) => {
+      const producto = detalle.articuloManufacturadoDto;
+      dispatch(
+        addToCarrito({
+          id: producto.id,
+          producto,
+          cantidad: detalle.cantidad,
+        })
+      );
+    });
+    toast.success("Promoción agregada al carrito");
   };
 
   return (
@@ -123,12 +202,17 @@ const CompraPromociones = () => {
               >
                 Ver Detalle
               </Button>
+              <Button
+                onClick={() => agregarPromocionAlCarrito(promocion)}
+                style={{ marginTop: "10px" }}
+              >
+                Agregar al Carrito
+              </Button>
             </Card>
           ))}
         </div>
       </div>
       <Carrito />
-
       <Modal
         title="Detalle de Promoción"
         visible={modalOpen}
@@ -136,6 +220,13 @@ const CompraPromociones = () => {
         footer={[
           <Button key="close" onClick={handleCloseModal}>
             Cerrar
+          </Button>,
+          <Button
+            key="add"
+            type="primary"
+            onClick={() => agregarPromocionAlCarrito(promocionSeleccionada!)}
+          >
+            Agregar al Carrito
           </Button>,
         ]}
       >
@@ -160,37 +251,34 @@ const CompraPromociones = () => {
             </Typography.Paragraph>
             <Typography.Paragraph>Productos:</Typography.Paragraph>
             <List>
-              {promocionSeleccionada.promocionDetallesDto &&
-                promocionSeleccionada.promocionDetallesDto.map(
-                  (detalle: any, index: any) => {
-                    const procesarUrlImagen = (url: any) => {
-                      if (!url) {
-                        return SinImagen;
-                      }
-                      return `http://localhost:8080/images/${url
-                        .split("\\")
-                        .pop()}`;
-                    };
-
-                    return (
-                      <List.Item key={index}>
-                        <List.Item.Meta
-                          avatar={
-                            <Avatar
-                              alt="Artículo"
-                              src={procesarUrlImagen(
-                                detalle.articuloManufacturadoDto.imagenes[0]
-                                  ?.url
-                              )}
-                            />
-                          }
-                          title={detalle.articuloManufacturadoDto.denominacion}
-                          description={`Cantidad: ${detalle.cantidad}`}
-                        />
-                      </List.Item>
-                    );
-                  }
-                )}
+              {promocionSeleccionada.promocionDetallesDto.map(
+                (detalle, index) => {
+                  const procesarUrlImagen = (url: any) => {
+                    if (!url) {
+                      return SinImagen;
+                    }
+                    return `http://localhost:8080/images/${url
+                      .split("\\")
+                      .pop()}`;
+                  };
+                  return (
+                    <List.Item key={index}>
+                      <List.Item.Meta
+                        avatar={
+                          <Avatar
+                            alt="Artículo"
+                            src={procesarUrlImagen(
+                              detalle.articuloManufacturadoDto.imagenes[0]?.url
+                            )}
+                          />
+                        }
+                        title={detalle.articuloManufacturadoDto.denominacion}
+                        description={`Cantidad: ${detalle.cantidad}`}
+                      />
+                    </List.Item>
+                  );
+                }
+              )}
             </List>
           </>
         )}
