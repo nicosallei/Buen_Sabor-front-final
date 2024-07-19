@@ -66,6 +66,9 @@ const CompraPromociones = () => {
     (state: RootState) => state.pedido.pedidoRealizado
   );
 
+  // Access the cart state from Redux
+  const carrito = useSelector((state: RootState) => state.cartReducer);
+
   useEffect(() => {
     const cargarPromociones = async () => {
       try {
@@ -144,19 +147,33 @@ const CompraPromociones = () => {
       return;
     }
 
-    const productoSinStock = promocion.promocionDetallesDto.find(
-      (detalle) =>
-        detalle.cantidad >
-        (detalle.articuloManufacturadoDto.cantidadMaximaCompra || 0)
-    );
+    // Map to keep track of the quantities in the cart
+    const cartQuantities = new Map<number, number>();
+    carrito.forEach((item: any) => {
+      cartQuantities.set(item.producto.id, item.cantidad);
+    });
 
-    if (productoSinStock) {
-      toast.error(
-        "No se puede agregar la promoción al carrito. Uno de los productos no tiene stock suficiente."
-      );
-      return;
+    // Check if any product in the promotion exceeds the allowed quantity
+    let stockSuficiente = true;
+    for (const detalle of promocion.promocionDetallesDto) {
+      const producto = detalle.articuloManufacturadoDto;
+      const cantidadActualEnCarrito = cartQuantities.get(producto.id) || 0;
+      const cantidadTotal = cantidadActualEnCarrito + detalle.cantidad;
+
+      if (cantidadTotal > (producto.cantidadMaximaCompra ?? Number.MAX_VALUE)) {
+        stockSuficiente = false;
+        toast.error(
+          `No hay stock suficiente para el producto ${producto.denominacion}.`
+        );
+        break;
+      }
     }
 
+    if (!stockSuficiente) {
+      return; // Exit early if stock is not sufficient
+    }
+
+    // Add the promotion to the cart if stock is sufficient
     promocion.promocionDetallesDto.forEach((detalle) => {
       const producto = detalle.articuloManufacturadoDto;
       dispatch(
@@ -215,7 +232,7 @@ const CompraPromociones = () => {
       <Carrito />
       <Modal
         title="Detalle de Promoción"
-        visible={modalOpen}
+        open={modalOpen}
         onCancel={handleCloseModal}
         footer={[
           <Button key="close" onClick={handleCloseModal}>
@@ -224,7 +241,10 @@ const CompraPromociones = () => {
           <Button
             key="add"
             type="primary"
-            onClick={() => agregarPromocionAlCarrito(promocionSeleccionada!)}
+            onClick={() =>
+              promocionSeleccionada &&
+              agregarPromocionAlCarrito(promocionSeleccionada)
+            }
           >
             Agregar al Carrito
           </Button>,
