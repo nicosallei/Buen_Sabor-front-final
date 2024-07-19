@@ -243,6 +243,10 @@ const Carrito = () => {
   const calcularDescuentoTotal = () => {
     let descuentoTotal = 0;
 
+    // Suponiendo que `carrito` es una lista de productos en el carrito de compras.
+    // Crea un registro para rastrear la cantidad comprometida de cada producto.
+    let cantidadComprometida: { [key: number]: number } = {};
+
     promociones.forEach((promocion: Promocion) => {
       const { promocionDetallesDto, precioPromocional } = promocion;
       let maxPromociones = Infinity;
@@ -255,7 +259,11 @@ const Carrito = () => {
         );
 
         if (carritoItem) {
-          const maxPromosPorItem = Math.floor(carritoItem.cantidad / cantidad);
+          // Ajusta la cantidad disponible del producto basándose en la cantidad ya comprometida.
+          const cantidadDisponible =
+            carritoItem.cantidad -
+            (cantidadComprometida[carritoItem.producto.id] || 0);
+          const maxPromosPorItem = Math.floor(cantidadDisponible / cantidad);
           maxPromociones = Math.min(maxPromociones, maxPromosPorItem);
           valorProductosEnPromocion +=
             carritoItem.producto.precioVenta * cantidad;
@@ -268,6 +276,20 @@ const Carrito = () => {
         const descuentoPorPromocion =
           (valorProductosEnPromocion - precioPromocional) * maxPromociones;
         descuentoTotal += descuentoPorPromocion;
+
+        // Actualiza la cantidad comprometida para los productos involucrados en esta promoción.
+        promocionDetallesDto.forEach((detalle) => {
+          const { articuloManufacturadoDto, cantidad } = detalle;
+          const carritoItem = carrito.find(
+            (item) => item.producto.id === articuloManufacturadoDto.id
+          );
+
+          if (carritoItem) {
+            cantidadComprometida[carritoItem.producto.id] =
+              (cantidadComprometida[carritoItem.producto.id] || 0) +
+              cantidad * maxPromociones;
+          }
+        });
       }
     });
 
