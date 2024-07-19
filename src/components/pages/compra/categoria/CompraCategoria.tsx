@@ -4,6 +4,7 @@ import { Card, Button, Modal } from "antd"; // Paso 1: Importa Modal
 import { obtenerCategoriasPadre } from "../../../../service/Compra";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/Store";
+import ImagenPromocion from "../../../../assets/promocion.png";
 
 const CompraCategoria = () => {
   const { sucursalId } = useParams();
@@ -107,7 +108,7 @@ const CompraCategoria = () => {
           cover={
             <img
               alt="Promociones"
-              src="URL_DE_IMAGEN_PARA_PROMOCIONES" // Reemplaza con la URL de tu imagen para promociones
+              src={ImagenPromocion} // Reemplaza con la URL de tu imagen para promociones
               style={{ width: "100%", height: "200px", objectFit: "cover" }}
             />
           }

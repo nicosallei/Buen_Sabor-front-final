@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Carrito from "../Carrito";
-import { Producto } from "../../../../types/compras/interface";
 import { Card, Button, Modal, List, Avatar, Typography } from "antd";
-import { addToCarrito } from "../../../../redux/slice/Carrito.slice";
-import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../redux/Store";
 import { obtenerPromociones } from "../../../../service/PromocionService";
 import { useAuth0 } from "@auth0/auth0-react";
 import SinImagen from "../../../../assets/sin-imagen.jpg";
@@ -49,10 +44,7 @@ interface ImagenArticulo {
 const CompraPromociones = () => {
   const navigate = useNavigate();
   const { sucursalId } = useParams();
-  const dispatch = useDispatch<AppDispatch>();
-  const pedidoRealizado = useSelector(
-    (state: RootState) => state.pedido.pedidoRealizado
-  );
+
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const { getAccessTokenSilently } = useAuth0();
   const [modalOpen, setModalOpen] = useState(false);
@@ -85,17 +77,6 @@ const CompraPromociones = () => {
 
     cargarPromociones();
   }, [sucursalId]);
-
-  const agregarAlCarrito = (producto: Producto) => {
-    if (pedidoRealizado) {
-      toast.warning(
-        "No puedes agregar más productos después de realizar un pedido."
-      );
-      return;
-    }
-
-    dispatch(addToCarrito({ id: producto.id, producto, cantidad: 1 }));
-  };
 
   const handleOpenModal = (promocion: Promocion) => {
     setPromocionSeleccionada(promocion);
