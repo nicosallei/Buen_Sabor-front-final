@@ -88,7 +88,7 @@ const Carrito = () => {
     (state: RootState) => state.pedido.pedidoRealizado
   );
   const [promociones, setPromociones] = useState([]);
-  const [totalDescuento, setTotalDescuento] = useState<number>(0);
+  const [descuentoTotal, setTotalDescuento] = useState<number>(0);
   const { getAccessTokenSilently } = useAuth0();
   const quitarDelCarrito = (productoId: number) => {
     dispatch(removeToCarrito({ id: productoId }));
@@ -120,10 +120,15 @@ const Carrito = () => {
     dispatch(limpiarCarrito());
   };
 
-  const total = carrito.reduce(
+  const totalSinDescuento = carrito.reduce(
     (sum, item) => sum + item.producto.precioVenta * item.cantidad,
     0
   );
+
+  let totalConDescuento = totalSinDescuento - descuentoTotal;
+  if (metodoEntrega === TipoEnvio.RETIRO_LOCAL) {
+    totalConDescuento *= 0.9; // Aplicar el 10% de descuento
+  }
 
   const handleEnviarPedido = async () => {
     if (!metodoPago) {
@@ -156,7 +161,7 @@ const Carrito = () => {
             tipoEnvio: metodoEntrega,
             formaPago: metodoPago,
             cliente: ClienteDto,
-            descuento: totalDescuento,
+            descuento: descuentoTotal,
           })
         );
       } else {
@@ -165,7 +170,7 @@ const Carrito = () => {
             tipoEnvio: metodoEntrega,
             cliente: ClienteDto,
             formaPago: metodoPago,
-            descuento: totalDescuento,
+            descuento: descuentoTotal,
           })
         );
       }
@@ -370,6 +375,11 @@ const Carrito = () => {
       })}
       {carrito.length > 0 && (
         <>
+          <div style={{ marginBottom: "20px", textAlign: "center" }}>
+            <h3 style={{ color: "green" }}>
+              Descuento del 10% por retiro en local
+            </h3>
+          </div>
           <div style={{ marginBottom: "20px" }}>
             <Radio.Group
               onChange={handleMetodoEntregaChange}
@@ -420,12 +430,12 @@ const Carrito = () => {
         </>
       )}
       <h2 style={{ textAlign: "center", fontSize: "16px", color: "green" }}>
-        Descuento: ${totalDescuento}
+        Descuento: ${descuentoTotal}
       </h2>
       <h2 style={{ textAlign: "center", fontSize: "16px", color: "#808080" }}>
-        Total Sin descuento: ${total}
+        Total Sin descuento: ${totalSinDescuento}
       </h2>
-      <h2 style={{ textAlign: "center" }}>Total: ${total - totalDescuento} </h2>
+      <h2 style={{ textAlign: "center" }}>Total: ${totalConDescuento} </h2>
       {!pedidoRealizado && (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Button
