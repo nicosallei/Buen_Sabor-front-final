@@ -29,11 +29,13 @@ export const enviarPedidoDomicilio = createAsyncThunk(
       tipoEnvio,
       cliente,
       formaPago,
+      descuento,
     }: {
       direccionEnvio: DomicilioDto | null;
       tipoEnvio: TipoEnvio;
       formaPago: FormaPago;
       cliente: ClienteDto | null;
+      descuento: number;
     },
     { getState }
   ) => {
@@ -49,10 +51,12 @@ export const enviarPedidoDomicilio = createAsyncThunk(
 
     const pedido: Pedido = {
       fechaPedido: new Date().toISOString(),
-      total: pedidoDetalle.reduce(
-        (sum, item) => sum + item.producto.precioVenta * item.cantidad,
-        0
-      ),
+      total:
+        pedidoDetalle.reduce(
+          (sum, item) => sum + item.producto.precioVenta * item.cantidad,
+          0
+        ) - descuento,
+
       tipoEnvio: tipoEnvio,
       formaPago: formaPago,
       cliente: {
@@ -91,7 +95,13 @@ export const enviarPedido = createAsyncThunk(
       tipoEnvio,
       cliente,
       formaPago,
-    }: { tipoEnvio: TipoEnvio; cliente: ClienteDto; formaPago: FormaPago },
+      descuento,
+    }: {
+      tipoEnvio: TipoEnvio;
+      cliente: ClienteDto;
+      formaPago: FormaPago;
+      descuento: number;
+    },
     { getState }
   ) => {
     const state = getState() as { cartReducer: PedidoDetalleAddState[] };
@@ -103,10 +113,11 @@ export const enviarPedido = createAsyncThunk(
 
     const pedido: Pedido = {
       fechaPedido: new Date().toISOString(),
-      total: pedidoDetalle.reduce(
-        (sum, item) => sum + item.producto.precioVenta * item.cantidad,
-        0
-      ),
+      total:
+        pedidoDetalle.reduce(
+          (sum, item) => sum + item.producto.precioVenta * item.cantidad,
+          0
+        ) - descuento,
       tipoEnvio: tipoEnvio,
       cliente: {
         id: cliente.id,

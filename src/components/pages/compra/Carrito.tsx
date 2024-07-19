@@ -24,6 +24,51 @@ import DireccionForm from "./formulario/DireccionForm";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/Store";
 import { setPedidoRealizado } from "../../../redux/slice/Pedido.silice";
+import { obtenerPromociones } from "../../../service/PromocionService";
+import { useAuth0 } from "@auth0/auth0-react";
+
+interface Promocion {
+  id: number;
+  eliminado: boolean;
+  denominacion: string;
+  fechaDesde: string;
+  fechaHasta: string;
+  horaDesde: string;
+  horaHasta: string;
+  descripcionDescuento: string;
+  precioPromocional: number;
+  imagen: string;
+  promocionDetallesDto: IPromocionDetallesDto[];
+  cantidadMaximaDisponible: number;
+  sucursal: any;
+}
+
+interface IPromocionDetallesDto {
+  id: number;
+  eliminado: boolean;
+  cantidad: number;
+  articuloManufacturadoDto: IArticuloPromocionDto;
+}
+
+interface IArticuloPromocionDto {
+  id: number;
+  eliminado: boolean;
+  denominacion: string;
+  descripcion: string;
+  precioVenta: number;
+  tiempoEstimadoMinutos: number;
+  preparacion: string;
+  codigo: string;
+  imagenes: ImagenArticulo[];
+  sucursal: any;
+  categoria: any;
+  cantidadMaximaCompra?: number;
+}
+
+interface ImagenArticulo {
+  id: number;
+  url: string;
+}
 
 const Carrito = () => {
   const imagenPorDefecto = "http://localhost:8080/images/sin-imagen.jpg";
@@ -42,7 +87,9 @@ const Carrito = () => {
   const pedidoRealizado = useSelector(
     (state: RootState) => state.pedido.pedidoRealizado
   );
-
+  const [promociones, setPromociones] = useState([]);
+  const [totalDescuento, setTotalDescuento] = useState<number>(0);
+  const { getAccessTokenSilently } = useAuth0();
   const quitarDelCarrito = (productoId: number) => {
     dispatch(removeToCarrito({ id: productoId }));
   };
@@ -109,6 +156,7 @@ const Carrito = () => {
             tipoEnvio: metodoEntrega,
             formaPago: metodoPago,
             cliente: ClienteDto,
+            descuento: totalDescuento,
           })
         );
       } else {
@@ -117,6 +165,7 @@ const Carrito = () => {
             tipoEnvio: metodoEntrega,
             cliente: ClienteDto,
             formaPago: metodoPago,
+            descuento: totalDescuento,
           })
         );
       }
@@ -171,6 +220,58 @@ const Carrito = () => {
 
   const handleMetodoPagoChange = (e: any) => {
     setMetodoPago(e.target.value);
+  };
+  const traerPromociones = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      const response = await obtenerPromociones(1, token);
+      setPromociones(response);
+    } catch (error) {
+      console.error("Error al obtener promociones:", error);
+    }
+  };
+
+  useEffect(() => {
+    traerPromociones();
+  }, []);
+
+  useEffect(() => {
+    const descuentoTotal = calcularDescuentoTotal();
+    setTotalDescuento(descuentoTotal);
+  }, [carrito, promociones]);
+
+  const calcularDescuentoTotal = () => {
+    let descuentoTotal = 0;
+
+    promociones.forEach((promocion: Promocion) => {
+      const { promocionDetallesDto, precioPromocional } = promocion;
+      let maxPromociones = Infinity;
+      let valorProductosEnPromocion = 0;
+
+      promocionDetallesDto.forEach((detalle) => {
+        const { articuloManufacturadoDto, cantidad } = detalle;
+        const carritoItem = carrito.find(
+          (item) => item.producto.id === articuloManufacturadoDto.id
+        );
+
+        if (carritoItem) {
+          const maxPromosPorItem = Math.floor(carritoItem.cantidad / cantidad);
+          maxPromociones = Math.min(maxPromociones, maxPromosPorItem);
+          valorProductosEnPromocion +=
+            carritoItem.producto.precioVenta * cantidad;
+        } else {
+          maxPromociones = 0;
+        }
+      });
+
+      if (maxPromociones > 0) {
+        const descuentoPorPromocion =
+          (valorProductosEnPromocion - precioPromocional) * maxPromociones;
+        descuentoTotal += descuentoPorPromocion;
+      }
+    });
+
+    return descuentoTotal;
   };
 
   return (
@@ -296,8 +397,13 @@ const Carrito = () => {
           </div>
         </>
       )}
-
-      <h2 style={{ textAlign: "center" }}>Total: {total}</h2>
+      <h2 style={{ textAlign: "center", fontSize: "16px", color: "green" }}>
+        Descuento: ${totalDescuento}
+      </h2>
+      <h2 style={{ textAlign: "center", fontSize: "16px", color: "#808080" }}>
+        Total Sin descuento: ${total}
+      </h2>
+      <h2 style={{ textAlign: "center" }}>Total: ${total - totalDescuento} </h2>
       {!pedidoRealizado && (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Button
