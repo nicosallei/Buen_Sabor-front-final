@@ -80,7 +80,7 @@ export const enviarPedidoDomicilio = createAsyncThunk(
     const data = await realizarPedido(pedido);
     if (data) {
       const preferenceMP = await createPreferenceMP(data);
-      return preferenceMP.id;
+      return { data, preferenceMPId: preferenceMP.id };
     } else {
       console.error("Error al realizar el pedido");
       throw new Error("Error al realizar el pedido");
@@ -130,7 +130,7 @@ export const enviarPedido = createAsyncThunk(
     if (data) {
       if (formaPago === FormaPago.MERCADOPAGO) {
         const preferenceMP = await createPreferenceMP(data);
-        return preferenceMP.id;
+        return { data, preferenceMPId: preferenceMP.id };
       } else {
         return data;
       }

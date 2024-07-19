@@ -66,15 +66,13 @@ export const realizarPedido = async (pedido: Pedido) => {
     if (!response.ok) {
       // Si el servidor envía un mensaje de error en el cuerpo de la respuesta
       const errorData = await response.json();
-      throw new Error(
-        errorData.message || "Error al cambiar el estado del pedido"
-      );
+      throw new Error(errorData.message || "Error al crear el pedido");
     }
 
     const data = await response.json();
     return data;
   } catch (error: any) {
-    console.error("Error al cambiar el estado del pedido:", error.message);
+    console.error("Error al crear el pedido:", error.message);
     throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
   }
 };

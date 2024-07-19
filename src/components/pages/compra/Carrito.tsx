@@ -93,6 +93,7 @@ const Carrito = () => {
   const quitarDelCarrito = (productoId: number) => {
     dispatch(removeToCarrito({ id: productoId }));
   };
+  const [tiempoEstimado, setTiempoEstimado] = useState<number | null>(null);
 
   const incrementar = (productoId: number) => {
     const producto = carrito.find((item) => item.id === productoId)?.producto;
@@ -161,7 +162,7 @@ const Carrito = () => {
             tipoEnvio: metodoEntrega,
             formaPago: metodoPago,
             cliente: ClienteDto,
-            descuento: descuentoTotal,
+            descuento: totalSinDescuento - totalConDescuento,
           })
         );
       } else {
@@ -170,15 +171,19 @@ const Carrito = () => {
             tipoEnvio: metodoEntrega,
             cliente: ClienteDto,
             formaPago: metodoPago,
-            descuento: descuentoTotal,
+            descuento: totalSinDescuento - totalConDescuento,
           })
         );
       }
-      const preferenceId = unwrapResult(resultAction);
-
-      setPreferenceId(preferenceId);
+      const resultado = unwrapResult(resultAction);
+      setPreferenceId(resultado.preferenceMPId);
       dispatch(setPedidoRealizado(true));
       toast.success("Pedido realizado con éxito. Ahora realiza el pago.");
+      let tiempoEstimadoEnMinutos = resultado.data.tiempoEspera;
+      if (metodoEntrega === TipoEnvio.DELIVERY) {
+        tiempoEstimadoEnMinutos += 10; // Suma 30 minutos si el envío es a domicilio
+      }
+      setTiempoEstimado(tiempoEstimadoEnMinutos);
     } catch (err) {
       console.error("Error al realizar el pedido", err);
       toast.error("Error al realizar el pedido.");
@@ -473,6 +478,14 @@ const Carrito = () => {
           onSubmit={handleModalOk}
           onCancel={handleModalCancel}
         />
+      </Modal>
+      <Modal
+        title="Tiempo Estimado de Entrega"
+        visible={tiempoEstimado !== null}
+        onOk={() => setTiempoEstimado(null)}
+        onCancel={() => setTiempoEstimado(null)}
+      >
+        <p>El tiempo estimado de entrega es de {tiempoEstimado} minutos.</p>
       </Modal>
     </div>
   );
