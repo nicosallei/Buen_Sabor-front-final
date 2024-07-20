@@ -65,6 +65,7 @@ const CompraPromociones = () => {
   const pedidoRealizado = useSelector(
     (state: RootState) => state.pedido.pedidoRealizado
   );
+  const [filtro, setFiltro] = useState("");
 
   // Access the cart state from Redux
   const carrito = useSelector((state: RootState) => state.cartReducer);
@@ -196,37 +197,55 @@ const CompraPromociones = () => {
         >
           Volver a Categorías
         </Button>
+        <input
+          type="text"
+          placeholder="Buscar promociones..."
+          value={filtro}
+          onChange={(e) => setFiltro(e.target.value)}
+          style={{ marginBottom: "20px" }}
+        />
         <h1>Promociones</h1>
+
         <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
-          {promociones.map((promocion) => (
-            <Card
-              key={promocion.id}
-              title={promocion.denominacion}
-              style={{ width: 300, minHeight: "400px" }}
-              cover={
-                <img
-                  alt={promocion.denominacion}
-                  src={promocion.imagen || SinImagen}
-                  style={{ width: "100%", height: "200px", objectFit: "cover" }}
-                />
-              }
-            >
-              <p>{promocion.descripcionDescuento}</p>
-              <p>Precio Promocional: ${promocion.precioPromocional}</p>
-              <Button
-                onClick={() => handleOpenModal(promocion)}
-                style={{ marginTop: "10px" }}
+          {promociones
+            .filter((promocion) =>
+              promocion.denominacion
+                .toLowerCase()
+                .includes(filtro.toLowerCase())
+            )
+            .map((promocion) => (
+              <Card
+                key={promocion.id}
+                title={promocion.denominacion}
+                style={{ width: 300, minHeight: "400px" }}
+                cover={
+                  <img
+                    alt={promocion.denominacion}
+                    src={promocion.imagen || SinImagen}
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                    }}
+                  />
+                }
               >
-                Ver Detalle
-              </Button>
-              <Button
-                onClick={() => agregarPromocionAlCarrito(promocion)}
-                style={{ marginTop: "10px" }}
-              >
-                Agregar al Carrito
-              </Button>
-            </Card>
-          ))}
+                <p>{promocion.descripcionDescuento}</p>
+                <p>Precio Promocional: ${promocion.precioPromocional}</p>
+                <Button
+                  onClick={() => handleOpenModal(promocion)}
+                  style={{ marginTop: "10px" }}
+                >
+                  Ver Detalle
+                </Button>
+                <Button
+                  onClick={() => agregarPromocionAlCarrito(promocion)}
+                  style={{ marginTop: "10px" }}
+                >
+                  Agregar al Carrito
+                </Button>
+              </Card>
+            ))}
         </div>
       </div>
       <Carrito />
