@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
   descargarFactura,
-  Estado,
   fetchPedidosClientes,
 } from "../../../service/PedidoService"; // Asegúrate de usar el path correcto
 import { Table } from "antd";
@@ -34,9 +33,9 @@ const PedidosCliente = () => {
     cargarPedidos();
   }, []);
 
-  const pedidosConNumero = pedidos.map((pedido: any, index) => ({
+  const pedidosFiltrados = pedidos.map((pedido: any, index) => ({
     ...pedido,
-    numeroPedido: index + 1, // Esto añade un número de pedido que empieza en 1 y se incrementa
+    numeroPedido: index + 1,
   }));
 
   const columns = [
@@ -84,7 +83,15 @@ const PedidosCliente = () => {
       title: "Estado",
       dataIndex: "estado",
       key: "estado",
-      render: (estado: Estado) => <>{estado}</>,
+      filters: [
+        { text: "PENDIENTE", value: "PENDIENTE" },
+        { text: "CONFIRMADO", value: "CONFIRMADO" },
+        { text: "EN PPREPARACION", value: "EN_PREPARACION" },
+        { text: "ENVIADO", value: "ENVIADO" },
+        { text: "ENTREGADO", value: "ENTREGADO" },
+        { text: "CANCELADO", value: "CANCELADO" },
+      ],
+      onFilter: (value: any, record: any) => record.estado.indexOf(value) === 0,
     },
     {
       title: "Factura",
@@ -107,7 +114,7 @@ const PedidosCliente = () => {
     <div>
       <h2>Mis Pedidos</h2>
 
-      <Table dataSource={pedidosConNumero} columns={columns} rowKey="id" />
+      <Table dataSource={pedidosFiltrados} columns={columns} rowKey="id" />
     </div>
   );
 };
