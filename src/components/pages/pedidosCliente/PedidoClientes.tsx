@@ -49,14 +49,24 @@ const PedidosCliente = () => {
       dataIndex: "fechaPedido",
       key: "fechaPedido",
       render: (fechaPedido: string, record: any) => {
-        // Formatear la fecha
-        const fechaFormateada = new Date(fechaPedido).toLocaleDateString();
+        // Formatear la fecha en el formato día/mes/año
+        const opcionesDeFecha: Intl.DateTimeFormatOptions = {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        };
+        const fechaFormateada = new Date(fechaPedido).toLocaleDateString(
+          "es",
+          opcionesDeFecha
+        );
+
         // Asumiendo que la hora viene en un formato 'HH:mm:ss' o similar y está en record.hora
         const partesHora = record.hora.split(":");
         const horaFormateada =
           partesHora.length >= 2
             ? `${partesHora[0]}:${partesHora[1]}`
             : record.hora;
+
         // Combinar fecha y hora con un guion como separador
         return `${fechaFormateada} - ${horaFormateada}`;
       },
