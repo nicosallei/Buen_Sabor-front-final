@@ -15,9 +15,11 @@ import { Layout, Menu, theme } from "antd";
 import { Dropdown, Button } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { MenuInfo } from "rc-menu/lib/interface";
-import Rutas from "../../../routes/Routes";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Rol, RolEmpleado } from "../../../types/usuario/Usuario";
+
+import Rutas from "../../../routes/Routes";
+//import Rutas from "../../../routes/RoutesSinAuth0";
 
 const { Header, Content, Sider } = Layout;
 
@@ -64,7 +66,7 @@ const allItems: MenuItem[] = [
   getItem(
     "/pedidosCliente",
     "PEDIDOS Cliente",
-    "13",
+    "14",
     <FundProjectionScreenOutlined />
   ),
 ];

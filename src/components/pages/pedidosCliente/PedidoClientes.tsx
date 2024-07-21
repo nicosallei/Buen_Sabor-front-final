@@ -12,11 +12,11 @@ const PedidosCliente = () => {
     const cargarPedidos = async () => {
       try {
         // Obtener el idCliente y el rol del Storage
-        const idCliente = localStorage.getItem("idCliente"); // Asegúrate de que 'idCliente' se guarde en el Storage
+        const idCliente = localStorage.getItem("id"); // Asegúrate de que 'idCliente' se guarde en el Storage
         const rol = localStorage.getItem("rol"); // Asegúrate de que 'rol' se guarde en el Storage
 
         // Verificar si el usuario es un cliente
-        if (rol === "Cliente" && idCliente) {
+        if (rol === "CLIENTE" && idCliente) {
           const pedidosDelCliente = await fetchPedidosClientes(
             Number(idCliente)
           );

@@ -19,7 +19,7 @@ import Login from "../components/pages/login-crear/login";
 import RegistroCliente from "../components/pages/login-crear/CrearUsuarioCliente";
 import Estadistica from "../components/pages/estadistica/Estadistica";
 import RegistroEmpleado from "../components/pages/login-crear/CrearUsuarioEmpleado";
-import { AuthenticationGuard } from "../components/auth0/AuthenticationGuard";
+//import { AuthenticationGuard } from "../components/auth0/AuthenticationGuard";
 import ErrorPage from "../components/User/ErrorPage";
 import CallbackPage from "../components/auth0/CallbackPage";
 import LoginHandler from "../components/ui/LoginHandler";
@@ -34,118 +34,94 @@ const Rutas: React.FC = () => {
     <Routes>
       <Route
         path="/empresas"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(Empresa, ["ADMINISTRADOR"])}
-          />
-        }
+        element={React.createElement(withRoleCheck(Empresa, []))}
       />
       <Route
         path="/sucursal/:id"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(Sucursal, ["ADMINISTRADOR"])}
-          />
-        }
+        element={React.createElement(
+          withRoleCheck(Sucursal, ["ADMINISTRADOR"])
+        )}
       />
       <Route
         path="/categorias"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(Categorias, ["ADMINISTRADOR"])}
-          />
-        }
+        element={React.createElement(
+          withRoleCheck(Categorias, ["ADMINISTRADOR"])
+        )}
       />
 
       <Route
         path="/empleados"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(Empleados, ["ADMINISTRADOR"])}
-          />
-        }
+        element={React.createElement(
+          withRoleCheck(Empleados, ["ADMINISTRADOR"])
+        )}
       />
 
       <Route
         path="/categorias/porSucursal"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(CategoriasPorSucursal, ["ADMINISTRADOR"])}
-          />
-        }
+        element={React.createElement(
+          withRoleCheck(CategoriasPorSucursal, ["ADMINISTRADOR"])
+        )}
       />
 
       <Route
         path="/productos"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(Productos, [
-              "ADMINISTRADOR",
-              "EMPLEADO_COCINA",
-            ])}
-          />
-        }
+        element={React.createElement(
+          withRoleCheck(Productos, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+        )}
       />
       <Route
         path="/insumos"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(Insumo, [
-              "ADMINISTRADOR",
-              "EMPLEADO_COCINA",
-            ])}
-          />
-        }
+        element={React.createElement(
+          withRoleCheck(Insumo, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+        )}
       />
       <Route
         path="/unidadMedida"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(UnidadMedida, ["ADMINISTRADOR"])}
-          />
-        }
+        element={React.createElement(
+          withRoleCheck(UnidadMedida, ["ADMINISTRADOR"])
+        )}
       />
       <Route
         path="/compra"
-        element={<AuthenticationGuard component={SeleccionSucursal} />}
+        element={React.createElement(
+          withRoleCheck(SeleccionSucursal, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+        )}
       />
       <Route
         path="/compra/categorias/:sucursalId"
-        element={<AuthenticationGuard component={CompraCategoria} />}
+        element={React.createElement(
+          withRoleCheck(CompraCategoria, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+        )}
       />
       <Route
         path="/compra/productos/:categoriaId"
-        element={<AuthenticationGuard component={CompraProductos} />}
+        element={React.createElement(
+          withRoleCheck(CompraProductos, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+        )}
       />
       <Route
         path="/compra/promociones/:sucursalId"
-        element={<AuthenticationGuard component={CompraPromociones} />}
+        element={React.createElement(
+          withRoleCheck(CompraPromociones, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+        )}
       />
       <Route
         path="/estadistica"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(Estadistica, [
-              "ADMINISTRADOR",
-              "EMPLEADO_COCINA",
-            ])}
-          />
-        }
+        element={React.createElement(
+          withRoleCheck(Estadistica, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+        )}
       />
       <Route
         path="/promociones"
-        element={
-          <AuthenticationGuard
-            component={withRoleCheck(Promocion, [
-              "ADMINISTRADOR",
-              "EMPLEADO_COCINA",
-            ])}
-          />
-        }
+        element={React.createElement(
+          withRoleCheck(Promocion, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+        )}
       />
       <Route
         path="/Pedidos"
-        element={<AuthenticationGuard component={Pedidos} />}
+        element={React.createElement(
+          withRoleCheck(Pedidos, ["ADMINISTRADOR", "CLIENTE"])
+        )}
       />
       <Route path="*" element={<ErrorPage />} />
       <Route path="/login" element={<Login />} />
@@ -158,12 +134,7 @@ const Rutas: React.FC = () => {
       /> */}
       <Route path="/" element={<LoginHandler />} />
       <Route path="/perfil" element={<EmpleadoProfileCard />} />
-      <Route
-        path="/pedidosCliente"
-        element={React.createElement(
-          withRoleCheck(PedidosCliente, ["ADMINISTRADOR", "CLIENTE"])
-        )}
-      />
+      <Route path="/pedidosCliente" element={<PedidosCliente />} />
       <Route
         path="/graficos"
         element={React.createElement(
