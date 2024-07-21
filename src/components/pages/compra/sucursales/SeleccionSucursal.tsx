@@ -59,7 +59,8 @@ const SeleccionSucursal = () => {
               Hora: {sucursal.horaApertura} a {sucursal.horaCierre}
             </p>
             <p>
-              Domicilio: {sucursal.calle} n°: {sucursal.numero}
+              Domicilio: {sucursal.domicilio?.calle} n°:{" "}
+              {sucursal.domicilio?.numero}
             </p>
           </Card>
         ))}

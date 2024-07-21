@@ -8,6 +8,7 @@ export interface Producto {
   sucursal: any;
   imagenes: Imagen[];
   cantidadMaximaCompra?: number;
+  categoriaId?: number;
   // Agrega aquí las demás propiedades de un producto
 }
 export interface Imagen {
