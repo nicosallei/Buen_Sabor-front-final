@@ -307,77 +307,88 @@ const Carrito = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1 style={{ textAlign: "center" }}>Carrito</h1>
-      {carrito.map((item) => {
-        const subtotal = item.producto.precioVenta * item.cantidad;
-        const imagenAMostrar =
-          item.producto.imagenes.length > 0
-            ? "http://localhost:8080/images/" + item.producto.imagenes[0].url
-            : imagenPorDefecto;
-        return (
-          <Card key={item.id} style={{ width: 330, marginBottom: "20px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Card.Meta
-                avatar={<Avatar src={imagenAMostrar} />}
-                title={
-                  <div
-                    style={{
-                      maxWidth: "250px",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {item.producto.denominacion}
-                  </div>
-                }
-                description={
-                  <>
-                    Precio: ${item.producto.precioVenta}
-                    <br />
-                    Cantidad:
-                    <InputNumber
-                      min={1}
-                      max={item.producto.cantidadMaximaCompra}
-                      value={item.cantidad}
-                      onChange={(value) =>
-                        cambiarCantidadProducto(item.id, value ?? 0)
-                      }
-                      disabled={pedidoRealizado}
-                    />
-                    <br />
-                    Subtotal: {subtotal}
-                  </>
-                }
-              />
-            </div>
-            {!pedidoRealizado && (
+    <div style={{ maxWidth: "500px", margin: "0 auto" }}>
+      <h1 style={{ textAlign: "center" }}>Carrito Compra</h1>
+      <div
+        style={{
+          height: "50vh",
+          maxHeight: "400px",
+          overflowY: "auto",
+          border: "1px solid #f0f0f0",
+        }}
+      >
+        {carrito.map((item) => {
+          const subtotal = item.producto.precioVenta * item.cantidad;
+          const imagenAMostrar =
+            item.producto.imagenes.length > 0
+              ? "http://localhost:8080/images/" + item.producto.imagenes[0].url
+              : imagenPorDefecto;
+          return (
+            <Card key={item.id} style={{ width: 330, marginBottom: "20px" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div style={{ display: "flex" }}>
-                  <Button
-                    type="primary"
-                    icon={<MinusOutlined />}
-                    onClick={() => decrementar(item.id)}
-                    style={{ marginRight: "5px" }}
-                  />
-
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => incrementar(item.id)}
-                  />
-                </div>
-                <Button
-                  type="primary"
-                  icon={<DeleteOutlined />}
-                  onClick={() => quitarDelCarrito(item.id)}
+                <Card.Meta
+                  avatar={<Avatar src={imagenAMostrar} />}
+                  title={
+                    <div
+                      style={{
+                        maxWidth: "250px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {item.producto.denominacion}
+                    </div>
+                  }
+                  description={
+                    <>
+                      Precio: ${item.producto.precioVenta}
+                      <br />
+                      Cantidad:
+                      <InputNumber
+                        min={1}
+                        max={item.producto.cantidadMaximaCompra}
+                        value={item.cantidad}
+                        onChange={(value) =>
+                          cambiarCantidadProducto(item.id, value ?? 0)
+                        }
+                        disabled={pedidoRealizado}
+                      />
+                      <br />
+                      Subtotal: {subtotal}
+                    </>
+                  }
                 />
               </div>
-            )}
-          </Card>
-        );
-      })}
+              {!pedidoRealizado && (
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <div style={{ display: "flex" }}>
+                    <Button
+                      type="primary"
+                      icon={<MinusOutlined />}
+                      onClick={() => decrementar(item.id)}
+                      style={{ marginRight: "5px" }}
+                    />
+
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => incrementar(item.id)}
+                    />
+                  </div>
+                  <Button
+                    type="primary"
+                    icon={<DeleteOutlined />}
+                    onClick={() => quitarDelCarrito(item.id)}
+                  />
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
       {carrito.length > 0 && (
         <>
           <div style={{ marginBottom: "20px", textAlign: "center" }}>
@@ -470,10 +481,10 @@ const Carrito = () => {
           initialValues={{
             calle: "",
             numero: "",
-            localidad: 0, // Asegúrate de que este valor sea válido según los datos de tu aplicación
+            localidad: 0,
             cp: 0,
-            pais: 0, // Asegúrate de que este valor sea válido según los datos de tu aplicación
-            provincia: 0, // Asegúrate de que este valor sea válido según los datos de tu aplicación
+            pais: 0,
+            provincia: 0,
           }}
           onSubmit={handleModalOk}
           onCancel={handleModalCancel}
