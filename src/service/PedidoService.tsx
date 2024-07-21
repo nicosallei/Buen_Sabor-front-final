@@ -118,12 +118,15 @@ export const fetchPedidosClientes = async (idCliente: number): Promise<any> => {
 
 export const descargarFactura = async (pedidoId: number) => {
   try {
-    const response = await fetch(`/descargarPdfPedido/${pedidoId}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/pdf",
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/descargarPdfPedido/${pedidoId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/pdf",
+        },
+      }
+    );
     if (!response.ok) {
       throw new Error("Error al descargar el PDF");
     }
