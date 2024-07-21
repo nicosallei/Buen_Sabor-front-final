@@ -250,11 +250,6 @@ const FormularioActualizarProducto: React.FC<Props> = ({
       key: "codigo",
     },
     {
-      title: "Precio Venta",
-      dataIndex: "precioVenta",
-      key: "precioVenta",
-    },
-    {
       title: "Acción",
       key: "accion",
       render: (_text: string, record: any) => (
