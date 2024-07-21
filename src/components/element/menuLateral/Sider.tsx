@@ -61,6 +61,12 @@ const allItems: MenuItem[] = [
     "12",
     <FundProjectionScreenOutlined />
   ),
+  getItem(
+    "/pedidosCliente",
+    "PEDIDOS Cliente",
+    "13",
+    <FundProjectionScreenOutlined />
+  ),
 ];
 
 const App: React.FC = () => {

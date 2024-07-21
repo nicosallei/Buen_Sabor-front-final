@@ -27,6 +27,7 @@ import EmpleadoProfileCard from "../components/pages/perfil/EmpleadoProfileCard"
 import Graficos from "../components/pages/estadistica/Graficos";
 import withRoleCheck from "../controlAcceso/withRoleCheck";
 import CompraPromociones from "../components/pages/compra/promociones/CompraPromociones";
+import PedidosCliente from "../components/pages/pedidosCliente/PedidoClientes";
 
 const Rutas: React.FC = () => {
   return (
@@ -157,6 +158,7 @@ const Rutas: React.FC = () => {
       /> */}
       <Route path="/" element={<LoginHandler />} />
       <Route path="/perfil" element={<EmpleadoProfileCard />} />
+      <Route path="/pedidosCliente" element={<PedidosCliente />} />
       <Route
         path="/graficos"
         element={React.createElement(

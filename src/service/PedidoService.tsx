@@ -100,3 +100,45 @@ export const cambiarEstadoPedido = async (
     throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
   }
 };
+export const fetchPedidosClientes = async (idCliente: number): Promise<any> => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/traer-pedido-cliente/${idCliente}`
+    );
+    if (!response.ok) {
+      throw new Error("Error al obtener los pedidos");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
+  }
+};
+
+export const descargarFactura = async (pedidoId: number) => {
+  try {
+    const response = await fetch(`/descargarPdfPedido/${pedidoId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/pdf",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Error al descargar el PDF");
+    }
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.setAttribute("download", `pedido_${pedidoId}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    if (link.parentNode) {
+      link.parentNode.removeChild(link);
+    }
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error("Error al descargar el archivo PDF:", error);
+  }
+};
