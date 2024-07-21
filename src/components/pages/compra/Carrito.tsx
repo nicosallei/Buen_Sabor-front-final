@@ -307,7 +307,7 @@ const Carrito = () => {
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "0 auto" }}>
+    <div style={{ maxWidth: "500px", margin: "0px" }}>
       <h1 style={{ textAlign: "center" }}>Carrito Compra</h1>
       <div
         style={{

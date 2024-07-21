@@ -21,9 +21,6 @@ const PedidosCliente = () => {
             Number(idCliente)
           );
           setPedidos(pedidosDelCliente);
-        } else {
-          const pedidosDelCliente = await fetchPedidosClientes(Number(1));
-          setPedidos(pedidosDelCliente);
         }
       } catch (error) {
         console.error("Error al cargar los pedidos del cliente:", error);
