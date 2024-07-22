@@ -14,7 +14,7 @@ export default class EmpleadoService extends BackendClient<IEmpleado> {
     url: string,
     email: string,
     token: string
-  ): Promise<IEmpleado> {
+  ): Promise<IEmpleado | null> {
     const path = `${url}/empleado/email/${email}`;
     const options: RequestInit = {
       method: "GET",
@@ -23,7 +23,14 @@ export default class EmpleadoService extends BackendClient<IEmpleado> {
         Authorization: `Bearer ${token}`,
       },
     };
-    return this.request(path, options, token);
+
+    try {
+      const empleado = await this.request(path, options, token);
+      return empleado;
+    } catch (error) {
+      console.error("Error al obtener el empleado por email:", error);
+      return null;
+    }
   }
 
   async postEmpleado(

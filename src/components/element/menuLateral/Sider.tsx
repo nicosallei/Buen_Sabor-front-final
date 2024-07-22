@@ -69,6 +69,7 @@ const allItems: MenuItem[] = [
     "14",
     <FundProjectionScreenOutlined />
   ),
+  getItem("/clientes", "CLIENTES", "15", <FundProjectionScreenOutlined />),
 ];
 
 const App: React.FC = () => {
@@ -108,7 +109,8 @@ const App: React.FC = () => {
           item?.key === "sub2" ||
           item?.key === "8" ||
           item?.key === "13" ||
-          item?.key === "11"
+          item?.key === "11" ||
+          item?.key === "15"
         ) {
           return null;
         }
@@ -136,7 +138,8 @@ const App: React.FC = () => {
           item?.key === "5" ||
           item?.key === "4" ||
           item?.key === "sub1" ||
-          item?.key === "3"
+          item?.key === "3" ||
+          item?.key === "15"
         ) {
           return null;
         }
