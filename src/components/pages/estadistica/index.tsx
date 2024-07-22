@@ -75,7 +75,7 @@ const VistaPrincipal = () => {
               style={isHovered.estadistica ? hoverStyle : cardStyle}
               cover={
                 <img
-                  alt="Estadística Ingresos/Ganancias"
+                  alt="Estadística Ingresos y Ganancias"
                   src={imagenEstadistica}
                   style={{ height: "200px", objectFit: "cover" }}
                 />
@@ -87,7 +87,7 @@ const VistaPrincipal = () => {
                 setIsHovered({ ...isHovered, estadistica: false })
               }
             >
-              <Card.Meta title="Estadística Ingresos/Ganancias" />
+              <Card.Meta title="Estadística Ingresos y Ganancias" />
             </Card>
           </Link>
         </div>
