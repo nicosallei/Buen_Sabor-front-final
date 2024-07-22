@@ -4,6 +4,10 @@ type Props = {
   component: React.ComponentType<object>;
 };
 
+// export const AuthenticationGuard = ({ component: Component }: Props) => {
+//   return <Component />;
+// };
+
 export const AuthenticationGuard = ({ component }: Props) => {
   const Component = withAuthenticationRequired(component, {
     onRedirecting: () => (

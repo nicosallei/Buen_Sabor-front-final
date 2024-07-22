@@ -70,7 +70,11 @@ interface ImagenArticulo {
   url: string;
 }
 
-const Carrito = () => {
+interface CarritoProps {
+  sucursalId: any;
+}
+
+const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
   const imagenPorDefecto = "http://localhost:8080/images/sin-imagen.jpg";
   const dispatch = useAppDispatch();
   const carrito = useAppSelector((state) => state.cartReducer);
@@ -163,6 +167,7 @@ const Carrito = () => {
             formaPago: metodoPago,
             cliente: ClienteDto,
             descuento: totalSinDescuento - totalConDescuento,
+            sucursalId: Number(sucursalId) || 1, // ID de la sucursal
           })
         );
       } else {
@@ -172,11 +177,14 @@ const Carrito = () => {
             cliente: ClienteDto,
             formaPago: metodoPago,
             descuento: totalSinDescuento - totalConDescuento,
+            sucursalId: Number(sucursalId) || 1, // ID de la sucursal
           })
         );
       }
       const resultado = unwrapResult(resultAction);
-      setPreferenceId(resultado.preferenceMPId);
+      if (resultado.preferenceMPId) {
+        setPreferenceId(resultado.preferenceMPId);
+      }
       dispatch(setPedidoRealizado(true));
       toast.success("Pedido realizado con éxito. Ahora realiza el pago.");
       let tiempoEstimadoEnMinutos = resultado.data.tiempoEspera;
@@ -234,7 +242,7 @@ const Carrito = () => {
   const traerPromociones = async () => {
     try {
       const token = await getAccessTokenSilently();
-      const response = await obtenerPromociones(1, token);
+      const response = await obtenerPromociones(Number(sucursalId), token);
       setPromociones(response);
     } catch (error) {
       console.error("Error al obtener promociones:", error);
@@ -307,7 +315,7 @@ const Carrito = () => {
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "0 auto" }}>
+    <div style={{ maxWidth: "500px", margin: "0px" }}>
       <h1 style={{ textAlign: "center" }}>Carrito Compra</h1>
       <div
         style={{

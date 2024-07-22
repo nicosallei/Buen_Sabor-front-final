@@ -30,12 +30,14 @@ export const enviarPedidoDomicilio = createAsyncThunk(
       cliente,
       formaPago,
       descuento,
+      sucursalId,
     }: {
       direccionEnvio: DomicilioDto | null;
       tipoEnvio: TipoEnvio;
       formaPago: FormaPago;
       cliente: ClienteDto | null;
       descuento: number;
+      sucursalId: number;
     },
     { getState }
   ) => {
@@ -75,6 +77,7 @@ export const enviarPedidoDomicilio = createAsyncThunk(
         cp: direccionEnvio.cp,
       },
       pedidoDetalle,
+      sucursalId: sucursalId,
     };
 
     const data = await realizarPedido(pedido);
@@ -96,11 +99,13 @@ export const enviarPedido = createAsyncThunk(
       cliente,
       formaPago,
       descuento,
+      sucursalId,
     }: {
       tipoEnvio: TipoEnvio;
       cliente: ClienteDto;
       formaPago: FormaPago;
       descuento: number;
+      sucursalId: number;
     },
     { getState }
   ) => {
@@ -124,6 +129,7 @@ export const enviarPedido = createAsyncThunk(
       },
       formaPago: formaPago,
       pedidoDetalle,
+      sucursalId: sucursalId,
     };
 
     const data = await realizarPedido(pedido);
@@ -132,7 +138,7 @@ export const enviarPedido = createAsyncThunk(
         const preferenceMP = await createPreferenceMP(data);
         return { data, preferenceMPId: preferenceMP.id };
       } else {
-        return data;
+        return { data };
       }
     } else {
       throw new Error("Error al realizar el pedido");

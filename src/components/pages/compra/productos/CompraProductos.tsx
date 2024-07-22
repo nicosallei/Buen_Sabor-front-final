@@ -12,7 +12,7 @@ import { AppDispatch, RootState } from "../../../../redux/Store";
 import { buscarCategoriaXId } from "../../../../service/ServiceCategoria";
 
 const CompraProductos = () => {
-  const { categoriaId } = useParams();
+  const { categoriaId, sucursalId } = useParams();
   const navigate = useNavigate();
   const [productos, setProductos] = useState<Producto[]>([]);
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(
@@ -163,7 +163,7 @@ const CompraProductos = () => {
           />
         )}
       </div>
-      <Carrito />
+      <Carrito sucursalId={sucursalId} />
     </div>
   );
 };

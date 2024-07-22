@@ -37,6 +37,7 @@ export interface Pedido {
   cliente?: any;
   pedidoDetalle?: PedidoDetalle[];
   factura?: any;
+  sucursalId?: number;
 }
 export interface Sucursal {
   id: number;

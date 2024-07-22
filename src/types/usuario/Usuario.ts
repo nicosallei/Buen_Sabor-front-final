@@ -13,6 +13,9 @@ export class Usuario {
   username: string = "";
   password: string = "";
   rol: Rol = Rol.DEFAULT;
+  idSucursal?: number;
+  idEmpresa?: number;
+  idCliente?: number;
 }
 export enum Rol {
   DEFAULT = "DEFAULT",

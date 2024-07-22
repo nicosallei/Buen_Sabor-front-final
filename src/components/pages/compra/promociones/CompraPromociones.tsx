@@ -248,7 +248,7 @@ const CompraPromociones = () => {
             ))}
         </div>
       </div>
-      <Carrito />
+      <Carrito sucursalId={sucursalId} />
       <Modal
         title="Detalle de Promoción"
         open={modalOpen}

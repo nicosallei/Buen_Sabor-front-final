@@ -79,7 +79,7 @@ const LoginHandler: React.FC = () => {
               localStorage.removeItem("id");
 
               localStorage.setItem("email", cliente.email);
-              localStorage.setItem("rol", "CLIENTE");
+              localStorage.setItem("rol", cliente.rol);
               localStorage.setItem("id", cliente.id.toString()); // Asumiendo que quieres marcar el rol en localStorage
               // Aquí puedes agregar más lógica específica para clientes
               navigate("/compra"); // Redirige a la ruta específica para clientes

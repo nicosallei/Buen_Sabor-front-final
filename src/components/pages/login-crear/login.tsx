@@ -54,25 +54,46 @@ function Login() {
     });
 
     if (response.ok) {
-      const data = await response.json();
-      const newUsuario = {
-        usuario: data.username,
-        rol: data.role,
-      };
-      const usuarioActualizado = new Usuario();
-      usuarioActualizado.username = newUsuario.usuario;
-      usuarioActualizado.rol = newUsuario.rol;
-      setUsuario(usuarioActualizado);
-      localStorage.setItem("usuario", JSON.stringify(newUsuario));
-      navigate("/compra", {
-        replace: true,
-        state: {
-          logged: true,
-          usuario: newUsuario,
-        },
-      });
+      const data: Usuario = await response.json();
+
+      if (data.rol === Rol.CLIENTE) {
+        localStorage.removeItem("sucursal_id");
+        localStorage.removeItem("selectedSucursalNombre");
+        localStorage.removeItem("empresa_id");
+        localStorage.removeItem("id");
+
+        localStorage.setItem("email", data.username);
+        localStorage.setItem("rol", "CLIENTE");
+        localStorage.setItem("id", String(data.idCliente));
+        navigate("/compra");
+      } else {
+        localStorage.setItem("email", data.username);
+
+        if (data.rol === Rol.ADMINISTRADOR) {
+          localStorage.setItem("rol", data.rol);
+          localStorage.removeItem("sucursal_id");
+          localStorage.removeItem("selectedSucursalNombre");
+          localStorage.removeItem("empresa_id");
+          localStorage.removeItem("id");
+          navigate("/unidadMedida");
+        } else if (
+          data.rol === Rol.EMPLEADO_COCINA ||
+          data.rol === Rol.EMPLEADO_REPARTIDOR
+        ) {
+          localStorage.setItem("rol", data.rol);
+          localStorage.setItem(
+            "sucursal_id",
+            data.idSucursal?.toString() || ""
+          );
+          localStorage.setItem("id", String(data.id));
+          localStorage.setItem("empresa_id", data.idEmpresa?.toString() || "");
+          navigate("/insumos");
+        }
+
+        navigate("/compra", {});
+      }
     } else {
-      setTxtValidacion("Usuario y/o clave incorrectas");
+      setTxtValidacion("Usuario o clave incorrectos");
     }
   };
 
