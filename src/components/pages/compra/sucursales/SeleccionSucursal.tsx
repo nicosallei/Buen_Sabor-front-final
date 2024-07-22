@@ -28,7 +28,8 @@ const SeleccionSucursal = () => {
   }, [dispatch]);
 
   const handleSeleccionar = (idSucursal: string) => {
-    navigate(`/compra/categorias/${idSucursal}`);
+    const idNumerico = Number(idSucursal);
+    navigate(`/compra/categorias/${idNumerico}`);
   };
 
   return (

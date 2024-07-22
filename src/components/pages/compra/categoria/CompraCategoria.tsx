@@ -25,7 +25,8 @@ const CompraCategoria = () => {
   }, [sucursalId]);
 
   const handleCategoriaClick = async (id: number) => {
-    navigate(`/compra/productos/${id}`);
+    const idNumerico = Number(sucursalId);
+    navigate(`/compra/productos/${idNumerico}/${id}`);
   };
 
   const mostrarModalSalir = () => {

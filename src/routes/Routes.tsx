@@ -114,7 +114,7 @@ const Rutas: React.FC = () => {
         element={<AuthenticationGuard component={CompraCategoria} />}
       />
       <Route
-        path="/compra/productos/:categoriaId"
+        path="/compra/productos/:surucsalId/:categoriaId"
         element={<AuthenticationGuard component={CompraProductos} />}
       />
       <Route
