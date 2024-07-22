@@ -1,5 +1,11 @@
 const Url = "http://localhost:8080/api/estadisticas";
 
+// types.ts
+export interface ArticuloManufacturadoVendidoDto {
+  denominacion: string;
+  cantidadVendida: number;
+}
+
 export const fetchIngresosPorRangoDeDias = async (
   startDate: string,
   endDate: string,
@@ -75,4 +81,20 @@ export const fetchArticulosManufacturadosVendidos = async (
     console.error(error);
     return []; // Retorna un arreglo vacío en caso de error
   }
+};
+export const fetchArticulosManufacturados = async (
+  fechaInicio: string,
+  fechaFin: string,
+  sucursalId: number
+): Promise<ArticuloManufacturadoVendidoDto[]> => {
+  const response = await fetch(
+    `${Url}/articulos-manufacturados/vendidos-por-sucursal?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&sucursalId=${sucursalId}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Error al obtener los datos");
+  }
+
+  const data: ArticuloManufacturadoVendidoDto[] = await response.json();
+  return data;
 };

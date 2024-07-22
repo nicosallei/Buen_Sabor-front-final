@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Select } from "antd";
+import { DatePicker, Select } from "antd";
 import { Chart } from "react-google-charts";
 import {
   fetchInsumosConStock,
   fetchArticulosManufacturadosVendidos,
-} from "../../../service/EstadisticaService"; // Adjust the path as needed
+  fetchArticulosManufacturados,
+} from "../../../service/EstadisticaService";
 import { getEmpresas, Empresas } from "../../../service/ServiceEmpresa";
 import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
+
 const { Option } = Select;
 
 interface Insumo {
@@ -22,6 +24,7 @@ interface Producto {
 const Graficos: React.FC = () => {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
   const [vendidos, setVendidos] = useState<Producto[]>([]);
+  const [topVendidos, setTopVendidos] = useState<Producto[]>([]);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
@@ -29,6 +32,8 @@ const Graficos: React.FC = () => {
     null
   );
   const [isDisabled, setIsDisabled] = useState(false);
+  const [fechaInicio, setFechaInicio] = useState<string | null>(null);
+  const [fechaFin, setFechaFin] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEmpresas = async () => {
@@ -61,19 +66,40 @@ const Graficos: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedSucursalId) {
-      const fetchData = async () => {
+    const fetchData = async () => {
+      if (selectedSucursalId) {
         const insumosData = await fetchInsumosConStock(selectedSucursalId);
         const vendidosData = await fetchArticulosManufacturadosVendidos(
           selectedSucursalId
         );
         setInsumos(insumosData);
         setVendidos(vendidosData);
+      }
+    };
+
+    fetchData();
+  }, [selectedSucursalId]);
+
+  useEffect(() => {
+    if (selectedSucursalId && fechaInicio && fechaFin) {
+      const fetchData = async () => {
+        const insumosData = await fetchInsumosConStock(selectedSucursalId);
+        const vendidosData = await fetchArticulosManufacturadosVendidos(
+          selectedSucursalId
+        );
+        const topVendidosData = await fetchArticulosManufacturados(
+          fechaInicio,
+          fechaFin,
+          selectedSucursalId
+        );
+        setInsumos(insumosData);
+        setVendidos(vendidosData);
+        setTopVendidos(topVendidosData.slice(0, 5)); // Mostrar solo los 5 productos más vendidos
       };
 
       fetchData();
     }
-  }, [selectedSucursalId]);
+  }, [selectedSucursalId, fechaInicio, fechaFin]);
 
   const handleSucursalChange = (value: string) => {
     setSelectedSucursalId(Number(value));
@@ -95,8 +121,13 @@ const Graficos: React.FC = () => {
     ]),
   ];
 
-  console.log("Insumos Data:", insumosData);
-  console.log("Vendidos Data:", vendidosData);
+  const topVendidosData = [
+    ["Producto", "Cantidad Vendida"],
+    ...topVendidos.map(({ denominacion, cantidadVendida }) => [
+      denominacion,
+      cantidadVendida,
+    ]),
+  ];
 
   return (
     <div>
@@ -177,6 +208,42 @@ const Graficos: React.FC = () => {
             width="100%"
             height="400px"
             options={{ title: "Productos Vendidos" }}
+          />
+
+          <div style={{ margin: "10px 0" }}>
+            <DatePicker
+              placeholder="Fecha de inicio"
+              onChange={(_date, dateString) =>
+                setFechaInicio(dateString as string)
+              }
+            />
+            <DatePicker
+              placeholder="Fecha de fin"
+              style={{ marginLeft: 20 }}
+              onChange={(_date, dateString) =>
+                setFechaFin(dateString as string)
+              }
+            />
+          </div>
+          <h2>Top 5 Productos Más Vendidos</h2>
+          <Chart
+            chartType="BarChart"
+            data={topVendidosData}
+            width="100%"
+            height="400px"
+            options={{
+              title: "Top 5 Productos Más Vendidos",
+              chartArea: { width: "50%" },
+              hAxis: {
+                title: "Cantidad Vendida",
+                minValue: 0,
+              },
+              vAxis: {
+                title: "Producto",
+              },
+              bars: "horizontal",
+              legend: { position: "none" },
+            }}
           />
         </>
       )}
