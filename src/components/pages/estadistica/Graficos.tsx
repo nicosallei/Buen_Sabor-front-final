@@ -5,6 +5,8 @@ import {
   fetchInsumosConStock,
   fetchArticulosManufacturadosVendidos,
   fetchArticulosManufacturados,
+  fetchPedidosPorClienteYRango,
+  ClientePedidosDto,
 } from "../../../service/EstadisticaService";
 import { getEmpresas, Empresas } from "../../../service/ServiceEmpresa";
 import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
@@ -25,6 +27,9 @@ const Graficos: React.FC = () => {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
   const [vendidos, setVendidos] = useState<Producto[]>([]);
   const [topVendidos, setTopVendidos] = useState<Producto[]>([]);
+  const [pedidosPorCliente, setPedidosPorCliente] = useState<
+    ClientePedidosDto[]
+  >([]);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
@@ -92,9 +97,30 @@ const Graficos: React.FC = () => {
           fechaFin,
           selectedSucursalId
         );
+        const pedidosData = await fetchPedidosPorClienteYRango(
+          fechaInicio,
+          fechaFin,
+          selectedSucursalId
+        );
         setInsumos(insumosData);
         setVendidos(vendidosData);
         setTopVendidos(topVendidosData.slice(0, 5)); // Mostrar solo los 5 productos más vendidos
+        setPedidosPorCliente(pedidosData);
+      };
+
+      fetchData();
+    }
+  }, [selectedSucursalId, fechaInicio, fechaFin]);
+  useEffect(() => {
+    if (selectedSucursalId && fechaInicio && fechaFin) {
+      const fetchData = async () => {
+        const pedidosData = await fetchPedidosPorClienteYRango(
+          fechaInicio,
+          fechaFin,
+          selectedSucursalId
+        );
+        console.log(pedidosData); // Verifica los datos obtenidos
+        setPedidosPorCliente(pedidosData);
       };
 
       fetchData();
@@ -129,6 +155,14 @@ const Graficos: React.FC = () => {
     ]),
   ];
 
+  const pedidosPorClienteData = [
+    ["Cliente", "Cantidad de Pedidos"],
+    ...pedidosPorCliente.map(({ nombre, apellido, cantidadPedidos }) => [
+      `${nombre} ${apellido}`,
+      cantidadPedidos,
+    ]),
+  ];
+
   return (
     <div>
       <div
@@ -139,7 +173,7 @@ const Graficos: React.FC = () => {
           flexWrap: "wrap",
         }}
       >
-        <h1>Estadísticas de Ingresos</h1>
+        <h1>Estadísticas de Productos y pedidos</h1>
         <div
           style={{
             flexGrow: 1,
@@ -225,6 +259,7 @@ const Graficos: React.FC = () => {
               }
             />
           </div>
+
           <h2>Top 5 Productos Más Vendidos</h2>
           <Chart
             chartType="BarChart"
@@ -240,6 +275,27 @@ const Graficos: React.FC = () => {
               },
               vAxis: {
                 title: "Producto",
+              },
+              bars: "horizontal",
+              legend: { position: "none" },
+            }}
+          />
+
+          <h2>Pedidos por Cliente</h2>
+          <Chart
+            chartType="BarChart"
+            data={pedidosPorClienteData}
+            width="100%"
+            height="400px"
+            options={{
+              title: "Cantidad de Pedidos por Cliente",
+              chartArea: { width: "50%" },
+              hAxis: {
+                title: "Cantidad de Pedidos",
+                minValue: 0,
+              },
+              vAxis: {
+                title: "Cliente",
               },
               bars: "horizontal",
               legend: { position: "none" },

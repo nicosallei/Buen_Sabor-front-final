@@ -6,6 +6,14 @@ export interface ArticuloManufacturadoVendidoDto {
   cantidadVendida: number;
 }
 
+export interface ClientePedidosDto {
+  clienteId: number;
+  nombre: string;
+  cantidadPedidos: number;
+  totalPedidos: number;
+  apellido?: string;
+}
+
 export const fetchIngresosPorRangoDeDias = async (
   startDate: string,
   endDate: string,
@@ -97,4 +105,24 @@ export const fetchArticulosManufacturados = async (
 
   const data: ArticuloManufacturadoVendidoDto[] = await response.json();
   return data;
+};
+
+export const fetchPedidosPorClienteYRango = async (
+  fechaInicio: string,
+  fechaFin: string,
+  sucursalId: number
+): Promise<ClientePedidosDto[]> => {
+  try {
+    const response = await fetch(
+      `${Url}/pedidos-por-cliente-y-rango?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&sucursalId=${sucursalId}`
+    );
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const data: ClientePedidosDto[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching pedidos por cliente y rango:", error);
+    throw error;
+  }
 };
