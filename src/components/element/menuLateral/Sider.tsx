@@ -44,7 +44,12 @@ function getItem(
 
 const allItems: MenuItem[] = [
   getItem("/empresas", "EMPRESA", "2", <BankOutlined />),
-  getItem("/graficos", "GRAFICO", "13", <FundProjectionScreenOutlined />),
+  getItem(
+    "/vista-graficos-estadistica",
+    "GRAFICOS-ESTADISTICAS",
+    "13",
+    <FundProjectionScreenOutlined />
+  ),
   getItem("/pedidos", "PEDIDOS", "3", <FundProjectionScreenOutlined />),
   getItem("/productos", "PRODUCTOS", "sub1", <ShoppingCartOutlined />, [
     getItem("/productos", "LISTA DE PRODUCTOS", "4"),
@@ -57,12 +62,6 @@ const allItems: MenuItem[] = [
   getItem("/insumos", "INSUMOS", "9", <InboxOutlined />),
   getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
   getItem("/unidadMedida", "Unidad de Medida", "11", <GoldOutlined />),
-  getItem(
-    "/estadistica",
-    "ESTADISTICA",
-    "12",
-    <FundProjectionScreenOutlined />
-  ),
   getItem(
     "/pedidosCliente",
     "PEDIDOS Cliente",

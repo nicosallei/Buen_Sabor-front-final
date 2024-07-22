@@ -29,6 +29,7 @@ import withRoleCheck from "../controlAcceso/withRoleCheck";
 import CompraPromociones from "../components/pages/compra/promociones/CompraPromociones";
 import PedidosCliente from "../components/pages/pedidosCliente/PedidoClientes";
 import Clientes from "../components/pages/clientes/Clientes";
+import VistaPrincipal from "../components/pages/estadistica";
 
 const Rutas: React.FC = () => {
   return (
@@ -175,6 +176,12 @@ const Rutas: React.FC = () => {
         path="/graficos"
         element={React.createElement(
           withRoleCheck(Graficos, ["ADMINISTRADOR"])
+        )}
+      />
+      <Route
+        path="/vista-graficos-estadistica"
+        element={React.createElement(
+          withRoleCheck(VistaPrincipal, ["ADMINISTRADOR"])
         )}
       />
     </Routes>
