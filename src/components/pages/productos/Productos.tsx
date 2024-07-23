@@ -11,8 +11,8 @@ export default function Productos() {
   const [showFormularioProducto, setShowFormularioProducto] = useState(false);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState("");
-  const [selectedSucursal, setSelectedSucursal] = useState("");
+  const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
+  const [selectedSucursal, setSelectedSucursal] = useState<number>(0);
   const [disableSelection, setDisableSelection] = useState(false);
   const [reloadProductos, setReloadProductos] = useState(false);
   const [reloadTable, setReloadTable] = useState(false);
@@ -29,7 +29,7 @@ export default function Productos() {
   useEffect(() => {
     const fetchSucursales = async () => {
       if (selectedEmpresa) {
-        const sucursalesData = await getSucursal(selectedEmpresa);
+        const sucursalesData = await getSucursal(String(selectedEmpresa));
         setSucursales(sucursalesData);
       }
     };
@@ -41,8 +41,8 @@ export default function Productos() {
     const empresaId = localStorage.getItem("empresa_id");
     const sucursalId = localStorage.getItem("sucursal_id");
     if (empresaId && sucursalId) {
-      setSelectedEmpresa(empresaId);
-      setSelectedSucursal(sucursalId);
+      setSelectedEmpresa(Number(empresaId));
+      setSelectedSucursal(Number(sucursalId));
       setDisableSelection(true);
     }
   }, []);
@@ -128,15 +128,15 @@ export default function Productos() {
         onClose={closeFormularioProducto}
         onSubmit={handleFormSubmit}
         initialValues={null}
-        sucursalId={selectedSucursal}
+        sucursalId={String(selectedSucursal)}
       />
 
       <div>
         {selectedSucursal ? (
           <TablaProductos
             key={reloadProductos ? "reload" : "normal"}
-            empresaId={selectedEmpresa}
-            sucursalId={selectedSucursal}
+            empresaId={String(selectedEmpresa)}
+            sucursalId={String(selectedSucursal)}
             reload={reloadTable}
             onReload={() => setReloadProductos(true)} // Pasar callback
           />

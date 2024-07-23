@@ -137,6 +137,7 @@ const PedidosCliente = () => {
         { text: "EN PPREPARACION", value: "EN_PREPARACION" },
         { text: "ENVIADO", value: "ENVIADO" },
         { text: "ENTREGADO", value: "ENTREGADO" },
+        { text: "LISTO PARA ENTREGAR", value: "LISTO_PARA_ENTREGAR" },
         { text: "CANCELADO", value: "CANCELADO" },
       ],
       onFilter: (value: any, record: any) => record.estado.indexOf(value) === 0,

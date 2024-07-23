@@ -49,7 +49,7 @@ const Estadistica = () => {
   const [gananciasMeses, setGananciasMeses] = useState<GananciaMes[]>([]);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
   const [selectedSucursalId, setSelectedSucursalId] = useState<number | null>(
     null
   );
@@ -83,7 +83,7 @@ const Estadistica = () => {
   useEffect(() => {
     const fetchSucursales = async () => {
       if (selectedEmpresa) {
-        const sucursalesData = await getSucursal(selectedEmpresa);
+        const sucursalesData = await getSucursal(String(selectedEmpresa));
         setSucursales(sucursalesData);
       }
     };
@@ -95,7 +95,7 @@ const Estadistica = () => {
     const empresaId = localStorage.getItem("empresa_id");
     const sucursalId = localStorage.getItem("sucursal_id");
     if (empresaId && sucursalId) {
-      setSelectedEmpresa(empresaId);
+      setSelectedEmpresa(Number(empresaId));
       setSelectedSucursalId(Number(sucursalId));
       setIsDisabled(true);
     }

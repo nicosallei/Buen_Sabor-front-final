@@ -27,6 +27,7 @@ export enum Estado {
   ENVIADO = "ENVIADO",
   ENTREGADO = "ENTREGADO",
   CANCELADO = "CANCELADO",
+  LISTO_PARA_ENTREGAR = "LISTO_PARA_ENTREGAR",
 }
 export interface Domicilio {
   calle?: string;

@@ -21,7 +21,6 @@ const LoginHandler: React.FC = () => {
           localStorage.removeItem("email");
           localStorage.removeItem("auth_token");
           localStorage.removeItem("id");
-
           const sucursalService = new SucursalService();
           const token = await getAccessTokenSilently();
           localStorage.setItem("auth_token", token);
@@ -45,7 +44,8 @@ const LoginHandler: React.FC = () => {
               navigate("/unidadMedida");
             } else if (
               empleado.rol === RolEmpleado.EMPLEADO_COCINA ||
-              empleado.rol === RolEmpleado.EMPLEADO_REPARTIDOR
+              empleado.rol === RolEmpleado.EMPLEADO_REPARTIDOR ||
+              empleado.rol == RolEmpleado.EMPLEADO_CAJA
             ) {
               localStorage.setItem("rol", empleado.rol);
               localStorage.setItem(
@@ -64,8 +64,13 @@ const LoginHandler: React.FC = () => {
                 empleado.sucursal.id,
                 token
               );
+
               localStorage.setItem("selectedSucursalNombre", sucursal.nombre);
-              navigate("/insumos");
+              localStorage.setItem(
+                "selectedEmpresaNombre",
+                empleado.sucursal.empresa.nombre
+              );
+              navigate("/pedidos/menu");
             }
           } else {
             const cliente = await clienteService.getClienteByEmail(

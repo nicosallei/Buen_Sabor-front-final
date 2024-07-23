@@ -25,7 +25,7 @@ const Promociones = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
   const [promociones, setPromociones] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [promocionDetail, setPromocionDetail] = useState<
@@ -51,7 +51,7 @@ const Promociones = () => {
   useEffect(() => {
     const fetchSucursales = async () => {
       if (selectedEmpresa) {
-        const sucursalesData = await getSucursal(selectedEmpresa);
+        const sucursalesData = await getSucursal(String(selectedEmpresa));
         setSucursales(sucursalesData);
       }
     };
@@ -60,10 +60,10 @@ const Promociones = () => {
   }, [selectedEmpresa]);
 
   useEffect(() => {
-    const empresaId = localStorage.getItem("empresa_id");
+    const empresaId = Number(localStorage.getItem("empresa_id"));
     const sucursalId = localStorage.getItem("sucursal_id");
     if (empresaId && sucursalId) {
-      setSelectedEmpresa(empresaId);
+      setSelectedEmpresa(Number(empresaId));
       setSelectedSucursalId(Number(sucursalId));
       setIsDisabled(true);
       handleSucursalChange(sucursalId);

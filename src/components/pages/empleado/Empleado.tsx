@@ -13,8 +13,8 @@ const Empleados = () => {
   const [showFormularioEmpleado, setShowFormularioEmpleado] = useState(false);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState("");
-  const [selectedSucursal, setSelectedSucursal] = useState("");
+  const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
+  const [selectedSucursal, setSelectedSucursal] = useState<number>(0);
   const [reloadTable, setReloadTable] = useState(false); // Estado para controlar la recarga de la tabla
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const Empleados = () => {
   useEffect(() => {
     const fetchSucursales = async () => {
       if (selectedEmpresa) {
-        const sucursalesData = await getSucursal(selectedEmpresa);
+        const sucursalesData = await getSucursal(String(selectedEmpresa));
         setSucursales(sucursalesData);
       }
     };
@@ -108,11 +108,14 @@ const Empleados = () => {
         onClose={closeFormularioEmpleado}
         onSubmit={handleFormSubmit}
         initialValues={null}
-        sucursalId={selectedSucursal}
+        sucursalId={String(selectedSucursal)}
       />
       <div>
         {selectedSucursal ? (
-          <TablaEmpleado sucursalId={selectedSucursal} reload={reloadTable} />
+          <TablaEmpleado
+            sucursalId={String(selectedSucursal)}
+            reload={reloadTable}
+          />
         ) : (
           <p>Por favor, seleccione la sucursal para ver los empleados.</p>
         )}

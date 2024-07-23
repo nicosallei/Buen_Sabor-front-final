@@ -1,5 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
-import { Card, Skeleton, Avatar, message } from "antd";
+import {
+  Card,
+  Skeleton,
+  Avatar,
+  message,
+  Modal,
+  Form,
+  Input,
+  Button,
+} from "antd";
 import EmpleadoService from "../../../service/auth0Service/EmpleadoService";
 import IEmpleado from "../../../service/auth0Service/typeAuth0/Empleado";
 import avatarImage from "../../../assets/user.png";
@@ -22,7 +31,7 @@ const EmpleadoProfileCard = () => {
   const [passwordActual, setPasswordActual] = useState("");
   const [nuevaPassword, setNuevaPassword] = useState("");
   const [cambiandoPassword, setCambiandoPassword] = useState(false);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const fetchEmpleado = async () => {
     if (email && token) {
       try {
@@ -63,6 +72,15 @@ const EmpleadoProfileCard = () => {
     }
   }, [email, token, empleadoService, baseURL, clienteService, rol]);
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  // Función para cerrar el modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   const handleChangePassword = async (e: any) => {
     e.preventDefault();
     setCambiandoPassword(true);
@@ -73,7 +91,6 @@ const EmpleadoProfileCard = () => {
       nuevaPassword,
       id: Number(id),
     };
-
     try {
       if (rol === "CLIENTE") {
         await cambiarPasswordCliente(cambioPasswordDto, token);
@@ -93,6 +110,13 @@ const EmpleadoProfileCard = () => {
 
   return (
     <div>
+      <div
+        style={{ display: "flex", justifyContent: "flex-end", margin: "20px" }}
+      >
+        <Button type="primary" onClick={showModal}>
+          Cambiar Contraseña
+        </Button>
+      </div>
       {rol === "CLIENTE" ? (
         <Card
           style={{ width: 300, margin: "20px auto" }}
@@ -157,25 +181,51 @@ const EmpleadoProfileCard = () => {
           </Skeleton>
         </Card>
       )}
-      <form onSubmit={handleChangePassword}>
-        <input
-          type="password"
-          placeholder="Contraseña Actual"
-          value={passwordActual}
-          onChange={(e) => setPasswordActual(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Nueva Contraseña"
-          value={nuevaPassword}
-          onChange={(e) => setNuevaPassword(e.target.value)}
-          required
-        />
-        <button type="submit" disabled={cambiandoPassword}>
-          Cambiar Contraseña
-        </button>
-      </form>
+
+      <Modal
+        title="Cambiar Contraseña"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null} // Remover el footer predeterminado
+      >
+        <Form
+          name="changePasswordForm"
+          initialValues={{ remember: true }}
+          onFinish={handleChangePassword}
+        >
+          <Form.Item
+            name="passwordActual"
+            rules={[
+              {
+                required: true,
+                message: "Por favor ingresa tu contraseña actual!",
+              },
+            ]}
+          >
+            <Input.Password placeholder="Contraseña Actual" />
+          </Form.Item>
+          <Form.Item
+            name="nuevaPassword"
+            rules={[
+              {
+                required: true,
+                message: "Por favor ingresa tu nueva contraseña!",
+              },
+            ]}
+          >
+            <Input.Password placeholder="Nueva Contraseña" />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={cambiandoPassword}
+            >
+              Cambiar Contraseña
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

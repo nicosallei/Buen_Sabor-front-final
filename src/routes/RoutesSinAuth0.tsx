@@ -28,6 +28,14 @@ import CompraPromociones from "../components/pages/compra/promociones/CompraProm
 import PedidosCliente from "../components/pages/pedidosCliente/PedidoClientes";
 import Clientes from "../components/pages/clientes/Clientes";
 import VistaPrincipal from "../components/pages/estadistica";
+import PedidosPendientes from "../components/pages/pedidos/PedidoPendiente";
+import PedidoPreparacion from "../components/pages/pedidos/PedidoPreparacion";
+import PedidosCancelados from "../components/pages/pedidos/PedidoCancelado";
+import PedidosAprobados from "../components/pages/pedidos/PedidosAprobados";
+import PedidosEnviados from "../components/pages/pedidos/PedidoEnviado";
+import PedidosEntregados from "../components/pages/pedidos/PedidoEntregado";
+import PedidosListos from "../components/pages/pedidos/PedidoListo";
+import PedidoMenu from "../components/pages/pedidos/PedidoMenu";
 
 const Rutas: React.FC = () => {
   return (
@@ -88,6 +96,7 @@ const Rutas: React.FC = () => {
             "ADMINISTRADOR",
             "EMPLEADO_COCINA",
             "CLIENTE",
+            "EMPLEADO_CAJA",
           ])
         )}
       />
@@ -98,6 +107,7 @@ const Rutas: React.FC = () => {
             "ADMINISTRADOR",
             "EMPLEADO_COCINA",
             "CLIENTE",
+            "EMPLEADO_CAJA",
           ])
         )}
       />
@@ -108,6 +118,7 @@ const Rutas: React.FC = () => {
             "ADMINISTRADOR",
             "EMPLEADO_COCINA",
             "CLIENTE",
+            "EMPLEADO_CAJA",
           ])
         )}
       />
@@ -124,7 +135,11 @@ const Rutas: React.FC = () => {
       <Route
         path="/estadistica"
         element={React.createElement(
-          withRoleCheck(Estadistica, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+          withRoleCheck(Estadistica, [
+            "ADMINISTRADOR",
+            "EMPLEADO_COCINA",
+            "EMPLEADO_CAJA",
+          ])
         )}
       />
       <Route
@@ -163,13 +178,91 @@ const Rutas: React.FC = () => {
       <Route
         path="/graficos"
         element={React.createElement(
-          withRoleCheck(Graficos, ["ADMINISTRADOR"])
+          withRoleCheck(Graficos, ["ADMINISTRADOR", "EMPLEADO_CAJA"])
         )}
       />
       <Route
         path="/vista-graficos-estadistica"
         element={React.createElement(
-          withRoleCheck(VistaPrincipal, ["ADMINISTRADOR"])
+          withRoleCheck(VistaPrincipal, ["ADMINISTRADOR", "EMPLEADO_CAJA"])
+        )}
+      />
+      <Route
+        path="/pedidos/pendiente"
+        element={React.createElement(
+          withRoleCheck(PedidosPendientes, ["ADMINISTRADOR", "EMPLEADO_CAJA"])
+        )}
+      />
+      <Route
+        path="/pedidos/preparacion"
+        element={React.createElement(
+          withRoleCheck(PedidoPreparacion, [
+            "ADMINISTRADOR",
+            "ADMIN_SUCURSAL",
+            "EMPLEADO_COCINA",
+          ])
+        )}
+      />
+      <Route
+        path="/pedidos/listo-entregar"
+        element={React.createElement(
+          withRoleCheck(PedidosListos, [
+            "ADMINISTRADOR",
+            "ADMIN_SUCURSAL",
+            "EMPLEADO_CAJA",
+          ])
+        )}
+      />
+      <Route
+        path="/pedidos/entregado"
+        element={React.createElement(
+          withRoleCheck(PedidosEntregados, [
+            "ADMINISTRADOR",
+            "ADMIN_SUCURSAL",
+            "EMPLEADO_CAJA",
+          ])
+        )}
+      />
+      <Route
+        path="/pedidos/enviado"
+        element={React.createElement(
+          withRoleCheck(PedidosEnviados, [
+            "ADMINISTRADOR",
+            "EMPLEADO_REPARTIDOR",
+          ])
+        )}
+      />
+      <Route
+        path="/pedidos/cancelado"
+        element={React.createElement(
+          withRoleCheck(PedidosCancelados, [
+            "ADMINISTRADOR",
+            "ADMIN_SUCURSAL",
+            "EMPLEADO_CAJA",
+          ])
+        )}
+      />
+      <Route
+        path="/pedidos/confirmado"
+        element={React.createElement(
+          withRoleCheck(PedidosAprobados, [
+            "ADMINISTRADOR",
+            "ADMIN_SUCURSAL",
+            "EMPLEADO_COCINA",
+          ])
+        )}
+      />
+      <Route
+        path="/pedidos/menu"
+        element={React.createElement(
+          withRoleCheck(PedidoMenu, [
+            "ADMINISTRADOR",
+            "CLIENTE",
+            "EMPLEADO_COCINA",
+            "EMPLEADO_REPARTIDOR",
+            "EMPLEADO_CAJA",
+            "ADMIN_SUCURSAL",
+          ])
         )}
       />
     </Routes>

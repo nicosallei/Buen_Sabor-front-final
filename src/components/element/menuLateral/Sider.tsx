@@ -50,7 +50,16 @@ const allItems: MenuItem[] = [
     "13",
     <FundProjectionScreenOutlined />
   ),
-  getItem("/pedidos", "PEDIDOS", "3", <FundProjectionScreenOutlined />),
+  getItem("/pedidos", "PEDIDOS", "3", <FundProjectionScreenOutlined />, [
+    getItem("/pedidos/menu", "MENU PEDIDOS", "sub11"),
+    getItem("/pedidos/pendiente", "PENDIENTE", "sub12"),
+    getItem("/pedidos/confirmado", "CONFIRMADO", "sub13"),
+    getItem("/pedidos/preparacion", "PREPARACION", "sub14"),
+    getItem("/pedidos/listo-entregar", "LISTO PARA ENTREGAR", "sub15"),
+    getItem("/pedidos/enviado", "ENVIADO", "sub16"),
+    getItem("/pedidos/entregado", "ENTREGADO", "sub17"),
+    getItem("/pedidos/cancelado", "CANCELADO", "sub18"),
+  ]),
   getItem("/productos", "PRODUCTOS", "sub1", <ShoppingCartOutlined />, [
     getItem("/productos", "LISTA DE PRODUCTOS", "4"),
     getItem("/categorias", "CATEGORIAS", "5"),
@@ -95,24 +104,39 @@ const App: React.FC = () => {
   const isAdmin = rol === RolEmpleado.ADMINISTRADOR;
   const isCocinero = rol === RolEmpleado.EMPLEADO_COCINA;
   const isRepartidor = rol === RolEmpleado.EMPLEADO_REPARTIDOR;
+  const isCajero = rol == Rol.EMPLEADO_CAJA;
   const isCliente = rol === Rol.CLIENTE;
 
   const visibleItems = allItems
     .map((item) => {
       if (isAdmin) return item;
       if (isCocinero) {
-        if (
-          item?.key === "2" ||
-          item?.key === "12" ||
-          item?.key === "10" ||
-          item?.key === "sub2" ||
-          item?.key === "8" ||
-          item?.key === "13" ||
-          item?.key === "11" ||
-          item?.key === "15"
-        ) {
+        // Lista de claves principales a excluir completamente
+        const clavesPrincipalesExcluidas = [
+          "2",
+          "12",
+          "10",
+          "sub2",
+          "8",
+          "13",
+          "11",
+          "15",
+          "14",
+        ];
+        if (clavesPrincipalesExcluidas.includes(item?.key?.toString() ?? "")) {
           return null;
         }
+
+        // Exclusión específica para item con clave "3"
+        if (item?.key === "3") {
+          const clavesExcluidas = ["sub12", "sub15", "sub16", "sub17", "sub18"];
+          const filteredChildren = (item?.children as MenuItem[])?.filter(
+            (child: any) => !clavesExcluidas.includes(child.key)
+          );
+          return { ...item, children: filteredChildren };
+        }
+
+        // Exclusión específica para item con clave "sub1"
         if (item?.key === "sub1") {
           const filteredChildren = (item?.children as MenuItem[])?.filter(
             (child: any) => child.key !== "5"
@@ -121,6 +145,69 @@ const App: React.FC = () => {
         }
       }
       if (isRepartidor) {
+        if (
+          item?.key === "2" ||
+          item?.key === "12" ||
+          item?.key === "sub2" ||
+          item?.key === "8" ||
+          item?.key === "13" ||
+          item?.key === "11" ||
+          item?.key === "9" ||
+          item?.key === "8" ||
+          item?.key === "7" ||
+          item?.key === "6" ||
+          item?.key === "5" ||
+          item?.key === "4" ||
+          item?.key === "sub1" ||
+          item?.key === "14" ||
+          item?.key === "15" ||
+          item?.key === "10"
+        ) {
+          return null;
+        }
+        if (item?.key === "3") {
+          // Define una lista de claves para excluir
+          const clavesExcluidas = [
+            "sub12",
+            "sub13",
+            "sub14",
+            "sub15",
+            "sub17",
+            "sub18",
+          ]; // Agrega aquí las claves que deseas excluir
+          const filteredChildren = (item?.children as MenuItem[])?.filter(
+            (child: any) => !clavesExcluidas.includes(child.key)
+          );
+          return { ...item, children: filteredChildren };
+        }
+      }
+      if (isCajero) {
+        if (
+          item?.key === "2" ||
+          item?.key === "12" ||
+          item?.key === "sub2" ||
+          item?.key === "8" ||
+          item?.key === "11" ||
+          item?.key === "9" ||
+          item?.key === "8" ||
+          item?.key === "7" ||
+          item?.key === "6" ||
+          item?.key === "5" ||
+          item?.key === "4" ||
+          item?.key === "sub1" ||
+          item?.key === "14" ||
+          item?.key === "15"
+        ) {
+          return null;
+        }
+        if (item?.key === "3") {
+          // Define una lista de claves para excluir
+          const clavesExcluidas = ["sub13", "sub14", "sub16"]; // Agrega aquí las claves que deseas excluir
+          const filteredChildren = (item?.children as MenuItem[])?.filter(
+            (child: any) => !clavesExcluidas.includes(child.key)
+          );
+          return { ...item, children: filteredChildren };
+        }
       }
       if (isCliente) {
         if (

@@ -11,8 +11,8 @@ const { Option } = Select;
 const CategoriasPorSucursal = () => {
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState("");
-  const [selectedSucursal, setSelectedSucursal] = useState("");
+  const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
+  const [selectedSucursal, setSelectedSucursal] = useState<number>(0);
   const [refreshKey] = useState(0);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const CategoriasPorSucursal = () => {
   useEffect(() => {
     const fetchSucursales = async () => {
       if (selectedEmpresa) {
-        const sucursalesData = await getSucursal(selectedEmpresa);
+        const sucursalesData = await getSucursal(String(selectedEmpresa));
         setSucursales(sucursalesData);
       }
     };
@@ -83,8 +83,8 @@ const CategoriasPorSucursal = () => {
       {selectedEmpresa && selectedSucursal ? (
         <ArbolCategoriaPorSucursal
           key={refreshKey}
-          selectedEmpresa={selectedEmpresa}
-          selectedSucursal={selectedSucursal}
+          selectedEmpresa={String(selectedEmpresa)}
+          selectedSucursal={String(selectedSucursal)}
         />
       ) : (
         <p>
