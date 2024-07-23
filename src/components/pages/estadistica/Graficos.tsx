@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { DatePicker, Select } from "antd";
+import { DatePicker, Select, Button } from "antd";
 import { Chart } from "react-google-charts";
+import * as XLSX from "xlsx";
 import {
   fetchInsumosConStock,
   fetchArticulosManufacturadosVendidos,
@@ -111,24 +112,51 @@ const Graficos: React.FC = () => {
       fetchData();
     }
   }, [selectedSucursalId, fechaInicio, fechaFin]);
-  useEffect(() => {
-    if (selectedSucursalId && fechaInicio && fechaFin) {
-      const fetchData = async () => {
-        const pedidosData = await fetchPedidosPorClienteYRango(
-          fechaInicio,
-          fechaFin,
-          selectedSucursalId
-        );
-        console.log(pedidosData); // Verifica los datos obtenidos
-        setPedidosPorCliente(pedidosData);
-      };
-
-      fetchData();
-    }
-  }, [selectedSucursalId, fechaInicio, fechaFin]);
 
   const handleSucursalChange = (value: string) => {
     setSelectedSucursalId(Number(value));
+  };
+
+  const exportToExcel = () => {
+    const wb = XLSX.utils.book_new();
+
+    // Insumos
+    const insumosSheet = XLSX.utils.json_to_sheet(
+      insumos.map(({ denominacion, stockActual }) => ({
+        Insumo: denominacion,
+        "Stock Actual": stockActual,
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, insumosSheet, "Insumos");
+
+    // Vendidos
+    const vendidosSheet = XLSX.utils.json_to_sheet(
+      vendidos.map(({ denominacion, cantidadVendida }) => ({
+        Producto: denominacion,
+        "Cantidad Vendida": cantidadVendida,
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, vendidosSheet, "Artículos Vendidos");
+
+    // Top Vendidos
+    const topVendidosSheet = XLSX.utils.json_to_sheet(
+      topVendidos.map(({ denominacion, cantidadVendida }) => ({
+        Producto: denominacion,
+        "Cantidad Vendida": cantidadVendida,
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, topVendidosSheet, "Top 5 Productos");
+
+    // Pedidos por Cliente
+    const pedidosSheet = XLSX.utils.json_to_sheet(
+      pedidosPorCliente.map(({ nombre, apellido, cantidadPedidos }) => ({
+        Cliente: `${nombre} ${apellido}`,
+        "Cantidad de Pedidos": cantidadPedidos,
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, pedidosSheet, "Pedidos por Cliente");
+
+    XLSX.writeFile(wb, "estadisticas.xlsx");
   };
 
   const insumosData = [
@@ -212,6 +240,12 @@ const Graficos: React.FC = () => {
             ))}
           </Select>
         </div>
+      </div>
+
+      <div style={{ marginBottom: "20px" }}>
+        <Button onClick={exportToExcel} type="primary">
+          Descargar Excel
+        </Button>
       </div>
 
       {selectedSucursalId && (

@@ -8,7 +8,8 @@ import {
   fetchGananciasPorRangoDeMeses,
 } from "../../../service/EstadisticaService";
 import { Chart } from "react-google-charts";
-
+import * as XLSX from "xlsx";
+import { DownloadOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
 type IngresoMes = {
@@ -159,6 +160,13 @@ const Estadistica = () => {
     }
   };
 
+  const handleExportToExcel = (data: any[], sheetName: string) => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    XLSX.writeFile(wb, `${sheetName}.xlsx`);
+  };
+
   const columnsDias = [
     { title: "Fecha", dataIndex: "fecha", key: "fecha" },
     { title: "Ingreso", dataIndex: "ingreso", key: "ingreso" },
@@ -260,6 +268,14 @@ const Estadistica = () => {
           </Form.Item>
         </Form>
         <Table dataSource={ingresosDias} columns={columnsDias} rowKey="fecha" />
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={() => handleExportToExcel(ingresosDias, "Ingresos por Dia")}
+          style={{ marginTop: "20px" }} // Añade un margen superior para separarlo de otros elementos si es necesario
+        >
+          Descargar Excel
+        </Button>
         <Chart
           width={"100%"}
           height={"400px"}
@@ -364,6 +380,13 @@ const Estadistica = () => {
           columns={columnsMeses}
           rowKey="fecha"
         />
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={() => handleExportToExcel(ingresosMeses, "Ingresos por Mes")}
+        >
+          Descargar Excel
+        </Button>
         <Chart
           width={"100%"}
           height={"400px"}
@@ -468,6 +491,16 @@ const Estadistica = () => {
           columns={columnsGanancias}
           rowKey="fecha"
         />
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={() =>
+            handleExportToExcel(gananciasMeses, "Ganancias por Mes")
+          }
+          style={{ marginTop: "20px" }} // Añade un margen superior para separarlo de otros elementos si es necesario
+        >
+          Descargar Excel
+        </Button>
         <Chart
           width={"100%"}
           height={"400px"}
