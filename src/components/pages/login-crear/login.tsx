@@ -70,11 +70,13 @@ function Login() {
         localStorage.setItem("email", data.username);
 
         if (data.rol === Rol.ADMINISTRADOR) {
-          localStorage.setItem("rol", data.rol);
           localStorage.removeItem("sucursal_id");
           localStorage.removeItem("selectedSucursalNombre");
           localStorage.removeItem("empresa_id");
           localStorage.removeItem("id");
+          localStorage.setItem("rol", data.rol);
+          localStorage.setItem("id", String(data.idEmpleado));
+          localStorage.setItem("email", data.username);
           navigate("/unidadMedida");
         } else if (
           data.rol === Rol.EMPLEADO_COCINA ||
@@ -85,8 +87,9 @@ function Login() {
             "sucursal_id",
             data.idSucursal?.toString() || ""
           );
-          localStorage.setItem("id", String(data.id));
+          localStorage.setItem("id", String(data.idEmpleado));
           localStorage.setItem("empresa_id", data.idEmpresa?.toString() || "");
+          localStorage.setItem("email", data.username);
           navigate("/insumos");
         }
 

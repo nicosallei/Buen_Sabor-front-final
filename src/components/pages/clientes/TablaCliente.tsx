@@ -68,11 +68,11 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
 
     try {
       await actualizarPasswordCliente(clienteId, nuevaPassword, token);
-      console.log("Contraseña reseteada con éxito");
-      // Aquí podrías mostrar un mensaje de éxito o actualizar tu UI según sea necesario
+      message.success(`La contraseña fue reseteada con exito: `);
+      // Recargar los pedidos para reflejar el cambio de estado
     } catch (error: any) {
       message.error(error.message);
-      // Maneja el error, por ejemplo, mostrando un mensaje al usuario
+      //alert(error.message);
     }
   };
 

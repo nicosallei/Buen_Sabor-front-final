@@ -33,14 +33,15 @@ const LoginHandler: React.FC = () => {
           );
 
           if (empleado) {
-            localStorage.setItem("email", empleado.email);
-
             if (empleado.rol === RolEmpleado.ADMINISTRADOR) {
-              localStorage.setItem("rol", empleado.rol);
+              localStorage.removeItem("email");
               localStorage.removeItem("sucursal_id");
               localStorage.removeItem("selectedSucursalNombre");
               localStorage.removeItem("empresa_id");
               localStorage.removeItem("id");
+              localStorage.setItem("rol", empleado.rol);
+              localStorage.setItem("id", empleado.id.toString());
+              localStorage.setItem("email", empleado.email);
               navigate("/unidadMedida");
             } else if (
               empleado.rol === RolEmpleado.EMPLEADO_COCINA ||
@@ -56,6 +57,7 @@ const LoginHandler: React.FC = () => {
                 "empresa_id",
                 empleado.sucursal.empresa.id.toString()
               );
+              localStorage.setItem("email", empleado.email);
 
               const sucursal = await sucursalService.getById(
                 `${url}`,

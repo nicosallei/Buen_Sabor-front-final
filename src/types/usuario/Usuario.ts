@@ -16,6 +16,8 @@ export class Usuario {
   idSucursal?: number;
   idEmpresa?: number;
   idCliente?: number;
+  idEmpleado?: number;
+  idUsuario?: number;
 }
 export enum Rol {
   DEFAULT = "DEFAULT",

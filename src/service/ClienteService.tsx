@@ -26,6 +26,7 @@ export const actualizarPasswordCliente = async (
 ): Promise<void> => {
   try {
     const encryptedPassword = CryptoJS.SHA256(nuevaPassword);
+    nuevaPassword = encryptedPassword.toString();
     const response = await fetch(
       `http://localhost:8080/api/usuario/cliente/actualizarPassword/${clienteId}`,
       {
@@ -34,18 +35,61 @@ export const actualizarPasswordCliente = async (
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`, // Indica el tipo de contenido que se está enviando
         },
-        body: JSON.stringify({ nuevaPassword: encryptedPassword }), // Convierte la nueva contraseña a una cadena JSON
+        body: JSON.stringify(nuevaPassword), // Convierte la nueva contraseña a una cadena JSON
       }
     );
 
     if (!response.ok) {
+      // Si el servidor envía un mensaje de error en el cuerpo de la respuesta
       const errorData = await response.json();
-      throw new Error(errorData);
+      throw new Error(errorData.message || "Error al cambiar la contraseña");
     }
+  } catch (error: any) {
+    console.error("Error al cambiar la contraseña:", error.message);
+    throw error;
+  }
+};
 
-    const data = await response.text();
-    console.log(data);
-  } catch (error) {
-    console.error("Error en actualizarPasswordCliente: ", error);
+export const cambiarPasswordCliente = async (
+  cambioPasswordDto: {
+    username: string;
+    passwordActual: string;
+    nuevaPassword: string;
+  },
+  token: string
+): Promise<void> => {
+  try {
+    const encryptedPasswordActual = CryptoJS.SHA256(
+      cambioPasswordDto.passwordActual
+    ).toString();
+    const encryptedPasswordNueva = CryptoJS.SHA256(
+      cambioPasswordDto.nuevaPassword
+    ).toString();
+    const body = JSON.stringify({
+      username: cambioPasswordDto.username,
+      passwordActual: encryptedPasswordActual,
+      nuevaPassword: encryptedPasswordNueva,
+    });
+
+    const response = await fetch(
+      `http://localhost:8080/api/usuario/cambiar-password-cliente`,
+      {
+        method: "POST", // Asegúrate de usar el método correcto (POST para este caso)
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: body,
+      }
+    );
+
+    if (!response.ok) {
+      // Si el servidor envía un mensaje de error en el cuerpo de la respuesta
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error al cambiar la contraseña");
+    }
+  } catch (error: any) {
+    console.error("Error al cambiar la contraseña:", error.message);
+    throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
   }
 };
