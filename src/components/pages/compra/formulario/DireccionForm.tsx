@@ -36,7 +36,9 @@ const DireccionForm: React.FC<DireccionFormProps> = ({
     if (selectedPais) {
       getProvincia().then((data: Provincia[]) => {
         const provinciasFiltradas = data.filter(
-          (provincia) => provincia.pais.id === String(selectedPais)
+          (provincia) =>
+            provincia.pais.id ===
+            (selectedPais ? Number(selectedPais) : undefined) // Asegúrate de que ambos sean del mismo tipo
         );
         setProvincias(provinciasFiltradas);
       });
@@ -76,6 +78,11 @@ const DireccionForm: React.FC<DireccionFormProps> = ({
   useEffect(() => {
     cargarDatos();
   }, []);
+
+  const handleCancel = () => {
+    form.resetFields();
+    onCancel();
+  };
 
   return (
     <Form layout="vertical" onFinish={onSubmit}>
@@ -193,7 +200,7 @@ const DireccionForm: React.FC<DireccionFormProps> = ({
         <Button type="primary" htmlType="submit">
           Guardar
         </Button>
-        <Button style={{ marginLeft: "10px" }} onClick={onCancel}>
+        <Button style={{ marginLeft: "10px" }} onClick={handleCancel}>
           Cancelar
         </Button>
       </Form.Item>
