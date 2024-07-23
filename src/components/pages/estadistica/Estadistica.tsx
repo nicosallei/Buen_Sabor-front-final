@@ -101,9 +101,9 @@ const Estadistica = () => {
     }
   }, []);
 
-  const handleSucursalChange = async (value: string) => {
-    setSelectedSucursalId(Number(value));
-  };
+  // const handleSucursalChange = async (value: string) => {
+  //   setSelectedSucursalId(Number(value));
+  // };
 
   const handleFetchDias = async () => {
     if (selectedSucursalId) {

@@ -113,9 +113,9 @@ const Graficos: React.FC = () => {
     }
   }, [selectedSucursalId, fechaInicio, fechaFin]);
 
-  const handleSucursalChange = (value: string) => {
-    setSelectedSucursalId(Number(value));
-  };
+  // const handleSucursalChange = (value: string) => {
+  //   setSelectedSucursalId(Number(value));
+  // };
 
   const exportToExcel = () => {
     const wb = XLSX.utils.book_new();

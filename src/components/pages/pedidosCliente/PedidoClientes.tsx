@@ -3,37 +3,76 @@ import {
   descargarFactura,
   fetchPedidosClientes,
 } from "../../../service/PedidoService"; // Asegúrate de usar el path correcto
-import { Table } from "antd";
+import { Select, Spin, Table } from "antd";
 import { FilePdfOutlined } from "@ant-design/icons";
+import { Cliente, getClientes } from "../../../service/ClienteService";
+import moment from "moment";
+
+const { Option } = Select;
 const PedidosCliente = () => {
   const [pedidos, setPedidos] = useState([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [cargandoClientes, setCargandoClientes] = useState(false);
+  // Obtener el rol y el ID del usuario desde el almacenamiento local
+  const rolUsuario = localStorage.getItem("rol");
+  const idUsuario = localStorage.getItem("id");
+  // Configurar el estado inicial de clienteSeleccionado basado en el rol del usuario
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(
+    rolUsuario === "CLIENTE" ? idUsuario : undefined
+  );
+  useEffect(() => {
+    const cargarClientes = async () => {
+      setCargandoClientes(true);
+      try {
+        const clientesObtenidos = await getClientes();
+        setClientes(clientesObtenidos);
+      } catch (error) {
+        console.error("Error al cargar los clientes:", error);
+      } finally {
+        setCargandoClientes(false);
+      }
+    };
+
+    cargarClientes();
+  }, []);
 
   useEffect(() => {
     const cargarPedidos = async () => {
+      if (!clienteSeleccionado) return;
       try {
-        // Obtener el idCliente y el rol del Storage
-        const idCliente = localStorage.getItem("id"); // Asegúrate de que 'idCliente' se guarde en el Storage
-        const rol = localStorage.getItem("rol"); // Asegúrate de que 'rol' se guarde en el Storage
-
-        // Verificar si el usuario es un cliente
-        if (rol === "CLIENTE" && idCliente) {
-          const pedidosDelCliente = await fetchPedidosClientes(
-            Number(idCliente)
-          );
-          setPedidos(pedidosDelCliente);
-        }
+        const pedidosDelCliente = await fetchPedidosClientes(
+          Number(clienteSeleccionado)
+        );
+        setPedidos(pedidosDelCliente);
       } catch (error) {
         console.error("Error al cargar los pedidos del cliente:", error);
       }
     };
 
     cargarPedidos();
-  }, []);
+  }, [clienteSeleccionado]);
 
-  const pedidosFiltrados = pedidos.map((pedido: any, index) => ({
-    ...pedido,
-    numeroPedido: index + 1,
-  }));
+  const filtrarPedidosPorFechaYAgregarNumero = (pedidos: any) => {
+    const rangoFechas: string | any[] = []; // Asegúrate de definir el rango de fechas correctamente
+    let pedidosFiltrados = pedidos;
+    if (rangoFechas.length === 2) {
+      const [inicio, fin] = rangoFechas;
+      pedidosFiltrados = pedidos.filter((pedido: any) => {
+        const fechaPedido = moment(pedido.fechaPedido);
+        return fechaPedido.isBetween(inicio, fin, undefined, "[]");
+      });
+    }
+    // Añadir el número de pedido basado en el índice del array
+    return pedidosFiltrados.map((pedido: any, index: any) => ({
+      ...pedido,
+      numeroPedido: index + 1, // Añade 1 para empezar la numeración desde 1
+    }));
+  };
+
+  // const pedidosFiltrados = pedidos.map((pedido: any, index) => ({
+  //   ...pedido,
+  //   numeroPedido: index + 1,
+  // }));
 
   const columns = [
     {
@@ -45,6 +84,8 @@ const PedidosCliente = () => {
       title: "Fecha y Hora del Pedido",
       dataIndex: "fechaPedido",
       key: "fechaPedido",
+      sorter: (a: any, b: any) =>
+        moment(a.fechaPedido).unix() - moment(b.fechaPedido).unix(),
       render: (fechaPedido: string, record: any) => {
         // Formatear la fecha en el formato día/mes/año
         const opcionesDeFecha: Intl.DateTimeFormatOptions = {
@@ -120,8 +161,38 @@ const PedidosCliente = () => {
   return (
     <div>
       <h2>Mis Pedidos</h2>
+      {cargandoClientes ? (
+        <Spin />
+      ) : (
+        // Renderizar el selector de clientes solo si el usuario no es un cliente
+        rolUsuario !== "CLIENTE" && (
+          <Select
+            showSearch
+            style={{ width: 200 }}
+            placeholder="Selecciona un cliente"
+            optionFilterProp="children"
+            onChange={(value) => setClienteSeleccionado(value)}
+            filterOption={(input, option) =>
+              (option?.children?.toString().toLowerCase() ?? "").includes(
+                input.toLowerCase()
+              )
+            }
+          >
+            {clientes.map((cliente) => (
+              <Option
+                key={cliente.id}
+                value={cliente.id}
+              >{`${cliente.nombre} ${cliente.apellido}`}</Option>
+            ))}
+          </Select>
+        )
+      )}
 
-      <Table dataSource={pedidosFiltrados} columns={columns} rowKey="id" />
+      <Table
+        dataSource={filtrarPedidosPorFechaYAgregarNumero(pedidos)}
+        columns={columns}
+        rowKey="id"
+      />
     </div>
   );
 };
