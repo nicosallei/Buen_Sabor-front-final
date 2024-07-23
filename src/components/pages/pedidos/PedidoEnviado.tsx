@@ -136,6 +136,21 @@ const PedidosEnviados: React.FC = () => {
       ),
     },
     {
+      title: "Domicilio",
+      key: "domicilio",
+      render: (_text: any, record: any) => (
+        <Button
+          onClick={() => {
+            setSelectedDomicilio(record.domicilioDto);
+            setDomicilioModalVisible(true);
+          }}
+          disabled={!record.domicilioDto}
+        >
+          Ver Domicilio
+        </Button>
+      ),
+    },
+    {
       title: "Estado",
       dataIndex: "estado",
       key: "estado",
@@ -159,21 +174,6 @@ const PedidosEnviados: React.FC = () => {
           },
         ]
       : []),
-    {
-      title: "Domicilio",
-      key: "domicilio",
-      render: (_text: any, record: any) => (
-        <Button
-          onClick={() => {
-            setSelectedDomicilio(record.domicilioDto);
-            setDomicilioModalVisible(true);
-          }}
-          disabled={!record.domicilioDto}
-        >
-          Ver Domicilio
-        </Button>
-      ),
-    },
   ];
 
   return (

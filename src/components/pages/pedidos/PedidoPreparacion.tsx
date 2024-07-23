@@ -215,24 +215,13 @@ const PedidoPreparacion: React.FC = () => {
         <Select
           placeholder="Selecciona un estado"
           value={nuevoEstado}
+          onChange={(value) => setNuevoEstado(value)}
           style={{ width: "100%" }}
-          onChange={(value) => {
-            Modal.confirm({
-              title: "Confirmar cambio de estado",
-              content: `¿Estás seguro de que quieres cambiar el estado a ${
-                value === "LISTO_PARA_ENTREGAR" ? "Confirmado" : "Cancelado"
-              }?`,
-              onOk() {
-                setNuevoEstado(value);
-                // Aquí puedes proceder con la lógica para cambiar el estado, como llamar a handleOk
-              },
-            });
-          }}
         >
           <Select.Option value="LISTO_PARA_ENTREGAR">
             LISTO PARA ENTREGAR
           </Select.Option>
-          <Select.Option value="CANCELADO">CANCELAR PEDIDO</Select.Option>
+          <Select.Option value="CANCELADO">CANCELADO</Select.Option>
         </Select>
       </Modal>
     </div>
