@@ -20,22 +20,28 @@ export const getClientes = async (): Promise<Cliente[]> => {
 };
 
 export const actualizarPasswordCliente = async (
-  clienteId: number,
-  nuevaPassword: string,
+  cambioPasswordDto: { id: number; nuevaPassword: string; username: string },
   token: string
 ): Promise<void> => {
   try {
-    const encryptedPassword = CryptoJS.SHA256(nuevaPassword);
-    nuevaPassword = encryptedPassword.toString();
+    const encryptedPasswordNueva = CryptoJS.SHA256(
+      cambioPasswordDto.nuevaPassword
+    ).toString();
+    const body = JSON.stringify({
+      id: cambioPasswordDto.id,
+      nuevaPassword: encryptedPasswordNueva,
+      username: cambioPasswordDto.username,
+    });
+
     const response = await fetch(
-      `http://localhost:8080/api/usuario/cliente/actualizarPassword/${clienteId}`,
+      `http://localhost:8080/api/usuario/cliente/actualizarPassword/${cambioPasswordDto.id}`,
       {
         method: "PUT", // Método HTTP
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`, // Indica el tipo de contenido que se está enviando
         },
-        body: JSON.stringify(nuevaPassword), // Convierte la nueva contraseña a una cadena JSON
+        body: body, // Convierte la nueva contraseña a una cadena JSON
       }
     );
 

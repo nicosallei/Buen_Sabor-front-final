@@ -58,16 +58,28 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
     clearFilters();
     setSearchText("");
   };
-  const generarNuevaPassword = () => {
-    return "BuenSabor1"; // Ejemplo de contraseña generada
-  };
+  // const generarNuevaPassword = () => {
+  //   return "BuenSabor1"; // Ejemplo de contraseña generada
+  // };
 
   const resetearContraseña = async (clienteId: number) => {
-    const token = await getAccessTokenSilently();
-    const nuevaPassword = generarNuevaPassword();
+    //const token = await getAccessTokenSilently();
+    // const nuevaPassword = generarNuevaPassword();
+
+    const username = "nombreDeUsuario"; // Ejemplo de nombre de usuario
 
     try {
-      await actualizarPasswordCliente(clienteId, nuevaPassword, token);
+      const token = await getAccessTokenSilently();
+      const nuevaPassword = "BuenSabor1";
+
+      await actualizarPasswordCliente(
+        {
+          id: clienteId,
+          nuevaPassword: nuevaPassword,
+          username: username,
+        },
+        token
+      );
       message.success(`La contraseña fue reseteada con exito: `);
       // Recargar los pedidos para reflejar el cambio de estado
     } catch (error: any) {

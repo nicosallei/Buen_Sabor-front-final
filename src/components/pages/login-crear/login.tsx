@@ -55,7 +55,6 @@ function Login() {
 
     if (response.ok) {
       const data: Usuario = await response.json();
-
       if (data.rol === Rol.CLIENTE) {
         localStorage.removeItem("sucursal_id");
         localStorage.removeItem("selectedSucursalNombre");
