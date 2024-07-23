@@ -51,6 +51,7 @@ const allItems: MenuItem[] = [
     <FundProjectionScreenOutlined />
   ),
   getItem("/pedidos", "PEDIDOS", "3", <FundProjectionScreenOutlined />, [
+    getItem("/pedidos/admin", "PEDIDOS ADMIN", "subAdmin"),
     getItem("/pedidos/menu", "MENU PEDIDOS", "sub11"),
     getItem("/pedidos/pendiente", "PENDIENTE", "sub12"),
     getItem("/pedidos/confirmado", "CONFIRMADO", "sub13"),
@@ -109,7 +110,25 @@ const App: React.FC = () => {
 
   const visibleItems = allItems
     .map((item) => {
-      if (isAdmin) return item;
+      if (isAdmin) {
+        if (item?.key === "3") {
+          // Define una lista de claves para excluir
+          const clavesExcluidas = [
+            "sub12",
+            "sub13",
+            "sub14",
+            "sub15",
+            "sub16",
+            "sub17",
+            "sub18",
+          ]; // Agrega aquí las claves que deseas excluir
+          const filteredChildren = (item?.children as MenuItem[])?.filter(
+            (child: any) => !clavesExcluidas.includes(child.key)
+          );
+          return { ...item, children: filteredChildren };
+        }
+      }
+      return item;
       if (isCocinero) {
         // Lista de claves principales a excluir completamente
         const clavesPrincipalesExcluidas = [
@@ -129,7 +148,14 @@ const App: React.FC = () => {
 
         // Exclusión específica para item con clave "3"
         if (item?.key === "3") {
-          const clavesExcluidas = ["sub12", "sub15", "sub16", "sub17", "sub18"];
+          const clavesExcluidas = [
+            "sub12",
+            "sub15",
+            "sub16",
+            "sub17",
+            "sub18",
+            "subAdmin",
+          ];
           const filteredChildren = (item?.children as MenuItem[])?.filter(
             (child: any) => !clavesExcluidas.includes(child.key)
           );
@@ -174,6 +200,7 @@ const App: React.FC = () => {
             "sub15",
             "sub17",
             "sub18",
+            "subAdmin",
           ]; // Agrega aquí las claves que deseas excluir
           const filteredChildren = (item?.children as MenuItem[])?.filter(
             (child: any) => !clavesExcluidas.includes(child.key)
@@ -202,7 +229,7 @@ const App: React.FC = () => {
         }
         if (item?.key === "3") {
           // Define una lista de claves para excluir
-          const clavesExcluidas = ["sub13", "sub14", "sub16"]; // Agrega aquí las claves que deseas excluir
+          const clavesExcluidas = ["sub13", "sub14", "sub16", "subAdmin"]; // Agrega aquí las claves que deseas excluir
           const filteredChildren = (item?.children as MenuItem[])?.filter(
             (child: any) => !clavesExcluidas.includes(child.key)
           );

@@ -188,6 +188,10 @@ const Rutas: React.FC = () => {
         )}
       />
       <Route
+        path="/pedidos/admin"
+        element={React.createElement(withRoleCheck(Pedidos, ["ADMINISTRADOR"]))}
+      />
+      <Route
         path="/pedidos/pendiente"
         element={React.createElement(
           withRoleCheck(PedidosPendientes, ["ADMINISTRADOR", "EMPLEADO_CAJA"])
