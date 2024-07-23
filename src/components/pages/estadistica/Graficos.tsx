@@ -214,8 +214,8 @@ const Graficos: React.FC = () => {
           <Select
             placeholder="Seleccione una empresa"
             style={{ width: 200 }}
-            onChange={(value) => setSelectedEmpresa(value ? value : null)}
-            value={selectedEmpresa ? selectedEmpresa.toString() : undefined}
+            onChange={(value) => setSelectedEmpresa(value)}
+            value={selectedEmpresa || undefined}
             disabled={isDisabled}
           >
             {empresas.map((empresa) => (
@@ -228,10 +228,8 @@ const Graficos: React.FC = () => {
             placeholder="Seleccione una sucursal"
             style={{ width: 200 }}
             disabled={!selectedEmpresa || isDisabled}
-            onChange={handleSucursalChange}
-            value={
-              selectedSucursalId ? selectedSucursalId.toString() : undefined
-            }
+            onChange={(value) => setSelectedSucursalId(Number(value))}
+            value={selectedSucursalId || undefined}
           >
             {sucursales.map((sucursal) => (
               <Option key={sucursal.id} value={sucursal.id}>

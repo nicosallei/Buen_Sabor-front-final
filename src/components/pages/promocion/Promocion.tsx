@@ -217,7 +217,7 @@ const Promociones = () => {
             placeholder="Seleccione una empresa"
             style={{ width: 200 }}
             onChange={(value) => setSelectedEmpresa(value)}
-            value={selectedEmpresa}
+            value={selectedEmpresa || undefined}
             disabled={isDisabled}
           >
             {empresas.map((empresa) => (
@@ -230,8 +230,8 @@ const Promociones = () => {
             placeholder="Seleccione una sucursal"
             style={{ width: 200 }}
             disabled={!selectedEmpresa || isDisabled}
-            onChange={handleSucursalChange}
-            value={selectedSucursalId?.toString()}
+            onChange={(value) => setSelectedSucursalId(Number(value))}
+            value={selectedSucursalId || undefined}
           >
             {sucursales.map((sucursal) => (
               <Option key={sucursal.id} value={sucursal.id}>
