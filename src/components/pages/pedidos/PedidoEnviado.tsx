@@ -11,6 +11,7 @@ import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Rol } from "../../../types/usuario/Usuario";
 const { Option } = Select;
+
 const PedidosEnviados: React.FC = () => {
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
@@ -20,11 +21,14 @@ const PedidosEnviados: React.FC = () => {
     null
   );
   const [isDisabled, setIsDisabled] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [estadoModalVisible, setEstadoModalVisible] = useState(false);
+  const [domicilioModalVisible, setDomicilioModalVisible] = useState(false);
   const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(null);
   const [nuevoEstado, setNuevoEstado] = useState<Estado | null>(null);
+  const [selectedDomicilio, setSelectedDomicilio] = useState<any>(null);
   const { getAccessTokenSilently } = useAuth0();
   const [userRole, setUserRole] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchEmpresas = async () => {
       const empresasData = await getEmpresas();
@@ -33,9 +37,9 @@ const PedidosEnviados: React.FC = () => {
 
     fetchEmpresas();
   }, []);
+
   useEffect(() => {
-    // Obtener el rol del usuario desde el localStorage
-    const rolUsuario = localStorage.getItem("rol"); // Asegúrate de que 'rolUsuario' sea la clave correcta
+    const rolUsuario = localStorage.getItem("rol");
     setUserRole(rolUsuario);
   }, []);
 
@@ -90,13 +94,11 @@ const PedidosEnviados: React.FC = () => {
       message.success(
         `El pedido cambió su estado a: ${pedidoActualizado.estado}`
       );
-      cargarPedidos(); // Recargar los pedidos para reflejar el cambio de estado
+      cargarPedidos();
     } catch (error: any) {
       message.error(error.message);
-      //alert(error.message);
     } finally {
-      // Asegurarse de restablecer el estado del modal y los valores seleccionados, independientemente del resultado de la operación
-      setModalVisible(false);
+      setEstadoModalVisible(false);
       setSelectedPedidoId(null);
       setNuevoEstado(null);
     }
@@ -148,7 +150,7 @@ const PedidosEnviados: React.FC = () => {
               <Button
                 onClick={() => {
                   setSelectedPedidoId(record.id);
-                  setModalVisible(true);
+                  setEstadoModalVisible(true);
                 }}
               >
                 Cambiar Estado
@@ -157,6 +159,21 @@ const PedidosEnviados: React.FC = () => {
           },
         ]
       : []),
+    {
+      title: "Domicilio",
+      key: "domicilio",
+      render: (_text: any, record: any) => (
+        <Button
+          onClick={() => {
+            setSelectedDomicilio(record.domicilioDto);
+            setDomicilioModalVisible(true);
+          }}
+          disabled={!record.domicilioDto}
+        >
+          Ver Domicilio
+        </Button>
+      ),
+    },
   ];
 
   return (
@@ -209,33 +226,54 @@ const PedidosEnviados: React.FC = () => {
       </div>
       <h1>Pedidos Enviados</h1>
       <Table dataSource={pedidos} columns={columns} rowKey="id" />
-      {userRole === "ADMINISTRADOR" ||
-        (Rol.EMPLEADO_CAJA && (
-          <Modal
-            title="Cambiar Estado del Pedido"
-            visible={modalVisible}
-            onOk={() => {
-              if (selectedPedidoId !== null && nuevoEstado !== null) {
-                handleEstadoChange(selectedPedidoId, nuevoEstado);
-              }
-            }}
-            onCancel={() => {
-              setModalVisible(false);
-              setSelectedPedidoId(null);
-              setNuevoEstado(null);
-            }}
+      {(userRole === "ADMINISTRADOR" || Rol.EMPLEADO_CAJA) && (
+        <Modal
+          title="Cambiar Estado del Pedido"
+          visible={estadoModalVisible}
+          onOk={() => {
+            if (selectedPedidoId !== null && nuevoEstado !== null) {
+              handleEstadoChange(selectedPedidoId, nuevoEstado);
+            }
+          }}
+          onCancel={() => {
+            setEstadoModalVisible(false);
+            setSelectedPedidoId(null);
+            setNuevoEstado(null);
+          }}
+        >
+          <Select
+            placeholder="Selecciona un estado"
+            value={nuevoEstado}
+            onChange={(value) => setNuevoEstado(value)}
+            style={{ width: "100%" }}
           >
-            <Select
-              placeholder="Selecciona un estado"
-              value={nuevoEstado}
-              onChange={(value) => setNuevoEstado(value)}
-              style={{ width: "100%" }}
-            >
-              <Select.Option value="ENTREGADO">ENTREGADO</Select.Option>
-              <Select.Option value="CANCELADO">CANCELADO</Select.Option>
-            </Select>
-          </Modal>
-        ))}
+            <Select.Option value="ENTREGADO">ENTREGADO</Select.Option>
+            <Select.Option value="CANCELADO">CANCELADO</Select.Option>
+          </Select>
+        </Modal>
+      )}
+      <Modal
+        title="Domicilio del Pedido"
+        visible={domicilioModalVisible}
+        onCancel={() => setDomicilioModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setDomicilioModalVisible(false)}>
+            Cerrar
+          </Button>,
+        ]}
+      >
+        {selectedDomicilio ? (
+          <div>
+            <p>Calle: {selectedDomicilio.calle}</p>
+            <p>Número: {selectedDomicilio.numero}</p>
+            <p>CP: {selectedDomicilio.cp}</p>
+            <p>Localidad: {selectedDomicilio.localidad}</p>
+            <p>Provincia: {selectedDomicilio.provincia}</p>
+          </div>
+        ) : (
+          <p>No hay información de domicilio disponible.</p>
+        )}
+      </Modal>
     </div>
   );
 };

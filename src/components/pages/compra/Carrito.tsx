@@ -485,18 +485,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
         onCancel={handleModalCancel}
         footer={null}
       >
-        <DireccionForm
-          initialValues={{
-            calle: "",
-            numero: "",
-            localidad: 0,
-            cp: 0,
-            pais: 0,
-            provincia: 0,
-          }}
-          onSubmit={handleModalOk}
-          onCancel={handleModalCancel}
-        />
+        <DireccionForm onSubmit={handleModalOk} onCancel={handleModalCancel} />
       </Modal>
       <Modal
         title="Tiempo Estimado de Entrega"

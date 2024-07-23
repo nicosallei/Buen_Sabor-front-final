@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Select, Table, message } from "antd";
-import { Estado, fetchPedidos, Pedido } from "../../../service/PedidoService";
+import {
+  descargarFactura,
+  Estado,
+  fetchPedidos,
+  Pedido,
+} from "../../../service/PedidoService";
 import { Empresas, getEmpresas } from "../../../service/ServiceEmpresa";
 import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
+import { FilePdfOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 const PedidosEntregados: React.FC = () => {
@@ -100,6 +106,21 @@ const PedidosEntregados: React.FC = () => {
       dataIndex: "estado",
       key: "estado",
       render: (estado: Estado) => <>{estado}</>,
+    },
+    {
+      title: "Factura",
+      key: "factura",
+      render: (_text: any, record: any) => {
+        if (record.estado === "ENTREGADO") {
+          return (
+            <FilePdfOutlined
+              style={{ color: "red", fontSize: "20px" }}
+              onClick={() => descargarFactura(record.id)}
+            />
+          );
+        }
+        return null;
+      },
     },
   ];
 
