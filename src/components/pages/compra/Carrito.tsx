@@ -25,7 +25,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/Store";
 import { setPedidoRealizado } from "../../../redux/slice/Pedido.silice";
 import { obtenerPromociones } from "../../../service/PromocionService";
-import { useAuth0 } from "@auth0/auth0-react";
+//import { useAuth0 } from "@auth0/auth0-react";
 
 interface Promocion {
   id: number;
@@ -93,7 +93,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
   );
   const [promociones, setPromociones] = useState([]);
   const [descuentoTotal, setTotalDescuento] = useState<number>(0);
-  const { getAccessTokenSilently } = useAuth0();
+  //const { getAccessTokenSilently } = useAuth0();
   const quitarDelCarrito = (productoId: number) => {
     dispatch(removeToCarrito({ id: productoId }));
   };
@@ -167,7 +167,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
             formaPago: metodoPago,
             cliente: ClienteDto,
             descuento: totalSinDescuento - totalConDescuento,
-            sucursalId: Number(sucursalId) || 1, // ID de la sucursal
+            sucursalId: Number(sucursalId) || 1,
           })
         );
       } else {
@@ -177,7 +177,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
             cliente: ClienteDto,
             formaPago: metodoPago,
             descuento: totalSinDescuento - totalConDescuento,
-            sucursalId: Number(sucursalId) || 1, // ID de la sucursal
+            sucursalId: Number(sucursalId) || 1,
           })
         );
       }
@@ -241,8 +241,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
   };
   const traerPromociones = async () => {
     try {
-      const token = await getAccessTokenSilently();
-      const response = await obtenerPromociones(Number(sucursalId), token);
+      const response = await obtenerPromociones(Number(sucursalId));
       setPromociones(response);
     } catch (error) {
       console.error("Error al obtener promociones:", error);
