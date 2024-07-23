@@ -10,16 +10,14 @@ import CompraProductos from "../components/pages/compra/productos/CompraProducto
 import UnidadMedida from "../components/pages/unidadMedida/UnidadMedida";
 import CategoriasPorSucursal from "../components/pages/categorias/CategoriasPorSucursal";
 import Promocion from "../components/pages/promocion/Promocion";
-
 import Empleados from "../components/pages/empleado/Empleado";
-
 import Pedidos from "../components/pages/pedidos/Pedidos";
 import SeleccionSucursal from "../components/pages/compra/sucursales/SeleccionSucursal";
 import Login from "../components/pages/login-crear/login";
 import RegistroCliente from "../components/pages/login-crear/CrearUsuarioCliente";
 import Estadistica from "../components/pages/estadistica/Estadistica";
 import RegistroEmpleado from "../components/pages/login-crear/CrearUsuarioEmpleado";
-//import { AuthenticationGuard } from "../components/auth0/AuthenticationGuard";
+import { AuthenticationGuard } from "../components/auth0/AuthenticationGuard";
 import ErrorPage from "../components/User/ErrorPage";
 import CallbackPage from "../components/auth0/CallbackPage";
 import LoginHandler from "../components/ui/LoginHandler";
@@ -29,13 +27,14 @@ import withRoleCheck from "../controlAcceso/withRoleCheck";
 import CompraPromociones from "../components/pages/compra/promociones/CompraPromociones";
 import PedidosCliente from "../components/pages/pedidosCliente/PedidoClientes";
 import Clientes from "../components/pages/clientes/Clientes";
+import VistaPrincipal from "../components/pages/estadistica";
 
 const Rutas: React.FC = () => {
   return (
     <Routes>
       <Route
         path="/empresas"
-        element={React.createElement(withRoleCheck(Empresa, []))}
+        element={React.createElement(withRoleCheck(Empresa, ["ADMINISTRADOR"]))}
       />
       <Route
         path="/sucursal/:id"
@@ -85,25 +84,41 @@ const Rutas: React.FC = () => {
       <Route
         path="/compra"
         element={React.createElement(
-          withRoleCheck(SeleccionSucursal, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+          withRoleCheck(SeleccionSucursal, [
+            "ADMINISTRADOR",
+            "EMPLEADO_COCINA",
+            "CLIENTE",
+          ])
         )}
       />
       <Route
         path="/compra/categorias/:sucursalId"
         element={React.createElement(
-          withRoleCheck(CompraCategoria, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+          withRoleCheck(CompraCategoria, [
+            "ADMINISTRADOR",
+            "EMPLEADO_COCINA",
+            "CLIENTE",
+          ])
         )}
       />
       <Route
-        path="/compra/productos/:categoriaId"
+        path="/compra/productos/:surucsalId/:categoriaId"
         element={React.createElement(
-          withRoleCheck(CompraProductos, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+          withRoleCheck(CompraProductos, [
+            "ADMINISTRADOR",
+            "EMPLEADO_COCINA",
+            "CLIENTE",
+          ])
         )}
       />
       <Route
         path="/compra/promociones/:sucursalId"
         element={React.createElement(
-          withRoleCheck(CompraPromociones, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
+          withRoleCheck(CompraPromociones, [
+            "ADMINISTRADOR",
+            "EMPLEADO_COCINA",
+            "CLIENTE",
+          ])
         )}
       />
       <Route
@@ -120,9 +135,7 @@ const Rutas: React.FC = () => {
       />
       <Route
         path="/Pedidos"
-        element={React.createElement(
-          withRoleCheck(Pedidos, ["ADMINISTRADOR", "CLIENTE"])
-        )}
+        element={<AuthenticationGuard component={Pedidos} />}
       />
       <Route path="*" element={<ErrorPage />} />
       <Route path="/login" element={<Login />} />
@@ -135,7 +148,18 @@ const Rutas: React.FC = () => {
       /> */}
       <Route path="/" element={<LoginHandler />} />
       <Route path="/perfil" element={<EmpleadoProfileCard />} />
-      <Route path="/pedidosCliente" element={<PedidosCliente />} />
+      <Route
+        path="/pedidosCliente"
+        element={React.createElement(
+          withRoleCheck(PedidosCliente, ["ADMINISTRADOR", "CLIENTE"])
+        )}
+      />
+      <Route
+        path="/clientes"
+        element={React.createElement(
+          withRoleCheck(Clientes, ["ADMINISTRADOR"])
+        )}
+      />
       <Route
         path="/graficos"
         element={React.createElement(
@@ -143,9 +167,9 @@ const Rutas: React.FC = () => {
         )}
       />
       <Route
-        path="/clientes"
+        path="/vista-graficos-estadistica"
         element={React.createElement(
-          withRoleCheck(Clientes, ["ADMINISTRADOR"])
+          withRoleCheck(VistaPrincipal, ["ADMINISTRADOR"])
         )}
       />
     </Routes>

@@ -18,8 +18,8 @@ import { MenuInfo } from "rc-menu/lib/interface";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Rol, RolEmpleado } from "../../../types/usuario/Usuario";
 
-import Rutas from "../../../routes/Routes";
-//import Rutas from "../../../routes/RoutesSinAuth0";
+//import Rutas from "../../../routes/Routes";
+import Rutas from "../../../routes/RoutesSinAuth0";
 
 const { Header, Content, Sider } = Layout;
 
