@@ -69,7 +69,11 @@ const Promociones = () => {
       handleSucursalChange(sucursalId);
     }
   }, []);
-
+  useEffect(() => {
+    if (selectedSucursalId !== null) {
+      handleSucursalChange(selectedSucursalId.toString());
+    }
+  }, [selectedSucursalId]);
   const handleSucursalChange = async (value: string) => {
     const selectedId = Number(value);
     setSelectedSucursalId(selectedId);
