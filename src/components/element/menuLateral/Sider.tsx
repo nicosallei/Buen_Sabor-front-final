@@ -127,8 +127,9 @@ const App: React.FC = () => {
           );
           return { ...item, children: filteredChildren };
         }
+        return item;
       }
-      return item;
+
       if (isCocinero) {
         // Lista de claves principales a excluir completamente
         const clavesPrincipalesExcluidas = [
