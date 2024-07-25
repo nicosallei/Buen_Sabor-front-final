@@ -112,7 +112,7 @@ const Rutas: React.FC = () => {
         )}
       />
       <Route
-        path="/compra/productos/:surucsalId/:categoriaId"
+        path="/compra/productos/:sucursalId/:categoriaId"
         element={React.createElement(
           withRoleCheck(CompraProductos, [
             "ADMINISTRADOR",

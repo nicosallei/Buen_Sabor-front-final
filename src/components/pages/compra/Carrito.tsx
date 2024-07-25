@@ -25,6 +25,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/Store";
 import { setPedidoRealizado } from "../../../redux/slice/Pedido.silice";
 import { obtenerPromociones } from "../../../service/PromocionService";
+import { useParams } from "react-router-dom";
 //import { useAuth0 } from "@auth0/auth0-react";
 
 interface Promocion {
@@ -70,11 +71,10 @@ interface ImagenArticulo {
   url: string;
 }
 
-interface CarritoProps {
-  sucursalId: any;
-}
+interface CarritoProps {}
 
-const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
+const Carrito: React.FC<CarritoProps> = () => {
+  const { sucursalId } = useParams<{ sucursalId: string }>();
   const imagenPorDefecto = "http://localhost:8080/images/sin-imagen.jpg";
   const dispatch = useAppDispatch();
   const carrito = useAppSelector((state) => state.cartReducer);
@@ -241,6 +241,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
   };
   const traerPromociones = async () => {
     try {
+      console.log("--------------->sucursalId:", sucursalId);
       const response = await obtenerPromociones(Number(sucursalId));
       setPromociones(response);
     } catch (error) {
