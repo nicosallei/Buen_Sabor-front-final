@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { DatePicker, Select } from "antd";
+import { DatePicker, Select, Button } from "antd";
 import { Chart } from "react-google-charts";
+import * as XLSX from "xlsx";
 import {
   fetchInsumosConStock,
   fetchArticulosManufacturadosVendidos,
@@ -32,7 +33,7 @@ const Graficos: React.FC = () => {
   >([]);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
   const [selectedSucursalId, setSelectedSucursalId] = useState<number | null>(
     null
   );
@@ -52,7 +53,7 @@ const Graficos: React.FC = () => {
   useEffect(() => {
     const fetchSucursales = async () => {
       if (selectedEmpresa) {
-        const sucursalesData = await getSucursal(selectedEmpresa);
+        const sucursalesData = await getSucursal(String(selectedEmpresa));
         setSucursales(sucursalesData);
       }
     };
@@ -64,7 +65,7 @@ const Graficos: React.FC = () => {
     const empresaId = localStorage.getItem("empresa_id");
     const sucursalId = localStorage.getItem("sucursal_id");
     if (empresaId && sucursalId) {
-      setSelectedEmpresa(empresaId);
+      setSelectedEmpresa(Number(empresaId));
       setSelectedSucursalId(Number(sucursalId));
       setIsDisabled(true);
     }
@@ -111,24 +112,51 @@ const Graficos: React.FC = () => {
       fetchData();
     }
   }, [selectedSucursalId, fechaInicio, fechaFin]);
-  useEffect(() => {
-    if (selectedSucursalId && fechaInicio && fechaFin) {
-      const fetchData = async () => {
-        const pedidosData = await fetchPedidosPorClienteYRango(
-          fechaInicio,
-          fechaFin,
-          selectedSucursalId
-        );
-        console.log(pedidosData); // Verifica los datos obtenidos
-        setPedidosPorCliente(pedidosData);
-      };
 
-      fetchData();
-    }
-  }, [selectedSucursalId, fechaInicio, fechaFin]);
+  // const handleSucursalChange = (value: string) => {
+  //   setSelectedSucursalId(Number(value));
+  // };
 
-  const handleSucursalChange = (value: string) => {
-    setSelectedSucursalId(Number(value));
+  const exportToExcel = () => {
+    const wb = XLSX.utils.book_new();
+
+    // Insumos
+    const insumosSheet = XLSX.utils.json_to_sheet(
+      insumos.map(({ denominacion, stockActual }) => ({
+        Insumo: denominacion,
+        "Stock Actual": stockActual,
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, insumosSheet, "Insumos");
+
+    // Vendidos
+    const vendidosSheet = XLSX.utils.json_to_sheet(
+      vendidos.map(({ denominacion, cantidadVendida }) => ({
+        Producto: denominacion,
+        "Cantidad Vendida": cantidadVendida,
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, vendidosSheet, "Artículos Vendidos");
+
+    // Top Vendidos
+    const topVendidosSheet = XLSX.utils.json_to_sheet(
+      topVendidos.map(({ denominacion, cantidadVendida }) => ({
+        Producto: denominacion,
+        "Cantidad Vendida": cantidadVendida,
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, topVendidosSheet, "Top 5 Productos");
+
+    // Pedidos por Cliente
+    const pedidosSheet = XLSX.utils.json_to_sheet(
+      pedidosPorCliente.map(({ nombre, apellido, cantidadPedidos }) => ({
+        Cliente: `${nombre} ${apellido}`,
+        "Cantidad de Pedidos": cantidadPedidos,
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, pedidosSheet, "Pedidos por Cliente");
+
+    XLSX.writeFile(wb, "estadisticas.xlsx");
   };
 
   const insumosData = [
@@ -186,8 +214,8 @@ const Graficos: React.FC = () => {
           <Select
             placeholder="Seleccione una empresa"
             style={{ width: 200 }}
-            onChange={(value) => setSelectedEmpresa(value ? value : null)}
-            value={selectedEmpresa ? selectedEmpresa.toString() : undefined}
+            onChange={(value) => setSelectedEmpresa(value)}
+            value={selectedEmpresa || undefined}
             disabled={isDisabled}
           >
             {empresas.map((empresa) => (
@@ -200,10 +228,8 @@ const Graficos: React.FC = () => {
             placeholder="Seleccione una sucursal"
             style={{ width: 200 }}
             disabled={!selectedEmpresa || isDisabled}
-            onChange={handleSucursalChange}
-            value={
-              selectedSucursalId ? selectedSucursalId.toString() : undefined
-            }
+            onChange={(value) => setSelectedSucursalId(Number(value))}
+            value={selectedSucursalId || undefined}
           >
             {sucursales.map((sucursal) => (
               <Option key={sucursal.id} value={sucursal.id}>
@@ -212,6 +238,12 @@ const Graficos: React.FC = () => {
             ))}
           </Select>
         </div>
+      </div>
+
+      <div style={{ marginBottom: "20px" }}>
+        <Button onClick={exportToExcel} type="primary">
+          Descargar Excel
+        </Button>
       </div>
 
       {selectedSucursalId && (

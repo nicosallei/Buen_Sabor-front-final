@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SearchOutlined, EditOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
-import { Button, Input, Space, Switch, Table } from "antd";
+import { Button, Input, Space, Switch, Table, Modal } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
 
@@ -22,6 +22,7 @@ interface DataType {
   descripcion: string;
   tiempoEstimadoCocina: string;
   eliminado: boolean;
+  preparacion: string; // Add this line
 }
 
 type DataIndex = keyof DataType;
@@ -43,6 +44,9 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
   );
   const [showFormularioProducto, setShowFormularioProducto] = useState(false);
   const { getAccessTokenSilently } = useAuth0();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [preparacion, setPreparacion] = useState<string>("");
+  const [nombreProducto, setNombreProducto] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -94,6 +98,12 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
     } else {
       console.error("El ID del insumo es nulo o no está definido.");
     }
+  };
+
+  const handlePreparacion = (record: DataType) => {
+    setNombreProducto(record.denominacion);
+    setPreparacion(record.preparacion);
+    setIsModalVisible(true);
   };
 
   const getColumnSearchProps = (
@@ -221,6 +231,13 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
       sortDirections: ["descend", "ascend"],
     },
     {
+      title: "Preparación",
+      key: "preparation",
+      render: (_text: string, record: DataType) => (
+        <Button onClick={() => handlePreparacion(record)}>Preparación</Button>
+      ),
+    },
+    {
       title: "Precio",
       dataIndex: "precioVenta",
       key: "precioVenta",
@@ -228,14 +245,15 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
       sorter: (a, b) => a.precioVenta - b.precioVenta,
       sortDirections: ["descend", "ascend"],
     },
-    {
-      title: "Descripcion",
-      dataIndex: "descripcion",
-      key: "descripcion",
-      ...getColumnSearchProps("descripcion"),
-      sorter: (a, b) => a.descripcion.localeCompare(b.descripcion),
-      sortDirections: ["descend", "ascend"],
-    },
+
+    // {
+    //   title: "Descripcion",
+    //   dataIndex: "descripcion",
+    //   key: "descripcion",
+    //   ...getColumnSearchProps("descripcion"),
+    //   sorter: (a, b) => a.descripcion.localeCompare(b.descripcion),
+    //   sortDirections: ["descend", "ascend"],
+    // },
     {
       title: "Tiempo Estimado Minutos",
       dataIndex: "tiempoEstimadoCocina",
@@ -267,12 +285,22 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
       <Table
         columns={columns}
         dataSource={data}
-        pagination={{
-          pageSizeOptions: ["5", "10", "20", "30", "50", "100"],
-          showSizeChanger: true,
-        }}
+        rowKey="id"
+        scroll={{ x: "max-content" }}
       />
-      {showFormularioProducto && selectedProducto && (
+      <Modal
+        title={`${nombreProducto}`}
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+      >
+        <ul>
+          {preparacion.split("\n").map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      </Modal>
+      {selectedProducto && (
         <FormularioActualizarProducto
           visible={showFormularioProducto}
           onClose={() => {

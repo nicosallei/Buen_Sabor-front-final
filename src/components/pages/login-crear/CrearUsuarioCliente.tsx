@@ -36,6 +36,9 @@ const RegistroCliente = () => {
       navigate("/login");
     }
   };
+  const handleFechaNacimientoChange = (_date: any, _dateString: any) => {
+    form.validateFields(["fechaNacimiento"]);
+  };
 
   return (
     <Row justify="center" align="middle" style={{ minHeight: "100vh" }}>
@@ -82,9 +85,44 @@ const RegistroCliente = () => {
             <Form.Item
               name="fechaNacimiento"
               label="Fecha de Nacimiento"
-              rules={[{ required: true }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Por favor, ingresa tu fecha de nacimiento!",
+                },
+                () => ({
+                  validator(_, value) {
+                    if (!value) {
+                      return Promise.reject();
+                    }
+                    // Crear la fecha de comparación (17 de julio de 2024)
+                    const comparisonDate = new Date(2024, 6, 17); // Los meses son base-0
+                    const birthDate = new Date(value);
+                    // Calcular la diferencia en años
+                    let age =
+                      comparisonDate.getFullYear() - birthDate.getFullYear();
+                    const m = comparisonDate.getMonth() - birthDate.getMonth();
+                    if (
+                      m < 0 ||
+                      (m === 0 &&
+                        comparisonDate.getDate() < birthDate.getDate())
+                    ) {
+                      age--;
+                    }
+                    // Verificar si la edad es menor a 17
+                    if (age < 17) {
+                      return Promise.reject(
+                        new Error(
+                          "Debes ser mayor de 17 años para el 17 de julio de 2024"
+                        )
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
             >
-              <DatePicker />
+              <DatePicker onChange={handleFechaNacimientoChange} />
             </Form.Item>
 
             <Form.Item>

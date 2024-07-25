@@ -221,7 +221,7 @@ export const eliminarDetallesPromocion = async (id: number, token: string) => {
     console.error("Error al eliminar los detalles de la promoción:", error);
   }
 };
-export const obtenerPromociones = async (sucursalId: number, token: string) => {
+export const obtenerPromociones = async (sucursalId: number) => {
   try {
     const response = await fetch(
       `http://localhost:8080/api/promociones/validas/sucursal/${sucursalId}`,
@@ -229,7 +229,6 @@ export const obtenerPromociones = async (sucursalId: number, token: string) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       }
     );

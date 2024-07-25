@@ -4,7 +4,11 @@ import type { InputRef, TableColumnsType, TableColumnType } from "antd";
 import { Button, Input, Space, Switch, Table, Popconfirm } from "antd"; // Importa Popconfirm para confirmar la acción de eliminar
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
-import { Empleado, getEmpleados } from "../../../service/EmpleadoService";
+import {
+  actualizarPasswordEmpleado,
+  Empleado,
+  getEmpleados,
+} from "../../../service/EmpleadoService";
 import FormularioEmpleadoModificar from "../formularios/FormularioEmpleadoModificar";
 import { useAuth0 } from "@auth0/auth0-react";
 import userImage from "../../../assets/user_imagen.jpg";
@@ -41,6 +45,26 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
     }
   };
 
+  const handleResetPassword = async (empleado: Empleado) => {
+    try {
+      const token = await getAccessTokenSilently();
+      const username = "admin";
+      const nuevaPassword = "BuenSabor1"; // Considera generar una contraseña segura o pedirla al usuario
+      await actualizarPasswordEmpleado(
+        {
+          id: empleado.id,
+          nuevaPassword: nuevaPassword,
+          username: username,
+        },
+        token
+      );
+      console.log("Contraseña reseteada con éxito");
+      // Aquí podrías mostrar un mensaje de éxito al usuario
+    } catch (error) {
+      console.error("Error al resetear la contraseña:", error);
+      // Aquí podrías mostrar un mensaje de error al usuario
+    }
+  };
   const handleSearch = (
     selectedKeys: string[],
     confirm: FilterDropdownProps["confirm"],
@@ -248,6 +272,13 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
             />
           </Popconfirm>
         </Space>
+      ),
+    },
+    {
+      title: "Resetear Contraseña",
+      key: "resetPassword",
+      render: (_text: string, record: Empleado) => (
+        <Button onClick={() => handleResetPassword(record)}>Resetear</Button>
       ),
     },
   ];

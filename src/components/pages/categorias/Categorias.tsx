@@ -11,7 +11,7 @@ const { Option } = Select;
 
 export default function Categorias() {
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<string>("");
+  const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function Categorias() {
           </Select>
         </div>
         <NuevaCategoria
-          selectedEmpresaId={selectedEmpresa}
+          selectedEmpresaId={String(selectedEmpresa)}
           onCategoryCreated={handleRefresh}
         />
         <Button onClick={() => irACategoriasPorSucursal(selectedEmpresa)}>
@@ -77,7 +77,10 @@ export default function Categorias() {
       </Row>
       <br />
       {selectedEmpresa ? (
-        <TablaCategoria key={refreshKey} selectedEmpresa={selectedEmpresa} />
+        <TablaCategoria
+          key={refreshKey}
+          selectedEmpresa={String(selectedEmpresa)}
+        />
       ) : (
         <p>Por favor, seleccione una empresa para ver las categorías.</p>
       )}

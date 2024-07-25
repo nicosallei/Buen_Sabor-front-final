@@ -25,7 +25,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/Store";
 import { setPedidoRealizado } from "../../../redux/slice/Pedido.silice";
 import { obtenerPromociones } from "../../../service/PromocionService";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useParams } from "react-router-dom";
+//import { useAuth0 } from "@auth0/auth0-react";
 
 interface Promocion {
   id: number;
@@ -70,11 +71,10 @@ interface ImagenArticulo {
   url: string;
 }
 
-interface CarritoProps {
-  sucursalId: any;
-}
+interface CarritoProps {}
 
-const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
+const Carrito: React.FC<CarritoProps> = () => {
+  const { sucursalId } = useParams<{ sucursalId: string }>();
   const imagenPorDefecto = "http://localhost:8080/images/sin-imagen.jpg";
   const dispatch = useAppDispatch();
   const carrito = useAppSelector((state) => state.cartReducer);
@@ -93,7 +93,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
   );
   const [promociones, setPromociones] = useState([]);
   const [descuentoTotal, setTotalDescuento] = useState<number>(0);
-  const { getAccessTokenSilently } = useAuth0();
+  //const { getAccessTokenSilently } = useAuth0();
   const quitarDelCarrito = (productoId: number) => {
     dispatch(removeToCarrito({ id: productoId }));
   };
@@ -147,13 +147,10 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
     try {
       let resultAction;
       const rol = localStorage.getItem("rol");
-      let clienteId = 1; // ID por defecto
+      let clienteId = Number(localStorage.getItem("id"));
 
-      if (rol === "CLIENTE") {
-        const idAlmacenado = localStorage.getItem("clienteId");
-        if (idAlmacenado) {
-          clienteId = parseInt(idAlmacenado, 10); // Asegúrate de convertir el ID a número
-        }
+      if (rol != "CLIENTE") {
+        clienteId = 1;
       }
 
       const ClienteDto: ClienteDto = {
@@ -167,7 +164,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
             formaPago: metodoPago,
             cliente: ClienteDto,
             descuento: totalSinDescuento - totalConDescuento,
-            sucursalId: Number(sucursalId) || 1, // ID de la sucursal
+            sucursalId: Number(sucursalId) || 1,
           })
         );
       } else {
@@ -177,7 +174,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
             cliente: ClienteDto,
             formaPago: metodoPago,
             descuento: totalSinDescuento - totalConDescuento,
-            sucursalId: Number(sucursalId) || 1, // ID de la sucursal
+            sucursalId: Number(sucursalId) || 1,
           })
         );
       }
@@ -241,8 +238,8 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
   };
   const traerPromociones = async () => {
     try {
-      const token = await getAccessTokenSilently();
-      const response = await obtenerPromociones(Number(sucursalId), token);
+      console.log("--------------->sucursalId:", sucursalId);
+      const response = await obtenerPromociones(Number(sucursalId));
       setPromociones(response);
     } catch (error) {
       console.error("Error al obtener promociones:", error);
@@ -485,18 +482,7 @@ const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
         onCancel={handleModalCancel}
         footer={null}
       >
-        <DireccionForm
-          initialValues={{
-            calle: "",
-            numero: "",
-            localidad: 0,
-            cp: 0,
-            pais: 0,
-            provincia: 0,
-          }}
-          onSubmit={handleModalOk}
-          onCancel={handleModalCancel}
-        />
+        <DireccionForm onSubmit={handleModalOk} onCancel={handleModalCancel} />
       </Modal>
       <Modal
         title="Tiempo Estimado de Entrega"

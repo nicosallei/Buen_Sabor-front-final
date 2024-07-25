@@ -21,7 +21,6 @@ const LoginHandler: React.FC = () => {
           localStorage.removeItem("email");
           localStorage.removeItem("auth_token");
           localStorage.removeItem("id");
-
           const sucursalService = new SucursalService();
           const token = await getAccessTokenSilently();
           localStorage.setItem("auth_token", token);
@@ -33,18 +32,20 @@ const LoginHandler: React.FC = () => {
           );
 
           if (empleado) {
-            localStorage.setItem("email", empleado.email);
-
             if (empleado.rol === RolEmpleado.ADMINISTRADOR) {
-              localStorage.setItem("rol", empleado.rol);
+              localStorage.removeItem("email");
               localStorage.removeItem("sucursal_id");
               localStorage.removeItem("selectedSucursalNombre");
               localStorage.removeItem("empresa_id");
               localStorage.removeItem("id");
+              localStorage.setItem("rol", empleado.rol);
+              localStorage.setItem("id", empleado.id.toString());
+              localStorage.setItem("email", empleado.email);
               navigate("/unidadMedida");
             } else if (
               empleado.rol === RolEmpleado.EMPLEADO_COCINA ||
-              empleado.rol === RolEmpleado.EMPLEADO_REPARTIDOR
+              empleado.rol === RolEmpleado.EMPLEADO_REPARTIDOR ||
+              empleado.rol == RolEmpleado.EMPLEADO_CAJA
             ) {
               localStorage.setItem("rol", empleado.rol);
               localStorage.setItem(
@@ -56,14 +57,20 @@ const LoginHandler: React.FC = () => {
                 "empresa_id",
                 empleado.sucursal.empresa.id.toString()
               );
+              localStorage.setItem("email", empleado.email);
 
               const sucursal = await sucursalService.getById(
                 `${url}`,
                 empleado.sucursal.id,
                 token
               );
+
               localStorage.setItem("selectedSucursalNombre", sucursal.nombre);
-              navigate("/insumos");
+              localStorage.setItem(
+                "selectedEmpresaNombre",
+                empleado.sucursal.empresa.nombre
+              );
+              navigate("/pedidos/menu");
             }
           } else {
             const cliente = await clienteService.getClienteByEmail(

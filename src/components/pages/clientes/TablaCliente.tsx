@@ -16,14 +16,10 @@ import {
 
 type DataIndex = keyof Cliente;
 type TablaEmpleadosProps = {
-  sucursalId: string;
   reload: boolean;
 };
 
-const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
-  sucursalId,
-  reload,
-}) => {
+const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({ reload }) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
@@ -33,7 +29,7 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
   const { getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     fetchData();
-  }, [sucursalId, reload]);
+  }, [reload]);
 
   const fetchData = async () => {
     try {
@@ -58,21 +54,33 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
     clearFilters();
     setSearchText("");
   };
-  const generarNuevaPassword = () => {
-    return "BuenSabor1"; // Ejemplo de contraseña generada
-  };
+  // const generarNuevaPassword = () => {
+  //   return "BuenSabor1"; // Ejemplo de contraseña generada
+  // };
 
   const resetearContraseña = async (clienteId: number) => {
-    const token = await getAccessTokenSilently();
-    const nuevaPassword = generarNuevaPassword();
+    //const token = await getAccessTokenSilently();
+    // const nuevaPassword = generarNuevaPassword();
+
+    const username = "nombreDeUsuario"; // Ejemplo de nombre de usuario
 
     try {
-      await actualizarPasswordCliente(clienteId, nuevaPassword, token);
-      console.log("Contraseña reseteada con éxito");
-      // Aquí podrías mostrar un mensaje de éxito o actualizar tu UI según sea necesario
+      const token = await getAccessTokenSilently();
+      const nuevaPassword = "BuenSabor1";
+
+      await actualizarPasswordCliente(
+        {
+          id: clienteId,
+          nuevaPassword: nuevaPassword,
+          username: username,
+        },
+        token
+      );
+      message.success(`La contraseña fue reseteada con exito: `);
+      // Recargar los pedidos para reflejar el cambio de estado
     } catch (error: any) {
       message.error(error.message);
-      // Maneja el error, por ejemplo, mostrando un mensaje al usuario
+      //alert(error.message);
     }
   };
 

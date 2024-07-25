@@ -30,6 +30,8 @@ import CompraPromociones from "../components/pages/compra/promociones/CompraProm
 import PedidosCliente from "../components/pages/pedidosCliente/PedidoClientes";
 import Clientes from "../components/pages/clientes/Clientes";
 import VistaPrincipal from "../components/pages/estadistica";
+import PedidosPendientes from "../components/pages/pedidos/PedidoPendiente";
+import PedidoPreparacion from "../components/pages/pedidos/PedidoPreparacion";
 
 const Rutas: React.FC = () => {
   return (
@@ -58,7 +60,6 @@ const Rutas: React.FC = () => {
           />
         }
       />
-
       <Route
         path="/empleados"
         element={
@@ -67,7 +68,6 @@ const Rutas: React.FC = () => {
           />
         }
       />
-
       <Route
         path="/categorias/porSucursal"
         element={
@@ -76,7 +76,6 @@ const Rutas: React.FC = () => {
           />
         }
       />
-
       <Route
         path="/productos"
         element={
@@ -182,6 +181,19 @@ const Rutas: React.FC = () => {
         path="/vista-graficos-estadistica"
         element={React.createElement(
           withRoleCheck(VistaPrincipal, ["ADMINISTRADOR"])
+        )}
+      />
+      //---------------------------------------------------------
+      <Route
+        path="/pedido-pendiente"
+        element={React.createElement(
+          withRoleCheck(PedidosPendientes, ["ADMINISTRADOR"])
+        )}
+      />
+      <Route
+        path="/pedido-preparacion"
+        element={React.createElement(
+          withRoleCheck(PedidoPreparacion, ["ADMINISTRADOR"])
         )}
       />
     </Routes>

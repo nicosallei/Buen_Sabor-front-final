@@ -1,17 +1,19 @@
-import { Select, Table, message, Button, Modal } from "antd";
-import { useEffect, useState } from "react";
-import { Empresas, getEmpresas } from "../../../service/ServiceEmpresa";
-import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
+import React, { useEffect, useState } from "react";
+import { Button, Modal, Select, Table, message } from "antd";
 import {
+  cambiarEstadoPedido,
   Estado,
   fetchPedidos,
-  cambiarEstadoPedido,
+  Pedido,
 } from "../../../service/PedidoService";
+import { Empresas, getEmpresas } from "../../../service/ServiceEmpresa";
+import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
 import { useAuth0 } from "@auth0/auth0-react";
-
+import { Rol } from "../../../types/usuario/Usuario";
 const { Option } = Select;
 
-const Pedidos: React.FC = () => {
+const PedidosEnviados: React.FC = () => {
+  const [pedidos, setPedidos] = useState<any[]>([]);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
@@ -19,12 +21,14 @@ const Pedidos: React.FC = () => {
     null
   );
   const [isDisabled, setIsDisabled] = useState(false);
-  const [pedidos, setPedidos] = useState<any[]>([]);
-  const [filtroEstado, setFiltroEstado] = useState<string>("");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [estadoModalVisible, setEstadoModalVisible] = useState(false);
+  const [domicilioModalVisible, setDomicilioModalVisible] = useState(false);
   const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(null);
   const [nuevoEstado, setNuevoEstado] = useState<Estado | null>(null);
+  const [selectedDomicilio, setSelectedDomicilio] = useState<any>(null);
   const { getAccessTokenSilently } = useAuth0();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchEmpresas = async () => {
       const empresasData = await getEmpresas();
@@ -32,6 +36,11 @@ const Pedidos: React.FC = () => {
     };
 
     fetchEmpresas();
+  }, []);
+
+  useEffect(() => {
+    const rolUsuario = localStorage.getItem("rol");
+    setUserRole(rolUsuario);
   }, []);
 
   useEffect(() => {
@@ -46,10 +55,6 @@ const Pedidos: React.FC = () => {
   }, [selectedEmpresa]);
 
   useEffect(() => {
-    cargarPedidos();
-  }, [selectedSucursalId]);
-
-  useEffect(() => {
     const empresaId = localStorage.getItem("empresa_id");
     const sucursalId = localStorage.getItem("sucursal_id");
     if (empresaId && sucursalId) {
@@ -62,13 +67,21 @@ const Pedidos: React.FC = () => {
   const cargarPedidos = async () => {
     if (selectedSucursalId && selectedSucursalId > 0) {
       try {
-        const pedidosData = await fetchPedidos(selectedSucursalId);
-        setPedidos(pedidosData);
+        const todosLosPedidos = await fetchPedidos(selectedSucursalId);
+        const pedidosFiltrados = todosLosPedidos.filter(
+          (pedido: Pedido) => pedido.estado === Estado.ENVIADO
+        );
+        setPedidos(pedidosFiltrados);
       } catch (error) {
         console.error("Error al cargar los pedidos:", error);
+        message.error("Error al cargar los pedidos");
       }
     }
   };
+
+  useEffect(() => {
+    cargarPedidos();
+  }, [selectedSucursalId]);
 
   const handleEstadoChange = async (id: number, nuevoEstado: Estado) => {
     try {
@@ -81,13 +94,11 @@ const Pedidos: React.FC = () => {
       message.success(
         `El pedido cambió su estado a: ${pedidoActualizado.estado}`
       );
-      cargarPedidos(); // Recargar los pedidos para reflejar el cambio de estado
+      cargarPedidos();
     } catch (error: any) {
       message.error(error.message);
-      //alert(error.message);
     } finally {
-      // Asegurarse de restablecer el estado del modal y los valores seleccionados, independientemente del resultado de la operación
-      setModalVisible(false);
+      setEstadoModalVisible(false);
       setSelectedPedidoId(null);
       setNuevoEstado(null);
     }
@@ -125,31 +136,45 @@ const Pedidos: React.FC = () => {
       ),
     },
     {
+      title: "Domicilio",
+      key: "domicilio",
+      render: (_text: any, record: any) => (
+        <Button
+          onClick={() => {
+            setSelectedDomicilio(record.domicilioDto);
+            setDomicilioModalVisible(true);
+          }}
+          disabled={!record.domicilioDto}
+        >
+          Ver Domicilio
+        </Button>
+      ),
+    },
+    {
       title: "Estado",
       dataIndex: "estado",
       key: "estado",
       render: (estado: Estado) => <>{estado}</>,
     },
-    {
-      title: "Cambiar Estado",
-      key: "cambiarEstado",
-      render: (_text: any, record: any) => (
-        <Button
-          onClick={() => {
-            setSelectedPedidoId(record.id);
-            setNuevoEstado(record.estado); // Establecer el estado actual del pedido cuando se abre el modal
-            setModalVisible(true);
-          }}
-        >
-          Cambiar Estado
-        </Button>
-      ),
-    },
+    ...(userRole === "ADMINISTRADOR" || Rol.EMPLEADO_CAJA
+      ? [
+          {
+            title: "Cambiar Estado",
+            key: "cambiarEstado",
+            render: (_text: any, record: any) => (
+              <Button
+                onClick={() => {
+                  setSelectedPedidoId(record.id);
+                  setEstadoModalVisible(true);
+                }}
+              >
+                Cambiar Estado
+              </Button>
+            ),
+          },
+        ]
+      : []),
   ];
-
-  const pedidosFiltrados = pedidos.filter(
-    (pedido) => filtroEstado === "" || pedido.estado === filtroEstado
-  );
 
   return (
     <div>
@@ -199,50 +224,58 @@ const Pedidos: React.FC = () => {
           </Select>
         </div>
       </div>
-      <Select
-        placeholder="Filtrar por estado"
-        style={{ width: 200, marginBottom: 20 }}
-        onChange={(value) => setFiltroEstado(value)}
-        value={filtroEstado}
-      >
-        <Option value="">Todos</Option>
-        {Object.values(Estado).map((estado) => (
-          <Option key={estado} value={estado}>
-            {estado}
-          </Option>
-        ))}
-      </Select>
-      <Table dataSource={pedidosFiltrados} columns={columns} rowKey="id" />
-
-      <Modal
-        title="Cambiar Estado del Pedido"
-        visible={modalVisible}
-        onOk={() => {
-          if (selectedPedidoId !== null && nuevoEstado !== null) {
-            handleEstadoChange(selectedPedidoId, nuevoEstado);
-          }
-        }}
-        onCancel={() => {
-          setModalVisible(false);
-          setSelectedPedidoId(null);
-          setNuevoEstado(null);
-        }}
-      >
-        <Select
-          value={nuevoEstado || undefined} // Establecer el valor seleccionado
-          placeholder="Seleccione un nuevo estado"
-          style={{ width: "100%" }}
-          onChange={(value) => setNuevoEstado(value as Estado)}
+      <h1>Pedidos Enviados</h1>
+      <Table dataSource={pedidos} columns={columns} rowKey="id" />
+      {(userRole === "ADMINISTRADOR" || Rol.EMPLEADO_CAJA) && (
+        <Modal
+          title="Cambiar Estado del Pedido"
+          visible={estadoModalVisible}
+          onOk={() => {
+            if (selectedPedidoId !== null && nuevoEstado !== null) {
+              handleEstadoChange(selectedPedidoId, nuevoEstado);
+            }
+          }}
+          onCancel={() => {
+            setEstadoModalVisible(false);
+            setSelectedPedidoId(null);
+            setNuevoEstado(null);
+          }}
         >
-          {Object.values(Estado).map((estado) => (
-            <Option key={estado} value={estado}>
-              {estado}
-            </Option>
-          ))}
-        </Select>
+          <Select
+            placeholder="Selecciona un estado"
+            value={nuevoEstado}
+            onChange={(value) => setNuevoEstado(value)}
+            style={{ width: "100%" }}
+          >
+            <Select.Option value="ENTREGADO">ENTREGADO</Select.Option>
+            <Select.Option value="CANCELADO">CANCELADO</Select.Option>
+          </Select>
+        </Modal>
+      )}
+      <Modal
+        title="Domicilio del Pedido"
+        visible={domicilioModalVisible}
+        onCancel={() => setDomicilioModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setDomicilioModalVisible(false)}>
+            Cerrar
+          </Button>,
+        ]}
+      >
+        {selectedDomicilio ? (
+          <div>
+            <p>Calle: {selectedDomicilio.calle}</p>
+            <p>Número: {selectedDomicilio.numero}</p>
+            <p>CP: {selectedDomicilio.cp}</p>
+            <p>Localidad: {selectedDomicilio.localidad}</p>
+            <p>Provincia: {selectedDomicilio.provincia}</p>
+          </div>
+        ) : (
+          <p>No hay información de domicilio disponible.</p>
+        )}
       </Modal>
     </div>
   );
 };
 
-export default Pedidos;
+export default PedidosEnviados;

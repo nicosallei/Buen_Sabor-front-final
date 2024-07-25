@@ -73,10 +73,9 @@ const CompraPromociones = () => {
   useEffect(() => {
     const cargarPromociones = async () => {
       try {
-        const token = await getAccessTokenSilently();
         const idNumerico = Number(sucursalId);
         if (!isNaN(idNumerico)) {
-          const data = await obtenerPromociones(idNumerico, token);
+          const data = await obtenerPromociones(idNumerico);
 
           const promocionesObtenidas = data.map((promocion: any) => {
             // Adjust the image URL

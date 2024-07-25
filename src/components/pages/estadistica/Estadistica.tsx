@@ -8,7 +8,8 @@ import {
   fetchGananciasPorRangoDeMeses,
 } from "../../../service/EstadisticaService";
 import { Chart } from "react-google-charts";
-
+import * as XLSX from "xlsx";
+import { DownloadOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
 type IngresoMes = {
@@ -48,7 +49,7 @@ const Estadistica = () => {
   const [gananciasMeses, setGananciasMeses] = useState<GananciaMes[]>([]);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
-  const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
   const [selectedSucursalId, setSelectedSucursalId] = useState<number | null>(
     null
   );
@@ -82,7 +83,7 @@ const Estadistica = () => {
   useEffect(() => {
     const fetchSucursales = async () => {
       if (selectedEmpresa) {
-        const sucursalesData = await getSucursal(selectedEmpresa);
+        const sucursalesData = await getSucursal(String(selectedEmpresa));
         setSucursales(sucursalesData);
       }
     };
@@ -94,15 +95,15 @@ const Estadistica = () => {
     const empresaId = localStorage.getItem("empresa_id");
     const sucursalId = localStorage.getItem("sucursal_id");
     if (empresaId && sucursalId) {
-      setSelectedEmpresa(empresaId);
+      setSelectedEmpresa(Number(empresaId));
       setSelectedSucursalId(Number(sucursalId));
       setIsDisabled(true);
     }
   }, []);
 
-  const handleSucursalChange = async (value: string) => {
-    setSelectedSucursalId(Number(value));
-  };
+  // const handleSucursalChange = async (value: string) => {
+  //   setSelectedSucursalId(Number(value));
+  // };
 
   const handleFetchDias = async () => {
     if (selectedSucursalId) {
@@ -159,6 +160,13 @@ const Estadistica = () => {
     }
   };
 
+  const handleExportToExcel = (data: any[], sheetName: string) => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    XLSX.writeFile(wb, `${sheetName}.xlsx`);
+  };
+
   const columnsDias = [
     { title: "Fecha", dataIndex: "fecha", key: "fecha" },
     { title: "Ingreso", dataIndex: "ingreso", key: "ingreso" },
@@ -203,10 +211,8 @@ const Estadistica = () => {
           <Select
             placeholder="Seleccione una empresa"
             style={{ width: 200 }}
-            onChange={(value) =>
-              setSelectedEmpresa(value ? value.toString() : null)
-            }
-            value={selectedEmpresa ? selectedEmpresa.toString() : undefined}
+            onChange={(value) => setSelectedEmpresa(value)}
+            value={selectedEmpresa || undefined}
             disabled={isDisabled}
           >
             {empresas.map((empresa) => (
@@ -219,10 +225,8 @@ const Estadistica = () => {
             placeholder="Seleccione una sucursal"
             style={{ width: 200 }}
             disabled={!selectedEmpresa || isDisabled}
-            onChange={handleSucursalChange}
-            value={
-              selectedSucursalId ? selectedSucursalId.toString() : undefined
-            }
+            onChange={(value) => setSelectedSucursalId(Number(value))}
+            value={selectedSucursalId || undefined}
           >
             {sucursales.map((sucursal) => (
               <Option key={sucursal.id} value={sucursal.id}>
@@ -260,6 +264,14 @@ const Estadistica = () => {
           </Form.Item>
         </Form>
         <Table dataSource={ingresosDias} columns={columnsDias} rowKey="fecha" />
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={() => handleExportToExcel(ingresosDias, "Ingresos por Dia")}
+          style={{ marginTop: "20px" }} // Añade un margen superior para separarlo de otros elementos si es necesario
+        >
+          Descargar Excel
+        </Button>
         <Chart
           width={"100%"}
           height={"400px"}
@@ -364,6 +376,13 @@ const Estadistica = () => {
           columns={columnsMeses}
           rowKey="fecha"
         />
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={() => handleExportToExcel(ingresosMeses, "Ingresos por Mes")}
+        >
+          Descargar Excel
+        </Button>
         <Chart
           width={"100%"}
           height={"400px"}
@@ -468,6 +487,16 @@ const Estadistica = () => {
           columns={columnsGanancias}
           rowKey="fecha"
         />
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={() =>
+            handleExportToExcel(gananciasMeses, "Ganancias por Mes")
+          }
+          style={{ marginTop: "20px" }} // Añade un margen superior para separarlo de otros elementos si es necesario
+        >
+          Descargar Excel
+        </Button>
         <Chart
           width={"100%"}
           height={"400px"}

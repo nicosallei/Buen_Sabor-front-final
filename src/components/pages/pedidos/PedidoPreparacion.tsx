@@ -1,17 +1,17 @@
-import { Select, Table, message, Button, Modal } from "antd";
-import { useEffect, useState } from "react";
-import { Empresas, getEmpresas } from "../../../service/ServiceEmpresa";
-import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
+import React, { useEffect, useState } from "react";
+import { Button, Modal, Select, Table, message } from "antd";
 import {
+  cambiarEstadoPedido,
   Estado,
   fetchPedidos,
-  cambiarEstadoPedido,
+  Pedido,
 } from "../../../service/PedidoService";
+import { Empresas, getEmpresas } from "../../../service/ServiceEmpresa";
+import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
 import { useAuth0 } from "@auth0/auth0-react";
-
 const { Option } = Select;
-
-const Pedidos: React.FC = () => {
+const PedidoPreparacion: React.FC = () => {
+  const [pedidosPendientes, setPedidosPendientes] = useState<any[]>([]);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
@@ -19,12 +19,11 @@ const Pedidos: React.FC = () => {
     null
   );
   const [isDisabled, setIsDisabled] = useState(false);
-  const [pedidos, setPedidos] = useState<any[]>([]);
-  const [filtroEstado, setFiltroEstado] = useState<string>("");
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(null);
   const [nuevoEstado, setNuevoEstado] = useState<Estado | null>(null);
   const { getAccessTokenSilently } = useAuth0();
+
   useEffect(() => {
     const fetchEmpresas = async () => {
       const empresasData = await getEmpresas();
@@ -46,10 +45,6 @@ const Pedidos: React.FC = () => {
   }, [selectedEmpresa]);
 
   useEffect(() => {
-    cargarPedidos();
-  }, [selectedSucursalId]);
-
-  useEffect(() => {
     const empresaId = localStorage.getItem("empresa_id");
     const sucursalId = localStorage.getItem("sucursal_id");
     if (empresaId && sucursalId) {
@@ -58,17 +53,23 @@ const Pedidos: React.FC = () => {
       setIsDisabled(true);
     }
   }, []);
-
-  const cargarPedidos = async () => {
+  const cargarPedidosPreparacion = async () => {
     if (selectedSucursalId && selectedSucursalId > 0) {
       try {
-        const pedidosData = await fetchPedidos(selectedSucursalId);
-        setPedidos(pedidosData);
+        const todosLosPedidos = await fetchPedidos(selectedSucursalId);
+        const pedidosFiltrados = todosLosPedidos.filter(
+          (pedido: Pedido) => pedido.estado === Estado.EN_PREPARACION
+        );
+        setPedidosPendientes(pedidosFiltrados);
       } catch (error) {
-        console.error("Error al cargar los pedidos:", error);
+        console.error("Error al cargar los pedidos en preparacion:", error);
+        message.error("Error al cargar los pedidos en preparacion");
       }
     }
   };
+  useEffect(() => {
+    cargarPedidosPreparacion();
+  }, [selectedSucursalId]);
 
   const handleEstadoChange = async (id: number, nuevoEstado: Estado) => {
     try {
@@ -81,7 +82,7 @@ const Pedidos: React.FC = () => {
       message.success(
         `El pedido cambió su estado a: ${pedidoActualizado.estado}`
       );
-      cargarPedidos(); // Recargar los pedidos para reflejar el cambio de estado
+      cargarPedidosPreparacion(); // Recargar los pedidos para reflejar el cambio de estado
     } catch (error: any) {
       message.error(error.message);
       //alert(error.message);
@@ -137,7 +138,6 @@ const Pedidos: React.FC = () => {
         <Button
           onClick={() => {
             setSelectedPedidoId(record.id);
-            setNuevoEstado(record.estado); // Establecer el estado actual del pedido cuando se abre el modal
             setModalVisible(true);
           }}
         >
@@ -146,10 +146,6 @@ const Pedidos: React.FC = () => {
       ),
     },
   ];
-
-  const pedidosFiltrados = pedidos.filter(
-    (pedido) => filtroEstado === "" || pedido.estado === filtroEstado
-  );
 
   return (
     <div>
@@ -199,20 +195,8 @@ const Pedidos: React.FC = () => {
           </Select>
         </div>
       </div>
-      <Select
-        placeholder="Filtrar por estado"
-        style={{ width: 200, marginBottom: 20 }}
-        onChange={(value) => setFiltroEstado(value)}
-        value={filtroEstado}
-      >
-        <Option value="">Todos</Option>
-        {Object.values(Estado).map((estado) => (
-          <Option key={estado} value={estado}>
-            {estado}
-          </Option>
-        ))}
-      </Select>
-      <Table dataSource={pedidosFiltrados} columns={columns} rowKey="id" />
+      <h1>Pedidos en Preparacion</h1>
+      <Table dataSource={pedidosPendientes} columns={columns} rowKey="id" />
 
       <Modal
         title="Cambiar Estado del Pedido"
@@ -229,20 +213,19 @@ const Pedidos: React.FC = () => {
         }}
       >
         <Select
-          value={nuevoEstado || undefined} // Establecer el valor seleccionado
-          placeholder="Seleccione un nuevo estado"
+          placeholder="Selecciona un estado"
+          value={nuevoEstado}
+          onChange={(value) => setNuevoEstado(value)}
           style={{ width: "100%" }}
-          onChange={(value) => setNuevoEstado(value as Estado)}
         >
-          {Object.values(Estado).map((estado) => (
-            <Option key={estado} value={estado}>
-              {estado}
-            </Option>
-          ))}
+          <Select.Option value="LISTO_PARA_ENTREGAR">
+            LISTO PARA ENTREGAR
+          </Select.Option>
+          <Select.Option value="CANCELADO">CANCELADO</Select.Option>
         </Select>
       </Modal>
     </div>
   );
 };
 
-export default Pedidos;
+export default PedidoPreparacion;
