@@ -147,13 +147,10 @@ const Carrito: React.FC<CarritoProps> = () => {
     try {
       let resultAction;
       const rol = localStorage.getItem("rol");
-      let clienteId = 1; // ID por defecto
+      let clienteId = Number(localStorage.getItem("id"));
 
-      if (rol === "CLIENTE") {
-        const idAlmacenado = localStorage.getItem("clienteId");
-        if (idAlmacenado) {
-          clienteId = parseInt(idAlmacenado, 10); // Asegúrate de convertir el ID a número
-        }
+      if (rol != "CLIENTE") {
+        clienteId = 1;
       }
 
       const ClienteDto: ClienteDto = {
