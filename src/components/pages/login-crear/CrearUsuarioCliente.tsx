@@ -1,7 +1,7 @@
-import { Form, Input, Button, DatePicker,  Card, Row, Col } from "antd";
+import { Form, Input, Button, DatePicker, Card, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import * as CryptoJS from "crypto-js";
-import { Rol} from "../../../types/usuario/Usuario";
+import { Rol } from "../../../types/usuario/Usuario";
 
 const RegistroCliente = () => {
   const [form] = Form.useForm();
@@ -17,7 +17,7 @@ const RegistroCliente = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: values.username,
+          username: values.email,
           password: encryptedPassword,
           rol: Rol.CLIENTE,
           cliente: {
@@ -43,9 +43,9 @@ const RegistroCliente = () => {
         <Card title="Registro de Cliente" bordered={false}>
           <Form form={form} onFinish={handleSubmit} layout="vertical">
             <Form.Item
-              name="username"
-              label="Nombre de usuario"
-              rules={[{ required: true }]}
+              name="email"
+              label="Email"
+              rules={[{ required: true, type: "email" }]}
             >
               <Input />
             </Form.Item>
@@ -56,7 +56,7 @@ const RegistroCliente = () => {
             >
               <Input.Password />
             </Form.Item>
-           
+
             <Form.Item
               name="nombre"
               label="Nombre"
@@ -78,13 +78,7 @@ const RegistroCliente = () => {
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              name="email"
-              label="Email"
-              rules={[{ required: true, type: "email" }]}
-            >
-              <Input />
-            </Form.Item>
+
             <Form.Item
               name="fechaNacimiento"
               label="Fecha de Nacimiento"

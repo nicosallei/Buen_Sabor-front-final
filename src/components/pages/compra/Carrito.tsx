@@ -24,8 +24,57 @@ import DireccionForm from "./formulario/DireccionForm";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/Store";
 import { setPedidoRealizado } from "../../../redux/slice/Pedido.silice";
+import { obtenerPromociones } from "../../../service/PromocionService";
+import { useAuth0 } from "@auth0/auth0-react";
 
-const Carrito = () => {
+interface Promocion {
+  id: number;
+  eliminado: boolean;
+  denominacion: string;
+  fechaDesde: string;
+  fechaHasta: string;
+  horaDesde: string;
+  horaHasta: string;
+  descripcionDescuento: string;
+  precioPromocional: number;
+  imagen: string;
+  promocionDetallesDto: IPromocionDetallesDto[];
+  cantidadMaximaDisponible: number;
+  sucursal: any;
+}
+
+interface IPromocionDetallesDto {
+  id: number;
+  eliminado: boolean;
+  cantidad: number;
+  articuloManufacturadoDto: IArticuloPromocionDto;
+}
+
+interface IArticuloPromocionDto {
+  id: number;
+  eliminado: boolean;
+  denominacion: string;
+  descripcion: string;
+  precioVenta: number;
+  tiempoEstimadoMinutos: number;
+  preparacion: string;
+  codigo: string;
+  imagenes: ImagenArticulo[];
+  sucursal: any;
+  categoria: any;
+  cantidadMaximaCompra?: number;
+}
+
+interface ImagenArticulo {
+  id: number;
+  url: string;
+}
+
+interface CarritoProps {
+  sucursalId: any;
+}
+
+const Carrito: React.FC<CarritoProps> = ({ sucursalId }) => {
   const imagenPorDefecto = "http://localhost:8080/images/sin-imagen.jpg";
   const dispatch = useAppDispatch();
   const carrito = useAppSelector((state) => state.cartReducer);
@@ -42,10 +91,13 @@ const Carrito = () => {
   const pedidoRealizado = useSelector(
     (state: RootState) => state.pedido.pedidoRealizado
   );
-
+  const [promociones, setPromociones] = useState([]);
+  const [descuentoTotal, setTotalDescuento] = useState<number>(0);
+  const { getAccessTokenSilently } = useAuth0();
   const quitarDelCarrito = (productoId: number) => {
     dispatch(removeToCarrito({ id: productoId }));
   };
+  const [tiempoEstimado, setTiempoEstimado] = useState<number | null>(null);
 
   const incrementar = (productoId: number) => {
     const producto = carrito.find((item) => item.id === productoId)?.producto;
@@ -73,10 +125,15 @@ const Carrito = () => {
     dispatch(limpiarCarrito());
   };
 
-  const total = carrito.reduce(
+  const totalSinDescuento = carrito.reduce(
     (sum, item) => sum + item.producto.precioVenta * item.cantidad,
     0
   );
+
+  let totalConDescuento = totalSinDescuento - descuentoTotal;
+  if (metodoEntrega === TipoEnvio.RETIRO_LOCAL) {
+    totalConDescuento *= 0.9; // Aplicar el 10% de descuento
+  }
 
   const handleEnviarPedido = async () => {
     if (!metodoPago) {
@@ -109,6 +166,8 @@ const Carrito = () => {
             tipoEnvio: metodoEntrega,
             formaPago: metodoPago,
             cliente: ClienteDto,
+            descuento: totalSinDescuento - totalConDescuento,
+            sucursalId: Number(sucursalId) || 1, // ID de la sucursal
           })
         );
       } else {
@@ -117,14 +176,22 @@ const Carrito = () => {
             tipoEnvio: metodoEntrega,
             cliente: ClienteDto,
             formaPago: metodoPago,
+            descuento: totalSinDescuento - totalConDescuento,
+            sucursalId: Number(sucursalId) || 1, // ID de la sucursal
           })
         );
       }
-      const preferenceId = unwrapResult(resultAction);
-
-      setPreferenceId(preferenceId);
+      const resultado = unwrapResult(resultAction);
+      if (resultado.preferenceMPId) {
+        setPreferenceId(resultado.preferenceMPId);
+      }
       dispatch(setPedidoRealizado(true));
       toast.success("Pedido realizado con éxito. Ahora realiza el pago.");
+      let tiempoEstimadoEnMinutos = resultado.data.tiempoEspera;
+      if (metodoEntrega === TipoEnvio.DELIVERY) {
+        tiempoEstimadoEnMinutos += 10; // Suma 30 minutos si el envío es a domicilio
+      }
+      setTiempoEstimado(tiempoEstimadoEnMinutos);
     } catch (err) {
       console.error("Error al realizar el pedido", err);
       toast.error("Error al realizar el pedido.");
@@ -172,81 +239,171 @@ const Carrito = () => {
   const handleMetodoPagoChange = (e: any) => {
     setMetodoPago(e.target.value);
   };
+  const traerPromociones = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      const response = await obtenerPromociones(Number(sucursalId), token);
+      setPromociones(response);
+    } catch (error) {
+      console.error("Error al obtener promociones:", error);
+    }
+  };
+
+  useEffect(() => {
+    traerPromociones();
+  }, []);
+
+  useEffect(() => {
+    const descuentoTotal = calcularDescuentoTotal();
+    setTotalDescuento(descuentoTotal);
+  }, [carrito, promociones]);
+
+  const calcularDescuentoTotal = () => {
+    let descuentoTotal = 0;
+
+    // Suponiendo que `carrito` es una lista de productos en el carrito de compras.
+    // Crea un registro para rastrear la cantidad comprometida de cada producto.
+    let cantidadComprometida: { [key: number]: number } = {};
+
+    promociones.forEach((promocion: Promocion) => {
+      const { promocionDetallesDto, precioPromocional } = promocion;
+      let maxPromociones = Infinity;
+      let valorProductosEnPromocion = 0;
+
+      promocionDetallesDto.forEach((detalle) => {
+        const { articuloManufacturadoDto, cantidad } = detalle;
+        const carritoItem = carrito.find(
+          (item) => item.producto.id === articuloManufacturadoDto.id
+        );
+
+        if (carritoItem) {
+          // Ajusta la cantidad disponible del producto basándose en la cantidad ya comprometida.
+          const cantidadDisponible =
+            carritoItem.cantidad -
+            (cantidadComprometida[carritoItem.producto.id] || 0);
+          const maxPromosPorItem = Math.floor(cantidadDisponible / cantidad);
+          maxPromociones = Math.min(maxPromociones, maxPromosPorItem);
+          valorProductosEnPromocion +=
+            carritoItem.producto.precioVenta * cantidad;
+        } else {
+          maxPromociones = 0;
+        }
+      });
+
+      if (maxPromociones > 0) {
+        const descuentoPorPromocion =
+          (valorProductosEnPromocion - precioPromocional) * maxPromociones;
+        descuentoTotal += descuentoPorPromocion;
+
+        // Actualiza la cantidad comprometida para los productos involucrados en esta promoción.
+        promocionDetallesDto.forEach((detalle) => {
+          const { articuloManufacturadoDto, cantidad } = detalle;
+          const carritoItem = carrito.find(
+            (item) => item.producto.id === articuloManufacturadoDto.id
+          );
+
+          if (carritoItem) {
+            cantidadComprometida[carritoItem.producto.id] =
+              (cantidadComprometida[carritoItem.producto.id] || 0) +
+              cantidad * maxPromociones;
+          }
+        });
+      }
+    });
+
+    return descuentoTotal;
+  };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1 style={{ textAlign: "center" }}>Carrito</h1>
-      {carrito.map((item) => {
-        const subtotal = item.producto.precioVenta * item.cantidad;
-        const imagenAMostrar =
-          item.producto.imagenes.length > 0
-            ? "http://localhost:8080/images/" + item.producto.imagenes[0].url
-            : imagenPorDefecto;
-        return (
-          <Card key={item.id} style={{ width: 330, marginBottom: "20px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Card.Meta
-                avatar={<Avatar src={imagenAMostrar} />}
-                title={
-                  <div
-                    style={{
-                      maxWidth: "250px",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {item.producto.denominacion}
-                  </div>
-                }
-                description={
-                  <>
-                    Precio: ${item.producto.precioVenta}
-                    <br />
-                    Cantidad:
-                    <InputNumber
-                      min={1}
-                      max={item.producto.cantidadMaximaCompra}
-                      value={item.cantidad}
-                      onChange={(value) =>
-                        cambiarCantidadProducto(item.id, value ?? 0)
-                      }
-                      disabled={pedidoRealizado}
-                    />
-                    <br />
-                    Subtotal: {subtotal}
-                  </>
-                }
-              />
-            </div>
-            {!pedidoRealizado && (
+    <div style={{ maxWidth: "500px", margin: "0px" }}>
+      <h1 style={{ textAlign: "center" }}>Carrito Compra</h1>
+      <div
+        style={{
+          height: "50vh",
+          maxHeight: "400px",
+          overflowY: "auto",
+          border: "1px solid #f0f0f0",
+        }}
+      >
+        {carrito.map((item) => {
+          const subtotal = item.producto.precioVenta * item.cantidad;
+          const imagenAMostrar =
+            item.producto.imagenes.length > 0
+              ? "http://localhost:8080/images/" + item.producto.imagenes[0].url
+              : imagenPorDefecto;
+          return (
+            <Card key={item.id} style={{ width: 330, marginBottom: "20px" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div style={{ display: "flex" }}>
-                  <Button
-                    type="primary"
-                    icon={<MinusOutlined />}
-                    onClick={() => decrementar(item.id)}
-                    style={{ marginRight: "5px" }}
-                  />
-
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => incrementar(item.id)}
-                  />
-                </div>
-                <Button
-                  type="primary"
-                  icon={<DeleteOutlined />}
-                  onClick={() => quitarDelCarrito(item.id)}
+                <Card.Meta
+                  avatar={<Avatar src={imagenAMostrar} />}
+                  title={
+                    <div
+                      style={{
+                        maxWidth: "250px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {item.producto.denominacion}
+                    </div>
+                  }
+                  description={
+                    <>
+                      Precio: ${item.producto.precioVenta}
+                      <br />
+                      Cantidad:
+                      <InputNumber
+                        min={1}
+                        max={item.producto.cantidadMaximaCompra}
+                        value={item.cantidad}
+                        onChange={(value) =>
+                          cambiarCantidadProducto(item.id, value ?? 0)
+                        }
+                        disabled={pedidoRealizado}
+                      />
+                      <br />
+                      Subtotal: {subtotal}
+                    </>
+                  }
                 />
               </div>
-            )}
-          </Card>
-        );
-      })}
+              {!pedidoRealizado && (
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <div style={{ display: "flex" }}>
+                    <Button
+                      type="primary"
+                      icon={<MinusOutlined />}
+                      onClick={() => decrementar(item.id)}
+                      style={{ marginRight: "5px" }}
+                    />
+
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={() => incrementar(item.id)}
+                    />
+                  </div>
+                  <Button
+                    type="primary"
+                    icon={<DeleteOutlined />}
+                    onClick={() => quitarDelCarrito(item.id)}
+                  />
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
       {carrito.length > 0 && (
         <>
+          <div style={{ marginBottom: "20px", textAlign: "center" }}>
+            <h3 style={{ color: "green" }}>
+              Descuento del 10% por retiro en local
+            </h3>
+          </div>
           <div style={{ marginBottom: "20px" }}>
             <Radio.Group
               onChange={handleMetodoEntregaChange}
@@ -296,8 +453,13 @@ const Carrito = () => {
           </div>
         </>
       )}
-
-      <h2 style={{ textAlign: "center" }}>Total: {total}</h2>
+      <h2 style={{ textAlign: "center", fontSize: "16px", color: "green" }}>
+        Descuento: ${descuentoTotal}
+      </h2>
+      <h2 style={{ textAlign: "center", fontSize: "16px", color: "#808080" }}>
+        Total Sin descuento: ${totalSinDescuento}
+      </h2>
+      <h2 style={{ textAlign: "center" }}>Total: ${totalConDescuento} </h2>
       {!pedidoRealizado && (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Button
@@ -327,14 +489,22 @@ const Carrito = () => {
           initialValues={{
             calle: "",
             numero: "",
-            localidad: 0, // Asegúrate de que este valor sea válido según los datos de tu aplicación
+            localidad: 0,
             cp: 0,
-            pais: 0, // Asegúrate de que este valor sea válido según los datos de tu aplicación
-            provincia: 0, // Asegúrate de que este valor sea válido según los datos de tu aplicación
+            pais: 0,
+            provincia: 0,
           }}
           onSubmit={handleModalOk}
           onCancel={handleModalCancel}
         />
+      </Modal>
+      <Modal
+        title="Tiempo Estimado de Entrega"
+        visible={tiempoEstimado !== null}
+        onOk={() => setTiempoEstimado(null)}
+        onCancel={() => setTiempoEstimado(null)}
+      >
+        <p>El tiempo estimado de entrega es de {tiempoEstimado} minutos.</p>
       </Modal>
     </div>
   );

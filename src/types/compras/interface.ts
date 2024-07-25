@@ -8,6 +8,7 @@ export interface Producto {
   sucursal: any;
   imagenes: Imagen[];
   cantidadMaximaCompra?: number;
+  categoriaId?: number;
   // Agrega aquí las demás propiedades de un producto
 }
 export interface Imagen {
@@ -36,6 +37,7 @@ export interface Pedido {
   cliente?: any;
   pedidoDetalle?: PedidoDetalle[];
   factura?: any;
+  sucursalId?: number;
 }
 export interface Sucursal {
   id: number;

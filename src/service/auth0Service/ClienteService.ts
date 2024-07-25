@@ -14,7 +14,7 @@ export default class ClienteService extends BackendClient<ICliente> {
     url: string,
     email: string,
     token: string
-  ): Promise<ICliente> {
+  ): Promise<ICliente | null> {
     const path = `${url}/cliente/email/${email}`;
     const options: RequestInit = {
       method: "GET",
@@ -23,7 +23,14 @@ export default class ClienteService extends BackendClient<ICliente> {
         Authorization: `Bearer ${token}`,
       },
     };
-    return this.request(path, options, token);
+
+    try {
+      const cliente = await this.request(path, options, token);
+      return cliente;
+    } catch (error) {
+      console.error("Error al obtener el cliente por email:", error);
+      return null;
+    }
   }
 
   async postCliente(

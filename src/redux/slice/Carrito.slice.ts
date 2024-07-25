@@ -29,11 +29,15 @@ export const enviarPedidoDomicilio = createAsyncThunk(
       tipoEnvio,
       cliente,
       formaPago,
+      descuento,
+      sucursalId,
     }: {
       direccionEnvio: DomicilioDto | null;
       tipoEnvio: TipoEnvio;
       formaPago: FormaPago;
       cliente: ClienteDto | null;
+      descuento: number;
+      sucursalId: number;
     },
     { getState }
   ) => {
@@ -49,10 +53,12 @@ export const enviarPedidoDomicilio = createAsyncThunk(
 
     const pedido: Pedido = {
       fechaPedido: new Date().toISOString(),
-      total: pedidoDetalle.reduce(
-        (sum, item) => sum + item.producto.precioVenta * item.cantidad,
-        0
-      ),
+      total:
+        pedidoDetalle.reduce(
+          (sum, item) => sum + item.producto.precioVenta * item.cantidad,
+          0
+        ) - descuento,
+
       tipoEnvio: tipoEnvio,
       formaPago: formaPago,
       cliente: {
@@ -71,12 +77,13 @@ export const enviarPedidoDomicilio = createAsyncThunk(
         cp: direccionEnvio.cp,
       },
       pedidoDetalle,
+      sucursalId: sucursalId,
     };
 
     const data = await realizarPedido(pedido);
     if (data) {
       const preferenceMP = await createPreferenceMP(data);
-      return preferenceMP.id;
+      return { data, preferenceMPId: preferenceMP.id };
     } else {
       console.error("Error al realizar el pedido");
       throw new Error("Error al realizar el pedido");
@@ -91,7 +98,15 @@ export const enviarPedido = createAsyncThunk(
       tipoEnvio,
       cliente,
       formaPago,
-    }: { tipoEnvio: TipoEnvio; cliente: ClienteDto; formaPago: FormaPago },
+      descuento,
+      sucursalId,
+    }: {
+      tipoEnvio: TipoEnvio;
+      cliente: ClienteDto;
+      formaPago: FormaPago;
+      descuento: number;
+      sucursalId: number;
+    },
     { getState }
   ) => {
     const state = getState() as { cartReducer: PedidoDetalleAddState[] };
@@ -103,25 +118,27 @@ export const enviarPedido = createAsyncThunk(
 
     const pedido: Pedido = {
       fechaPedido: new Date().toISOString(),
-      total: pedidoDetalle.reduce(
-        (sum, item) => sum + item.producto.precioVenta * item.cantidad,
-        0
-      ),
+      total:
+        pedidoDetalle.reduce(
+          (sum, item) => sum + item.producto.precioVenta * item.cantidad,
+          0
+        ) - descuento,
       tipoEnvio: tipoEnvio,
       cliente: {
         id: cliente.id,
       },
       formaPago: formaPago,
       pedidoDetalle,
+      sucursalId: sucursalId,
     };
 
     const data = await realizarPedido(pedido);
     if (data) {
       if (formaPago === FormaPago.MERCADOPAGO) {
         const preferenceMP = await createPreferenceMP(data);
-        return preferenceMP.id;
+        return { data, preferenceMPId: preferenceMP.id };
       } else {
-        return data;
+        return { data };
       }
     } else {
       throw new Error("Error al realizar el pedido");

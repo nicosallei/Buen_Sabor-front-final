@@ -5,6 +5,7 @@ import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
 import {
   fetchIngresosPorRangoDeDias,
   fetchIngresosPorRangoDeMeses,
+  fetchGananciasPorRangoDeMeses,
 } from "../../../service/EstadisticaService";
 import { Chart } from "react-google-charts";
 
@@ -17,6 +18,10 @@ type IngresoMes = {
 type IngresoDia = {
   fecha: string;
   ingreso: number;
+};
+type GananciaMes = {
+  fecha: string; // "YYYY-MM" format
+  ganancia: number;
 };
 
 const generateYears = (startYear: number, endYear: number): number[] => {
@@ -40,6 +45,7 @@ const Estadistica = () => {
   const [selectedEndMonth, setSelectedEndMonth] = useState<string | null>(null);
   const [ingresosDias, setIngresosDias] = useState<IngresoDia[]>([]);
   const [ingresosMeses, setIngresosMeses] = useState<IngresoMes[]>([]);
+  const [gananciasMeses, setGananciasMeses] = useState<GananciaMes[]>([]);
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
@@ -132,6 +138,27 @@ const Estadistica = () => {
     }
   };
 
+  const handleFetchGanancias = async () => {
+    if (
+      selectedSucursalId &&
+      selectedStartYear &&
+      selectedStartMonth &&
+      selectedEndYear &&
+      selectedEndMonth
+    ) {
+      const startDateMes = `${selectedStartYear}-${selectedStartMonth}`;
+      const endDateMes = `${selectedEndYear}-${selectedEndMonth}`;
+      const data = await fetchGananciasPorRangoDeMeses({
+        startMonth: startDateMes,
+        endMonth: endDateMes,
+        sucursalId: selectedSucursalId,
+      });
+      setGananciasMeses(
+        Object.entries(data).map(([fecha, ganancia]) => ({ fecha, ganancia }))
+      );
+    }
+  };
+
   const columnsDias = [
     { title: "Fecha", dataIndex: "fecha", key: "fecha" },
     { title: "Ingreso", dataIndex: "ingreso", key: "ingreso" },
@@ -140,6 +167,11 @@ const Estadistica = () => {
   const columnsMeses = [
     { title: "Mes", dataIndex: "fecha", key: "fecha" },
     { title: "Ingreso", dataIndex: "ingreso", key: "ingreso" },
+  ];
+
+  const columnsGanancias = [
+    { title: "Mes", dataIndex: "fecha", key: "fecha" },
+    { title: "Ganancia", dataIndex: "ganancia", key: "ganancia" },
   ];
 
   const isMesesFormValid =
@@ -347,6 +379,113 @@ const Estadistica = () => {
             },
             vAxis: {
               title: "Ingreso",
+            },
+            legend: { position: "none" },
+          }}
+        />
+      </div>
+
+      <div>
+        <h2>Ganancias por Mes</h2>
+        <Form layout="inline" onFinish={handleFetchGanancias}>
+          <Form.Item label="Año de Inicio">
+            <Select
+              value={selectedStartYear}
+              onChange={setSelectedStartYear}
+              style={{ width: 120 }}
+            >
+              {years.map((year) => (
+                <Option key={year} value={year}>
+                  {year}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item label="Mes de Inicio">
+            <Select
+              value={selectedStartMonth}
+              onChange={setSelectedStartMonth}
+              style={{ width: 120 }}
+            >
+              {months.map((month) => (
+                <Option key={month} value={month}>
+                  {month}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item label="Año de Fin">
+            <Select
+              value={selectedEndYear}
+              onChange={setSelectedEndYear}
+              style={{ width: 120 }}
+              disabled={!selectedStartYear}
+            >
+              {years.map((year) => (
+                <Option
+                  key={year}
+                  value={year}
+                  disabled={year < selectedStartYear!}
+                >
+                  {year}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item label="Mes de Fin">
+            <Select
+              value={selectedEndMonth}
+              onChange={setSelectedEndMonth}
+              style={{ width: 120 }}
+              disabled={!selectedStartMonth}
+            >
+              {months.map((month) => (
+                <Option
+                  key={month}
+                  value={month}
+                  disabled={
+                    selectedEndYear === selectedStartYear &&
+                    month < selectedStartMonth!
+                  }
+                >
+                  {month}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              disabled={!isMesesFormValid}
+            >
+              Obtener Ganancias
+            </Button>
+          </Form.Item>
+        </Form>
+        <Table
+          dataSource={gananciasMeses}
+          columns={columnsGanancias}
+          rowKey="fecha"
+        />
+        <Chart
+          width={"100%"}
+          height={"400px"}
+          chartType="ColumnChart"
+          loader={<div>Loading Chart</div>}
+          data={[
+            ["Mes", "Ganancia"],
+            ...gananciasMeses.map((ganancia) => [
+              ganancia.fecha,
+              ganancia.ganancia,
+            ]),
+          ]}
+          options={{
+            hAxis: {
+              title: "Mes",
+            },
+            vAxis: {
+              title: "Ganancia",
             },
             legend: { position: "none" },
           }}

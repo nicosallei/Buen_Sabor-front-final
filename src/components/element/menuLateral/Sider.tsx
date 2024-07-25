@@ -15,9 +15,11 @@ import { Layout, Menu, theme } from "antd";
 import { Dropdown, Button } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { MenuInfo } from "rc-menu/lib/interface";
-import Rutas from "../../../routes/Routes";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Rol, RolEmpleado } from "../../../types/usuario/Usuario";
+
+import Rutas from "../../../routes/Routes";
+//import Rutas from "../../../routes/RoutesSinAuth0";
 
 const { Header, Content, Sider } = Layout;
 
@@ -42,8 +44,13 @@ function getItem(
 
 const allItems: MenuItem[] = [
   getItem("/empresas", "EMPRESA", "2", <BankOutlined />),
-  getItem("/graficos", "GRAFICO", "13", <FundProjectionScreenOutlined />),
-  // getItem("/pedidos", "PEDIDOS", "3", <FundProjectionScreenOutlined />),
+  getItem(
+    "/vista-graficos-estadistica",
+    "GRAFICOS-ESTADISTICAS",
+    "13",
+    <FundProjectionScreenOutlined />
+  ),
+  getItem("/pedidos", "PEDIDOS", "3", <FundProjectionScreenOutlined />),
   getItem("/productos", "PRODUCTOS", "sub1", <ShoppingCartOutlined />, [
     getItem("/productos", "LISTA DE PRODUCTOS", "4"),
     getItem("/categorias", "CATEGORIAS", "5"),
@@ -51,17 +58,17 @@ const allItems: MenuItem[] = [
   getItem("/promociones", "PROMOCIONES", "6", <FireOutlined />),
   getItem("/empleados", "EMPLEADOS", "sub2", <TeamOutlined />, [
     getItem("/empleados", "LISTA DE EMPLEADOS", "7"),
-    // getItem("/roles", "ROLES", "8"),
   ]),
   getItem("/insumos", "INSUMOS", "9", <InboxOutlined />),
-  //getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
+  getItem("/compra/", "COMPRA", "10", <ShoppingCartOutlined />),
   getItem("/unidadMedida", "Unidad de Medida", "11", <GoldOutlined />),
-  // getItem(
-  //   "/estadistica",
-  //   "ESTADISTICA",
-  //   "12",
-  //   <FundProjectionScreenOutlined />
-  // ),
+  getItem(
+    "/pedidosCliente",
+    "PEDIDOS Cliente",
+    "14",
+    <FundProjectionScreenOutlined />
+  ),
+  getItem("/clientes", "CLIENTES", "15", <FundProjectionScreenOutlined />),
 ];
 
 const App: React.FC = () => {
@@ -101,7 +108,8 @@ const App: React.FC = () => {
           item?.key === "sub2" ||
           item?.key === "8" ||
           item?.key === "13" ||
-          item?.key === "11"
+          item?.key === "11" ||
+          item?.key === "15"
         ) {
           return null;
         }
@@ -129,7 +137,8 @@ const App: React.FC = () => {
           item?.key === "5" ||
           item?.key === "4" ||
           item?.key === "sub1" ||
-          item?.key === "3"
+          item?.key === "3" ||
+          item?.key === "15"
         ) {
           return null;
         }

@@ -4,6 +4,7 @@ import { Card, Button, Modal } from "antd"; // Paso 1: Importa Modal
 import { obtenerCategoriasPadre } from "../../../../service/Compra";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../redux/Store";
+import ImagenPromocion from "../../../../assets/promocion.png";
 
 const CompraCategoria = () => {
   const { sucursalId } = useParams();
@@ -24,7 +25,8 @@ const CompraCategoria = () => {
   }, [sucursalId]);
 
   const handleCategoriaClick = async (id: number) => {
-    navigate(`/compra/productos/${id}`);
+    const idNumerico = Number(sucursalId);
+    navigate(`/compra/productos/${idNumerico}/${id}`);
   };
 
   const mostrarModalSalir = () => {
@@ -38,6 +40,10 @@ const CompraCategoria = () => {
 
   const cancelarSalida = () => {
     setIsModalVisible(false); // Oculta el modal si el usuario cancela
+  };
+  const irAPromociones = () => {
+    const idNumerico = Number(sucursalId);
+    navigate(`/compra/promociones/${idNumerico}`);
   };
 
   return (
@@ -66,7 +72,7 @@ const CompraCategoria = () => {
           Perderás todos los artículos en tu carrito.
         </p>
       </Modal>
-      <h1>Elige una categoría</h1>
+      <h1>Elige una categoría o mira las promociones</h1>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
         {categorias.map(
           (categoria: {
@@ -97,6 +103,19 @@ const CompraCategoria = () => {
             </Card>
           )
         )}
+        <Card
+          onClick={irAPromociones}
+          style={{ width: 300, height: 300, cursor: "pointer" }} // Asegúrate de que el tamaño de la Card sea el deseado
+          cover={
+            <img
+              alt="Promociones"
+              src={ImagenPromocion} // Reemplaza con la URL de tu imagen para promociones
+              style={{ width: "100%", height: "200px", objectFit: "cover" }}
+            />
+          }
+        >
+          <Card.Meta title="Ver Promociones" />
+        </Card>
       </div>
     </div>
   );

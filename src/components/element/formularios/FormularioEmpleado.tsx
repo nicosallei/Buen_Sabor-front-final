@@ -7,10 +7,11 @@ import {
   notification,
   DatePicker,
 } from "antd";
-//import moment from "moment";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { RolEmpleado } from "../../../types/usuario/Usuario";
+import * as CryptoJS from "crypto-js";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface Props {
   visible: boolean;
@@ -30,6 +31,7 @@ const FormularioEmpleado: React.FC<Props> = ({
   const [imagenBase64, setImagenBase64] = useState<string | undefined>(
     undefined
   );
+  const { getAccessTokenSilently } = useAuth0();
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -57,16 +59,25 @@ const FormularioEmpleado: React.FC<Props> = ({
     };
 
     try {
+      const token = await getAccessTokenSilently();
+      const encryptedPassword = CryptoJS.SHA256(
+        formattedValues.password
+      ).toString();
       formattedValues.imagen = imagenBase64;
+      formattedValues.password = encryptedPassword;
 
       // Realizar la petición POST a la API
-      const response = await fetch("http://localhost:8080/api/empleado/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formattedValues),
-      });
+      const response = await fetch(
+        "http://localhost:8080/api/usuario/registro/usuario-empleado",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formattedValues),
+        }
+      );
 
       if (response.ok) {
         notification.open({
@@ -91,6 +102,13 @@ const FormularioEmpleado: React.FC<Props> = ({
       });
     }
   };
+  const handleClose = () => {
+    form.resetFields(); // Restablece los campos del formulario a initialValues
+    onClose(); // Llama a la función onClose original pasada como prop
+  };
+  const handleFechaNacimientoChange = (_date: any, _dateString: any) => {
+    form.validateFields(["fechaNacimiento"]);
+  };
 
   const [form] = Form.useForm();
 
@@ -98,7 +116,7 @@ const FormularioEmpleado: React.FC<Props> = ({
     <Modal
       visible={visible}
       title="Agregar Empleado"
-      onCancel={onClose}
+      onCancel={handleClose}
       footer={null}
       width={1000}
     >
@@ -141,6 +159,13 @@ const FormularioEmpleado: React.FC<Props> = ({
             <Input />
           </Form.Item>
           <Form.Item
+            name="password"
+            label="Contraseña"
+            rules={[{ required: true }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
             label="Telefono:"
             name="telefono"
             rules={[
@@ -158,21 +183,42 @@ const FormularioEmpleado: React.FC<Props> = ({
             rules={[
               {
                 required: true,
-                message: "Por favor selecciona tu fecha de nacimiento",
+                message: "Por favor, ingresa tu fecha de nacimiento!",
               },
-              // () => ({
-              //   validator(_, value) {
-              //     if (!value || moment().diff(moment(value), "years") >= 18) {
-              //       return Promise.resolve();
-              //     }
-              //     return Promise.reject(
-              //       new Error("Debes tener al menos 18 años")
-              //     );
-              //   },
-              // }),
+              () => ({
+                validator(_, value) {
+                  if (!value) {
+                    return Promise.reject(
+                      new Error("Por favor, ingresa tu fecha de nacimiento!")
+                    );
+                  }
+                  // Crear la fecha de comparación (17 de julio de 2024)
+                  const comparisonDate = new Date(2024, 6, 17); // Los meses son base-0
+                  const birthDate = new Date(value);
+                  // Calcular la diferencia en años
+                  let age =
+                    comparisonDate.getFullYear() - birthDate.getFullYear();
+                  const m = comparisonDate.getMonth() - birthDate.getMonth();
+                  if (
+                    m < 0 ||
+                    (m === 0 && comparisonDate.getDate() < birthDate.getDate())
+                  ) {
+                    age--;
+                  }
+                  // Verificar si la edad es menor a 17
+                  if (age < 17) {
+                    return Promise.reject(
+                      new Error(
+                        "Debes ser mayor de 17 años para el 17 de julio de 2024"
+                      )
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              }),
             ]}
           >
-            <DatePicker />
+            <DatePicker onChange={handleFechaNacimientoChange} />
           </Form.Item>
 
           <Form.Item name="rol" label="Rol" rules={[{ required: true }]}>
@@ -206,68 +252,3 @@ const FormularioEmpleado: React.FC<Props> = ({
 };
 
 export default FormularioEmpleado;
-
-// const handleButtonClick = async (values: any) => {
-//   console.log("Received values of form: ", values);
-
-//   // Encriptar la contraseña
-//   const encryptedPassword = CryptoJS.SHA256(values.apellido).toString();
-
-//   // Preparar los valores formateados para la solicitud
-//   const formattedValues = {
-//     username: values.email,
-//     password: encryptedPassword,
-//     empleado: {
-//       nombre: values.nombre,
-//       apellido: values.apellido,
-//       telefono: values.telefono,
-//       email: values.email,
-//       rol: values.rol,
-//       imagen: imagenBase64,
-//       fechaNacimiento: values.fechaNacimiento.format("YYYY-MM-DD"),
-//       sucursal: {
-//         id: sucursalId,
-//       },
-//       // imagen: imagenBase64, // Descomenta y ajusta según sea necesario
-//       // Añade otros campos específicos de empleado si es necesario
-//     },
-//   };
-
-//   try {
-//     // Realizar la petición POST a la API
-//     const token = await getAccessTokenSilently();
-//     const response = await fetch(
-//       "http://localhost:8080/api/usuario/registro/usuario-empleado",
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify(formattedValues),
-//       }
-//     );
-
-//     if (response.ok) {
-//       notification.open({
-//         message: (
-//           <span>
-//             <CheckCircleOutlined style={{ color: "green" }} /> Agregado
-//             correctamente
-//           </span>
-//         ),
-//       });
-//       form.resetFields();
-//       setImagenBase64(undefined);
-//       onClose(); // Asegúrate de que esta función esté definida y haga lo que esperas (por ejemplo, cerrar un modal)
-//     } else {
-//       throw new Error("Error en la solicitud");
-//     }
-//   } catch (error) {
-//     console.error("Error: ", error);
-//     notification.error({
-//       message: "Error",
-//       description: "Hubo un problema al agregar el empleado.",
-//     });
-//   }
-// };

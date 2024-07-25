@@ -221,3 +221,27 @@ export const eliminarDetallesPromocion = async (id: number, token: string) => {
     console.error("Error al eliminar los detalles de la promoción:", error);
   }
 };
+export const obtenerPromociones = async (sucursalId: number, token: string) => {
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/promociones/validas/sucursal/${sucursalId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      // Manejar errores si la respuesta no es exitosa (por ejemplo, si es un error 404, 500, etc.)
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    // Manejar errores de red u otros errores que puedan ocurrir durante la solicitud
+    console.error("Error al obtener promociones:", error);
+    throw error;
+  }
+};
