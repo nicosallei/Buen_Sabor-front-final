@@ -16,14 +16,10 @@ import {
 
 type DataIndex = keyof Cliente;
 type TablaEmpleadosProps = {
-  sucursalId: string;
   reload: boolean;
 };
 
-const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
-  sucursalId,
-  reload,
-}) => {
+const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({ reload }) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
@@ -33,7 +29,7 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
   const { getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     fetchData();
-  }, [sucursalId, reload]);
+  }, [reload]);
 
   const fetchData = async () => {
     try {
