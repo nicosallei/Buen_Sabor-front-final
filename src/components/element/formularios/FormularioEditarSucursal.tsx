@@ -17,6 +17,7 @@ import {
 } from "../../../service/ServiceSucursal";
 import {
   getLocalidad,
+  getLocalidadesByProvincia,
   getPais,
   getProvincia,
 } from "../../../service/ServiceUbicacion";
@@ -48,6 +49,50 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
   const [nuevaImagenBase64, setNuevaImagenBase64] = useState<string | null>(
     null
   );
+  const [selectedPais, setSelectedPais] = useState<number | null>(null);
+  const [selectedProvincia, setSelectedProvincia] = useState<number | null>(
+    null
+  );
+
+  useEffect(() => {
+    getPais().then((data: Pais[]) => setPaises(data));
+  }, []);
+
+  useEffect(() => {
+    if (selectedPais) {
+      getProvincia().then((data: Provincia[]) => {
+        const provinciasFiltradas = data.filter(
+          (provincia) =>
+            provincia.pais.id ===
+            (selectedPais ? Number(selectedPais) : undefined) // Asegúrate de que ambos sean del mismo tipo
+        );
+        setProvincias(provinciasFiltradas);
+      });
+    } else {
+      setProvincias([]);
+    }
+    setSelectedProvincia(null);
+    setLocalidades([]);
+  }, [selectedPais]);
+
+  useEffect(() => {
+    if (selectedProvincia) {
+      getLocalidadesByProvincia(selectedProvincia).then((data: Localidad[]) =>
+        setLocalidades(data)
+      );
+    } else {
+      setLocalidades([]);
+    }
+  }, [selectedProvincia]);
+  const handlePaisChange = (paisId: number) => {
+    setSelectedPais(paisId);
+    form.setFieldsValue({ provincia: undefined, localidad: undefined }); // Clear provincia and localidad fields
+  };
+
+  const handleProvinciaChange = (provinciaId: number) => {
+    setSelectedProvincia(provinciaId);
+    form.setFieldsValue({ localidad: undefined }); // Clear localidad field
+  };
 
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -235,6 +280,7 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
                     .toLowerCase()
                     .indexOf(input.toLowerCase()) >= 0
                 }
+                onChange={handlePaisChange}
               >
                 {paises.map((pais) => (
                   <Option key={pais.id} value={String(pais.id)}>
@@ -254,10 +300,12 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
             >
               <Select
                 showSearch
+                disabled={!selectedPais}
                 filterOption={(input, option: any) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >=
                   0
                 }
+                onChange={handleProvinciaChange}
               >
                 {provincias.map((provincia) => (
                   <Option key={provincia.id} value={String(provincia.id)}>
@@ -279,6 +327,7 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
             >
               <Select
                 showSearch
+                disabled={!selectedProvincia}
                 filterOption={(input, option: any) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >=
                   0

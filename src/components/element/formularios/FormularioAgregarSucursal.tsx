@@ -55,7 +55,9 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
     if (selectedPais) {
       getProvincia().then((data: Provincia[]) => {
         const provinciasFiltradas = data.filter(
-          (provincia) => provincia.pais.id === String(selectedPais)
+          (provincia) =>
+            provincia.pais.id ===
+            (selectedPais ? Number(selectedPais) : undefined) // Asegúrate de que ambos sean del mismo tipo
         );
         setProvincias(provinciasFiltradas);
       });
@@ -65,6 +67,30 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
     setSelectedProvincia(null);
     setLocalidades([]);
   }, [selectedPais]);
+
+  useEffect(() => {
+    if (selectedProvincia) {
+      getLocalidadesByProvincia(selectedProvincia).then((data: Localidad[]) =>
+        setLocalidades(data)
+      );
+    } else {
+      setLocalidades([]);
+    }
+  }, [selectedProvincia]);
+
+  const handlePaisChange = (paisId: number) => {
+    setSelectedPais(paisId);
+    form.setFieldsValue({ provincia: undefined, localidad: undefined }); // Clear provincia and localidad fields
+  };
+
+  const handleProvinciaChange = (provinciaId: number) => {
+    setSelectedProvincia(provinciaId);
+    form.setFieldsValue({ localidad: undefined }); // Clear localidad field
+  };
+
+  useEffect(() => {
+    cargarDatos();
+  }, []);
 
   useEffect(() => {
     if (selectedProvincia) {
@@ -101,16 +127,6 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const handlePaisChange = (paisId: number) => {
-    setSelectedPais(paisId);
-    form.setFieldsValue({ provincia: undefined, localidad: undefined }); // Clear provincia and localidad fields
-  };
-
-  const handleProvinciaChange = (provinciaId: number) => {
-    setSelectedProvincia(provinciaId);
-    form.setFieldsValue({ localidad: undefined }); // Clear localidad field
   };
 
   const handleSubmit = async (values: any) => {
