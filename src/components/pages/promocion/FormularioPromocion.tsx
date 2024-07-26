@@ -18,7 +18,6 @@ import {
   savePromocion,
   Promocion,
 } from "../../../service/PromocionService";
-import { useAuth0 } from "@auth0/auth0-react";
 
 //const { Option } = Select;
 
@@ -47,7 +46,7 @@ const FormularioPromocion: React.FC<Props> = ({
   const [imagenBase64, setImagenBase64] = useState<string | undefined>(
     undefined
   );
-  const { getAccessTokenSilently } = useAuth0();
+
   const setFieldValue = (_arg0: string, value: string | Dayjs): void => {
     if (typeof value === "string") {
       value = dayjs(value);
@@ -117,8 +116,8 @@ const FormularioPromocion: React.FC<Props> = ({
           articuloManufacturado: { id: articulo.id },
         })),
       };
-      const token = await getAccessTokenSilently();
-      await savePromocion(promocionData, token);
+
+      await savePromocion(promocionData);
       form.resetFields(); // Limpia los campos del formulario
       setImagenBase64(undefined);
       onCancel();

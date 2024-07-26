@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal, Input, Form } from "antd";
 import { agregarStockId, getInsumoXId } from "../../../service/ServiceInsumos";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface FormularioStockProps {
   onClose: () => void;
@@ -29,7 +28,7 @@ const FormularioStock: React.FC<FormularioStockProps> = ({
     useState<number>(precioVentaInicial);
   const [nuevoPrecioCompra, setNuevoPrecioCompra] =
     useState<number>(precioCompraInicial);
-  const { getAccessTokenSilently } = useAuth0();
+
   const [insumo, setInsumo] = useState<any>(null);
   const [esParaElaborar, setEsParaElaborar] = useState<boolean>(false);
   console.log(insumo);
@@ -58,7 +57,7 @@ const FormularioStock: React.FC<FormularioStockProps> = ({
     if (id) {
       obtenerDatosInsumo();
     }
-  }, [id, getAccessTokenSilently]);
+  }, [id]);
 
   useEffect(() => {
     // Si es un producto para elaborar, bloquear el campo de precio de venta
@@ -74,8 +73,8 @@ const FormularioStock: React.FC<FormularioStockProps> = ({
         nuevoPrecioVenta,
         nuevoPrecioCompra,
       };
-      const token = await getAccessTokenSilently();
-      await agregarStockId(formData, id, token);
+
+      await agregarStockId(formData, id);
       onClose();
     } catch (error) {
       console.error("Error al agregar stock:", error);

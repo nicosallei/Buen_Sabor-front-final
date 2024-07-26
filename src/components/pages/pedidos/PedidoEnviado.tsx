@@ -8,7 +8,7 @@ import {
 } from "../../../service/PedidoService";
 import { Empresas, getEmpresas } from "../../../service/ServiceEmpresa";
 import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
-import { useAuth0 } from "@auth0/auth0-react";
+
 import { Rol } from "../../../types/usuario/Usuario";
 const { Option } = Select;
 
@@ -26,7 +26,7 @@ const PedidosEnviados: React.FC = () => {
   const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(null);
   const [nuevoEstado, setNuevoEstado] = useState<Estado | null>(null);
   const [selectedDomicilio, setSelectedDomicilio] = useState<any>(null);
-  const { getAccessTokenSilently } = useAuth0();
+
   const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
@@ -85,12 +85,7 @@ const PedidosEnviados: React.FC = () => {
 
   const handleEstadoChange = async (id: number, nuevoEstado: Estado) => {
     try {
-      const token = await getAccessTokenSilently();
-      const pedidoActualizado = await cambiarEstadoPedido(
-        id,
-        nuevoEstado,
-        token
-      );
+      const pedidoActualizado = await cambiarEstadoPedido(id, nuevoEstado);
       message.success(
         `El pedido cambió su estado a: ${pedidoActualizado.estado}`
       );

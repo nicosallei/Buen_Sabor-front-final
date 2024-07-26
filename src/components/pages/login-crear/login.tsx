@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Rol, Usuario } from "../../../types/usuario/Usuario";
 import * as CryptoJS from "crypto-js";
-import { Form, Input, Button, Checkbox, Card } from "antd";
+import { Form, Input, Button, Card } from "antd";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons"; // Import EyeTwoTone from @ant-design/icons
 
 function Login() {
   const navigate = useNavigate();
   const [usuario, setUsuario] = useState<Usuario>(new Usuario());
   const [txtValidacion, setTxtValidacion] = useState<string>("");
-  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     localStorage.clear();
@@ -144,14 +143,7 @@ function Login() {
               }
             />
           </Form.Item>
-          <Form.Item>
-            <Checkbox
-              checked={showPassword}
-              onChange={() => setShowPassword(!showPassword)}
-            >
-              Mostrar contraseña
-            </Checkbox>
-          </Form.Item>
+
           <Form.Item>
             <Button type="primary" onClick={login}>
               Ingresar

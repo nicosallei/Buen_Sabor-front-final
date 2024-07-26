@@ -3,14 +3,9 @@ import { AbstractBackendClient } from "./AbstractBackendClient";
 export default abstract class BackendClient<
   T
 > extends AbstractBackendClient<T> {
-  protected async request(
-    path: string,
-    options: RequestInit,
-    token: string
-  ): Promise<T> {
+  protected async request(path: string, options: RequestInit): Promise<T> {
     options.headers = {
       ...options.headers,
-      Authorization: `Bearer ${token}`,
     };
     try {
       const response = await fetch(path, options);
@@ -34,14 +29,9 @@ export default abstract class BackendClient<
     }
   }
 
-  protected async requestAll(
-    path: string,
-    options: RequestInit,
-    token: string
-  ): Promise<T[]> {
+  protected async requestAll(path: string, options: RequestInit): Promise<T[]> {
     options.headers = {
       ...options.headers,
-      Authorization: `Bearer ${token}`,
     };
 
     try {
@@ -60,12 +50,12 @@ export default abstract class BackendClient<
   }
   // @ts-ignore
 
-  async get(url: string, id: number, token: string): Promise<T> {
+  async get(url: string, id: number): Promise<T> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "GET",
     };
-    return this.request(path, options, token);
+    return this.request(path, options);
   }
   // @ts-ignore
 
@@ -74,50 +64,47 @@ export default abstract class BackendClient<
     const options: RequestInit = {
       method: "GET",
     };
-    return this.requestAll(path, options, token);
+    return this.requestAll(path, options);
   }
   // @ts-ignore
 
-  async post(url: string, data: T, token: string): Promise<T> {
+  async post(url: string, data: Text): Promise<T> {
     const path = url;
     const options: RequestInit = {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     };
 
-    return this.request(path, options, token);
+    return this.request(path, options);
   }
   // @ts-ignore
 
-  async put(url: string, id: number, data: T, token: string): Promise<T> {
+  async put(url: string, id: number, data: T): Promise<T> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     };
-    return this.request(path, options, token);
+    return this.request(path, options);
   }
   // @ts-ignore
 
-  async delete(url: string, id: number, token: string): Promise<void> {
+  async delete(url: string, id: number): Promise<void> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
     };
-    await this.request(path, options, token);
+    await this.request(path, options);
   }
 }

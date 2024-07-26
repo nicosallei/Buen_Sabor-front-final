@@ -24,7 +24,7 @@ const EmpleadoProfileCard = () => {
   const [loading, setLoading] = useState(true);
   const email = useMemo(() => localStorage.getItem("email") || "", []);
   const id = useMemo(() => localStorage.getItem("id") || "", []);
-  const token = useMemo(() => localStorage.getItem("auth_token") || "", []);
+
   const rol = useMemo(() => localStorage.getItem("rol") || "", []);
   const empleadoService = useMemo(() => new EmpleadoService(), []);
   const baseURL = useMemo(() => import.meta.env.VITE_API_URL, []);
@@ -33,13 +33,12 @@ const EmpleadoProfileCard = () => {
   const [cambiandoPassword, setCambiandoPassword] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const fetchEmpleado = async () => {
-    if (email && token) {
+    if (email) {
       try {
         console.log("Fetching empleado data...");
         const empleadoData = await empleadoService.getEmpleadoByEmail(
           baseURL,
-          email,
-          token
+          email
         );
         console.log("Empleado data fetched:", empleadoData);
         setEmpleado(empleadoData);
@@ -54,8 +53,7 @@ const EmpleadoProfileCard = () => {
     try {
       const clienteData = await clienteService.getClienteByEmail(
         baseURL, // Asegúrate de que esta URL es la correcta para obtener datos del cliente
-        email,
-        token
+        email
       );
       setCliente(clienteData);
     } catch (error) {
@@ -70,7 +68,7 @@ const EmpleadoProfileCard = () => {
     } else {
       fetchEmpleado();
     }
-  }, [email, token, empleadoService, baseURL, clienteService, rol]);
+  }, [email, empleadoService, baseURL, clienteService, rol]);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -93,9 +91,9 @@ const EmpleadoProfileCard = () => {
     };
     try {
       if (rol === "CLIENTE") {
-        await cambiarPasswordCliente(cambioPasswordDto, token);
+        await cambiarPasswordCliente(cambioPasswordDto);
       } else {
-        await cambiarPasswordEmpleado(cambioPasswordDto, token);
+        await cambiarPasswordEmpleado(cambioPasswordDto);
       }
       message.success(`La contraseña fue cambiada con exito `);
       // Resetear los valores de los inputs después de cambiar la contraseña

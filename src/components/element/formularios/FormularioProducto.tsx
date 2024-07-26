@@ -26,7 +26,6 @@ import {
   crearManufacturado,
   getCategoria,
 } from "../../../service/ServiceProducto";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface Props {
   visible: boolean;
@@ -48,7 +47,7 @@ const FormularioProducto: React.FC<Props> = ({
   const [selectedInsumos, setSelectedInsumos] = useState<string[]>([]);
   const [selectedInsumosData, setSelectedInsumosData] = useState<any[]>([]);
   const [insumos, setInsumos] = useState<any[]>([]);
-  const { getAccessTokenSilently } = useAuth0();
+
   const [categoria, setCategoria] = useState<any[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<unidadMedida[]>([]);
   useEffect(() => {
@@ -153,8 +152,8 @@ const FormularioProducto: React.FC<Props> = ({
     try {
       const imagenes = await Promise.all(promises);
       formattedValues.imagenes = imagenes;
-      const token = await getAccessTokenSilently();
-      const response = await crearManufacturado(formattedValues, token);
+
+      const response = await crearManufacturado(formattedValues);
       onSubmit(response);
       form.resetFields();
       onClose();

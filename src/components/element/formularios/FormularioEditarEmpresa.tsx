@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Button, Form, Input, Modal } from "antd";
 
 import { actualizarEmpresa } from "../../../service/ServiceEmpresa";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface FormularioModificarEmpresaProps {
   empresa: any; // Aquí define la estructura de la empresa que vas a modificar
@@ -17,7 +16,7 @@ const FormularioModificarEmpresa: React.FC<FormularioModificarEmpresaProps> = ({
 }) => {
   const [componentDisabled] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(true);
-  const { getAccessTokenSilently } = useAuth0();
+
   const [form] = Form.useForm();
   const [nuevaImagenBase64, setNuevaImagenBase64] = useState<string | null>(
     null
@@ -72,8 +71,8 @@ const FormularioModificarEmpresa: React.FC<FormularioModificarEmpresaProps> = ({
       cuil: values.cuil,
       imagen: nuevaImagenBase64,
     };
-    const token = await getAccessTokenSilently();
-    await actualizarEmpresa(empresa.id, formData, token);
+
+    await actualizarEmpresa(empresa.id, formData);
     onSubmit(values);
     handleOk();
     //window.location.reload(); // Esto recarga la página, considera si realmente es necesario

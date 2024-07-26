@@ -26,7 +26,6 @@ import {
   getProductoXIdBase,
   modificarProductoId,
 } from "../../../service/ServiceProducto";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface Props {
   visible: boolean;
@@ -59,7 +58,7 @@ const FormularioActualizarProducto: React.FC<Props> = ({
   const [form] = Form.useForm();
   const [images, setImages] = useState<ImageData[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<unidadMedida[]>([]);
-  const { getAccessTokenSilently } = useAuth0();
+
   const [categoria, setCategoria] = useState<any[]>([]);
 
   useEffect(() => {
@@ -207,12 +206,8 @@ const FormularioActualizarProducto: React.FC<Props> = ({
       formattedValues.imagenes = [...uploadedImages, ...existingImages];
 
       console.log("Formatted values for submission:", formattedValues);
-      const token = await getAccessTokenSilently();
-      await modificarProductoId(
-        formattedValues,
-        parseInt(productoId, 10),
-        token
-      );
+
+      await modificarProductoId(formattedValues, parseInt(productoId, 10));
       notification.success({
         message: "Producto actualizado correctamente",
         icon: <CheckCircleOutlined style={{ color: "#108ee9" }} />,

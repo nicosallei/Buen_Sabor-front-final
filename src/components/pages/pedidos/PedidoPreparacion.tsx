@@ -8,7 +8,7 @@ import {
 } from "../../../service/PedidoService";
 import { Empresas, getEmpresas } from "../../../service/ServiceEmpresa";
 import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
-import { useAuth0 } from "@auth0/auth0-react";
+
 const { Option } = Select;
 const PedidoPreparacion: React.FC = () => {
   const [pedidosPendientes, setPedidosPendientes] = useState<any[]>([]);
@@ -22,7 +22,6 @@ const PedidoPreparacion: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(null);
   const [nuevoEstado, setNuevoEstado] = useState<Estado | null>(null);
-  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const fetchEmpresas = async () => {
@@ -73,12 +72,7 @@ const PedidoPreparacion: React.FC = () => {
 
   const handleEstadoChange = async (id: number, nuevoEstado: Estado) => {
     try {
-      const token = await getAccessTokenSilently();
-      const pedidoActualizado = await cambiarEstadoPedido(
-        id,
-        nuevoEstado,
-        token
-      );
+      const pedidoActualizado = await cambiarEstadoPedido(id, nuevoEstado);
       message.success(
         `El pedido cambió su estado a: ${pedidoActualizado.estado}`
       );

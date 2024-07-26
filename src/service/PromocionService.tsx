@@ -88,13 +88,12 @@ export const fetchArticulosManufacturados = async (sucursalId: number) => {
   }
 };
 
-export const savePromocion = async (promocion: Promocion, token: string) => {
+export const savePromocion = async (promocion: Promocion) => {
   try {
     const response = await fetch("http://localhost:8080/api/promociones/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(promocion),
     });
@@ -111,7 +110,7 @@ export const savePromocion = async (promocion: Promocion, token: string) => {
   }
 };
 
-export const togglePromocion = async (id: number, token: string) => {
+export const togglePromocion = async (id: number) => {
   try {
     const response = await fetch(
       `http://localhost:8080/api/promociones/${id}`,
@@ -119,7 +118,6 @@ export const togglePromocion = async (id: number, token: string) => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -135,7 +133,7 @@ export const togglePromocion = async (id: number, token: string) => {
     return null;
   }
 };
-export const eliminacionLogica = async (id: number, token: string) => {
+export const eliminacionLogica = async (id: number) => {
   try {
     const response = await fetch(
       `http://localhost:8080/api/promociones/${id}`,
@@ -143,7 +141,6 @@ export const eliminacionLogica = async (id: number, token: string) => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -178,16 +175,11 @@ export const fetchPromocionById = async (promocionId: number) => {
   }
 };
 
-export const actualizarPromocion = async (
-  id: number,
-  promocion: Promocion,
-  token: string
-) => {
+export const actualizarPromocion = async (id: number, promocion: Promocion) => {
   const response = await fetch(`http://localhost:8080/api/promociones/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(promocion),
   });
@@ -199,7 +191,7 @@ export const actualizarPromocion = async (
   return await response.json();
 };
 
-export const eliminarDetallesPromocion = async (id: number, token: string) => {
+export const eliminarDetallesPromocion = async (id: number) => {
   try {
     const response = await fetch(
       `http://localhost:8080/api/promociones/eliminar-detalles/${id}`,
@@ -207,7 +199,6 @@ export const eliminarDetallesPromocion = async (id: number, token: string) => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       }
     );

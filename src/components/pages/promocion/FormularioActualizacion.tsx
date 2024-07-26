@@ -21,7 +21,6 @@ import {
   Promocion,
   //eliminarDetallesPromocion,
 } from "../../../service/PromocionService";
-import { useAuth0 } from "@auth0/auth0-react";
 
 //const { Option } = Select;
 
@@ -50,7 +49,7 @@ const FormularioActualizacionPromocion: React.FC<Props> = ({
   const [nuevaImagenBase64, setNuevaImagenBase64] = useState<string | null>(
     null
   );
-  const { getAccessTokenSilently } = useAuth0();
+
   const [reloadKey, setReloadKey] = useState(0);
 
   const forceReload = () => setReloadKey((prevKey) => prevKey + 1);
@@ -150,9 +149,8 @@ const FormularioActualizacionPromocion: React.FC<Props> = ({
           articuloManufacturado: { id: articulo.id },
         })),
       };
-      const token = await getAccessTokenSilently();
-      //await eliminarDetallesPromocion(promocionId!, token);
-      await actualizarPromocion(promocionId!, promocionData, token);
+
+      await actualizarPromocion(promocionId!, promocionData);
       form.resetFields(); // Limpia los campos del formulario
       forceReload();
       onCancel();

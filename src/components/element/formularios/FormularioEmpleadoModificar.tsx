@@ -1,6 +1,6 @@
 import { Modal, Form, Input, Button, notification, Select } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
-import { useAuth0 } from "@auth0/auth0-react";
+
 import { useState } from "react";
 import { RolEmpleado } from "../../../types/usuario/Usuario";
 
@@ -21,7 +21,7 @@ const FormularioEmpleado: React.FC<Props> = ({
   empleadoId,
 }) => {
   const [form] = Form.useForm();
-  const { getAccessTokenSilently } = useAuth0();
+
   const [nuevaImagenBase64, setNuevaImagenBase64] = useState<string | null>(
     null
   );
@@ -55,7 +55,6 @@ const FormularioEmpleado: React.FC<Props> = ({
     }
 
     try {
-      const token = await getAccessTokenSilently();
       formattedValues.imagen = nuevaImagenBase64;
 
       let url = `http://localhost:8080/api/empleado/`;
@@ -69,7 +68,6 @@ const FormularioEmpleado: React.FC<Props> = ({
         method: method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formattedValues),
       });

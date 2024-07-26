@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import { Button, Form, Input, Modal } from "antd";
 import { crearEmpresa } from "../../../service/ServiceEmpresa";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface FormularioAgregarEmpresaProps {
   onClose: () => void;
@@ -15,7 +14,7 @@ const FormularioAgregarEmpresa: React.FC<FormularioAgregarEmpresaProps> = ({
 }) => {
   const [componentDisabled] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(true);
-  const { getAccessTokenSilently } = useAuth0();
+
   const [imagenBase64, setImagenBase64] = useState<string | undefined>(
     undefined
   );
@@ -52,8 +51,8 @@ const FormularioAgregarEmpresa: React.FC<FormularioAgregarEmpresaProps> = ({
       cuil: values.cuil,
       imagen: imagenBase64,
     };
-    const token = await getAccessTokenSilently();
-    await crearEmpresa(formData, token);
+
+    await crearEmpresa(formData);
     onSucursalAdded();
     handleOk();
     // window.location.reload();

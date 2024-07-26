@@ -23,7 +23,6 @@ import {
 import { getSucursal, Sucursal } from "../../../service/ServiceSucursal";
 import { crearManufacturado } from "../../../service/ServiceProducto";
 import { getCategoria } from "../../../service/ServiceProducto";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface FormularioInsumoProps {
   onClose: () => void;
@@ -44,7 +43,6 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
   const [unidadesMedida, setUnidadesMedida] = useState<unidadMedida[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [categorias, setCategorias] = useState<any[]>([]);
-  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const fetchSucursales = async () => {
@@ -123,7 +121,6 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
     }
 
     try {
-      const token = await getAccessTokenSilently();
       const imagenes = await Promise.all(promises);
       formattedValues.imagenes = imagenes;
       if (isParaElaborar) {
@@ -132,9 +129,9 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
 
       let response;
       if (values.esParaElaborar) {
-        response = await crearInsumo(formattedValues, token);
+        response = await crearInsumo(formattedValues);
       } else {
-        response = await crearInsumo(formattedValues, token);
+        response = await crearInsumo(formattedValues);
         formattedValues.articuloManufacturadoDetalles = [
           {
             cantidad: 1,
@@ -143,7 +140,7 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
             },
           },
         ];
-        response = await crearManufacturado(formattedValues, token);
+        response = await crearManufacturado(formattedValues);
       }
       console.log("Response: ", response);
       onSubmit(values);

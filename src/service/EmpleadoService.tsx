@@ -26,15 +26,12 @@ export const getEmpleados = async (sucursalId: string): Promise<Empleado[]> => {
   return response.json();
 };
 
-export const cambiarPasswordEmpleado = async (
-  cambioPasswordDto: {
-    username: string;
-    passwordActual: string;
-    nuevaPassword: string;
-    id: number;
-  },
-  token: string
-): Promise<void> => {
+export const cambiarPasswordEmpleado = async (cambioPasswordDto: {
+  username: string;
+  passwordActual: string;
+  nuevaPassword: string;
+  id: number;
+}): Promise<void> => {
   try {
     const encryptedPasswordActual = CryptoJS.SHA256(
       cambioPasswordDto.passwordActual
@@ -55,7 +52,6 @@ export const cambiarPasswordEmpleado = async (
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: body,
       }
@@ -72,10 +68,11 @@ export const cambiarPasswordEmpleado = async (
   }
 };
 
-export const actualizarPasswordEmpleado = async (
-  cambioPasswordDto: { id: number; nuevaPassword: string; username: string },
-  token: string
-): Promise<void> => {
+export const actualizarPasswordEmpleado = async (cambioPasswordDto: {
+  id: number;
+  nuevaPassword: string;
+  username: string;
+}): Promise<void> => {
   try {
     const encryptedPasswordNueva = CryptoJS.SHA256(
       cambioPasswordDto.nuevaPassword
@@ -92,7 +89,6 @@ export const actualizarPasswordEmpleado = async (
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: body,
       }

@@ -47,7 +47,7 @@ export const getSucursalId = async (id: number): Promise<Sucursal[]> => {
   return sucursales;
 };
 
-export async function crearSucursal(formData: Sucursal, token: string) {
+export async function crearSucursal(formData: Sucursal) {
   console.log("estoy en el crearSucursal");
 
   try {
@@ -61,7 +61,7 @@ export async function crearSucursal(formData: Sucursal, token: string) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+
         "Access-Control-Allow-Origin": "*",
       },
       mode: "cors",
@@ -90,13 +90,13 @@ export async function crearSucursal(formData: Sucursal, token: string) {
   }
 }
 
-export async function eliminarSucursal(id: string, token: string) {
+export async function eliminarSucursal(id: string) {
   const urlServer = "http://localhost:8080/api/sucursal/" + id;
   await fetch(urlServer, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+
       "Access-Control-Allow-Origin": "*",
     },
     mode: "cors",
@@ -127,11 +127,7 @@ export async function getSucursalXId(id: string) {
 
   return await response.json();
 }
-export async function actualizarSucursal(
-  id: number,
-  formData: Sucursal,
-  token: string
-) {
+export async function actualizarSucursal(id: number, formData: Sucursal) {
   console.log("estoy en el actualizarSucursal");
 
   try {
@@ -145,7 +141,7 @@ export async function actualizarSucursal(
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+
         "Access-Control-Allow-Origin": "*",
       },
       mode: "cors",

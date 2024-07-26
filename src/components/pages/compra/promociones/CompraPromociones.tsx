@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Carrito from "../Carrito";
 import { Card, Button, Modal, List, Avatar, Typography } from "antd";
 import { obtenerPromociones } from "../../../../service/PromocionService";
-import { useAuth0 } from "@auth0/auth0-react";
+
 import SinImagen from "../../../../assets/sin-imagen.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../redux/Store";
@@ -57,7 +57,7 @@ const CompraPromociones = () => {
   const navigate = useNavigate();
   const { sucursalId } = useParams();
   const [promociones, setPromociones] = useState<Promocion[]>([]);
-  const { getAccessTokenSilently } = useAuth0();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [promocionSeleccionada, setPromocionSeleccionada] =
     useState<Promocion | null>(null);
@@ -124,7 +124,7 @@ const CompraPromociones = () => {
     };
 
     cargarPromociones();
-  }, [sucursalId, getAccessTokenSilently]);
+  }, [sucursalId]);
 
   const handleOpenModal = (promocion: Promocion) => {
     setPromocionSeleccionada(promocion);
@@ -247,7 +247,7 @@ const CompraPromociones = () => {
             ))}
         </div>
       </div>
-      <Carrito sucursalId={sucursalId} />
+      <Carrito />
       <Modal
         title="Detalle de Promoción"
         open={modalOpen}

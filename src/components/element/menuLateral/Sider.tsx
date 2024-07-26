@@ -15,7 +15,6 @@ import { Layout, Menu, theme } from "antd";
 import { Dropdown, Button } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { MenuInfo } from "rc-menu/lib/interface";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Rol, RolEmpleado } from "../../../types/usuario/Usuario";
 
 //import Rutas from "../../../routes/Routes";
@@ -82,7 +81,6 @@ const allItems: MenuItem[] = [
 ];
 
 const App: React.FC = () => {
-  const { logout } = useAuth0();
   const navigate = useNavigate();
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -91,7 +89,11 @@ const App: React.FC = () => {
   function handleMenuClick(info: MenuInfo): void {
     console.log("Menu item clicked:", info.key);
     if (info.key === "logout") {
-      logout({});
+      // Resetea los datos del almacenamiento
+      localStorage.clear();
+      sessionStorage.clear();
+      // Redirige a la página de login
+      navigate("/login");
     } else if (info.key === "perfil") {
       navigate("/perfil");
     }

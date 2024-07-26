@@ -5,15 +5,11 @@ export interface UnidadMedida {
   eliminado: boolean; // Asumiendo que tienes un campo 'eliminado' en tus datos
 }
 
-export const cargarUnidadMedida = async (
-  unidadMedida: UnidadMedida,
-  token: string
-) => {
+export const cargarUnidadMedida = async (unidadMedida: UnidadMedida) => {
   const response = await fetch("http://localhost:8080/api/unidad-medida/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(unidadMedida),
   });
@@ -28,8 +24,7 @@ export const cargarUnidadMedida = async (
 // Para actualizar una unidad de medida
 export const actualizarUnidadMedida = async (
   id: number,
-  unidadMedida: UnidadMedida,
-  token: string
+  unidadMedida: UnidadMedida
 ) => {
   const response = await fetch(
     `http://localhost:8080/api/unidad-medida/${id}`,
@@ -37,7 +32,6 @@ export const actualizarUnidadMedida = async (
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(unidadMedida),
     }
@@ -54,14 +48,13 @@ export const actualizarUnidadMedida = async (
 // Para cambiar el estado de una unidad de medida
 // En tu servicio de unidad de medida
 
-export const toggleActiveUnidadMedida = async (id: number, token: string) => {
+export const toggleActiveUnidadMedida = async (id: number) => {
   const url = `http://localhost:8080/api/unidad-medida/toggle-active/${id}`;
 
   const response = await fetch(url, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`, // Añade el token de autenticación
     },
   });
 

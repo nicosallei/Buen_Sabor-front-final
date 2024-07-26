@@ -36,7 +36,7 @@ export const getTodasEmpresas = async (): Promise<Empresas[]> => {
   return await response.json();
 };
 
-export async function crearEmpresa(formData: Empresas, token: string) {
+export async function crearEmpresa(formData: Empresas) {
   console.log("estoy en el crearEmpresa");
 
   try {
@@ -49,7 +49,7 @@ export async function crearEmpresa(formData: Empresas, token: string) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+
         "Access-Control-Allow-Origin": "*",
       },
       mode: "cors",
@@ -72,15 +72,13 @@ export async function crearEmpresa(formData: Empresas, token: string) {
 
 export const actualizarEmpresa = async (
   id: number,
-  empresa: Empresa,
-  token: string
+  empresa: Empresa
 ): Promise<Response> => {
   const endpoint = `http://localhost:8080/api/empresa/${id}`;
   const response = await fetch(endpoint, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
       "Access-Control-Allow-Origin": "*",
     },
     body: JSON.stringify(empresa),

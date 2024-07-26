@@ -25,7 +25,7 @@ import {
 import { Pais, Provincia, Localidad } from "../../../service/ServiceUbicacion";
 
 import moment from "moment";
-import { useAuth0 } from "@auth0/auth0-react";
+
 const { Option } = Select;
 
 interface FormularioEditarSucursalProps {
@@ -41,7 +41,7 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
   const [componentDisabled] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(true);
   const [form] = Form.useForm();
-  const { getAccessTokenSilently } = useAuth0();
+
   const [paises, setPaises] = useState<Pais[]>([]);
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [localidades, setLocalidades] = useState<Localidad[]>([]);
@@ -172,8 +172,8 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
         cp: values.cp,
         nombre: values.nombre,
       };
-      const token = await getAccessTokenSilently();
-      await actualizarSucursal(sucursalId!, updatedSucursal, token);
+
+      await actualizarSucursal(sucursalId!, updatedSucursal);
       notification.success({
         message: "Sucursal actualizada",
         description: "Sucursal actualizada correctamente",

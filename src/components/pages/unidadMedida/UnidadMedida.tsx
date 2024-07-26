@@ -7,7 +7,6 @@ import {
   traerTodoUnidadMedida,
 } from "../../../service/UnidadMedidaService";
 import { toast } from "react-toastify";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface UnidadMedida {
   id: number;
@@ -21,7 +20,6 @@ const UnidadMedida: React.FC = () => {
   const [unidadSeleccionada, setUnidadSeleccionada] =
     useState<UnidadMedida | null>(null);
   const [form] = Form.useForm();
-  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     traerTodoUnidadMedida().then(setUnidades);
@@ -54,12 +52,11 @@ const UnidadMedida: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const token = await getAccessTokenSilently();
       const values = await form.validateFields();
       if (unidadSeleccionada) {
-        await actualizarUnidadMedida(unidadSeleccionada.id, values, token);
+        await actualizarUnidadMedida(unidadSeleccionada.id, values);
       } else {
-        await cargarUnidadMedida(values, token);
+        await cargarUnidadMedida(values);
       }
       cerrarModal();
       traerTodoUnidadMedida().then(setUnidades);
@@ -69,8 +66,7 @@ const UnidadMedida: React.FC = () => {
   };
 
   const handleToggleActive = async (id: number, checked: boolean) => {
-    const token = await getAccessTokenSilently();
-    await toggleActiveUnidadMedida(id, token);
+    await toggleActiveUnidadMedida(id);
 
     // Actualizar unidades después de cambiar el estado
     const updatedUnidades = unidades.map((unidad) =>

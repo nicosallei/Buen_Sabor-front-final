@@ -73,15 +73,13 @@ export const fetchPedidos = async (sucursalId: number): Promise<any> => {
 
 export const cambiarEstadoPedido = async (
   id: number,
-  nuevoEstado: Estado,
-  token: string
+  nuevoEstado: Estado
 ): Promise<Pedido> => {
   try {
     const response = await fetch(`${API_BASE_URL}/estado/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: nuevoEstado, // Enviar el valor del estado en formato JSON
     });

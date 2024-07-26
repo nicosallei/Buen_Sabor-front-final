@@ -61,7 +61,7 @@ export const getArticulosInsumos = async (): Promise<ArticuloInsumo[]> => {
   return await response.json();
 };
 
-export async function crearInsumo(formData: ArticuloInsumo, token: string) {
+export async function crearInsumo(formData: ArticuloInsumo) {
   console.log("estoy en el crearInsumo");
 
   try {
@@ -74,7 +74,7 @@ export async function crearInsumo(formData: ArticuloInsumo, token: string) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+
         "Access-Control-Allow-Origin": "*",
       },
       mode: "cors",
@@ -105,11 +105,7 @@ export async function crearInsumo(formData: ArticuloInsumo, token: string) {
   }
 }
 
-export async function modificarInsumoId(
-  formData: any,
-  id: number,
-  token: string
-) {
+export async function modificarInsumoId(formData: any, id: number) {
   try {
     console.log("estoy en el fetc");
     console.log("data" + formData);
@@ -120,7 +116,7 @@ export async function modificarInsumoId(
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+
         "Access-Control-Allow-Origin": "*",
       },
       mode: "cors",
@@ -163,26 +159,26 @@ export async function getInsumoXId(id: string) {
   return await response.json();
 }
 
-export async function deleteInsumoXId(id: string, token: string) {
+export async function deleteInsumoXId(id: string) {
   const urlServer = "http://localhost:8080/api/articulos/insumos/" + id;
   await fetch(urlServer, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+
       "Access-Control-Allow-Origin": "*",
     },
     mode: "cors",
   });
 }
-export async function activarInsumoXId(id: string, token: string) {
+export async function activarInsumoXId(id: string) {
   const urlServer =
     "http://localhost:8080/api/articulos/insumos/reactivate/" + id;
   await fetch(urlServer, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+
       "Access-Control-Allow-Origin": "*",
     },
     mode: "cors",
@@ -205,7 +201,7 @@ export async function getInsumoXSucursal(id: string) {
   return await response.json();
 }
 
-export async function agregarStockId(formData: any, id: number, token: string) {
+export async function agregarStockId(formData: any, id: number) {
   try {
     const urlServer = `http://localhost:8080/api/local/articulo/insumo/aumentarStock/${id}?cantidad=${formData.cantidad}&nuevoPrecioVenta=${formData.nuevoPrecioVenta}&nuevoPrecioCompra=${formData.nuevoPrecioCompra}`;
 
@@ -213,7 +209,7 @@ export async function agregarStockId(formData: any, id: number, token: string) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+
         "Access-Control-Allow-Origin": "*", // Puedes ajustar esto según la configuración de tu servidor
       },
       mode: "cors",

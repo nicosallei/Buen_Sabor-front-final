@@ -19,10 +19,11 @@ export const getClientes = async (): Promise<Cliente[]> => {
   return response.json();
 };
 
-export const actualizarPasswordCliente = async (
-  cambioPasswordDto: { id: number; nuevaPassword: string; username: string },
-  token: string
-): Promise<void> => {
+export const actualizarPasswordCliente = async (cambioPasswordDto: {
+  id: number;
+  nuevaPassword: string;
+  username: string;
+}): Promise<void> => {
   try {
     const encryptedPasswordNueva = CryptoJS.SHA256(
       cambioPasswordDto.nuevaPassword
@@ -39,7 +40,7 @@ export const actualizarPasswordCliente = async (
         method: "PUT", // Método HTTP
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Indica el tipo de contenido que se está enviando
+          // Indica el tipo de contenido que se está enviando
         },
         body: body, // Convierte la nueva contraseña a una cadena JSON
       }
@@ -56,14 +57,11 @@ export const actualizarPasswordCliente = async (
   }
 };
 
-export const cambiarPasswordCliente = async (
-  cambioPasswordDto: {
-    username: string;
-    passwordActual: string;
-    nuevaPassword: string;
-  },
-  token: string
-): Promise<void> => {
+export const cambiarPasswordCliente = async (cambioPasswordDto: {
+  username: string;
+  passwordActual: string;
+  nuevaPassword: string;
+}): Promise<void> => {
   try {
     const encryptedPasswordActual = CryptoJS.SHA256(
       cambioPasswordDto.passwordActual
@@ -83,7 +81,6 @@ export const cambiarPasswordCliente = async (
         method: "POST", // Asegúrate de usar el método correcto (POST para este caso)
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: body,
       }

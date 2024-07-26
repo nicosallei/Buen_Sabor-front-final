@@ -11,7 +11,6 @@ import { CheckCircleOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { RolEmpleado } from "../../../types/usuario/Usuario";
 import * as CryptoJS from "crypto-js";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface Props {
   visible: boolean;
@@ -31,7 +30,7 @@ const FormularioEmpleado: React.FC<Props> = ({
   const [imagenBase64, setImagenBase64] = useState<string | undefined>(
     undefined
   );
-  const { getAccessTokenSilently } = useAuth0();
+
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
@@ -59,7 +58,6 @@ const FormularioEmpleado: React.FC<Props> = ({
     };
 
     try {
-      const token = await getAccessTokenSilently();
       const encryptedPassword = CryptoJS.SHA256(
         formattedValues.password
       ).toString();
@@ -73,7 +71,6 @@ const FormularioEmpleado: React.FC<Props> = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(formattedValues),
         }

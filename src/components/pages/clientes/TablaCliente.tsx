@@ -5,7 +5,6 @@ import { Button, Input, message, Space, Table } from "antd"; // Importa Popconfi
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
 
-import { useAuth0 } from "@auth0/auth0-react";
 import userImage from "../../../assets/user_imagen.jpg";
 
 import {
@@ -26,7 +25,6 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({ reload }) => {
   const [data, setData] = useState<Cliente[]>([]);
   //const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
 
-  const { getAccessTokenSilently } = useAuth0();
   useEffect(() => {
     fetchData();
   }, [reload]);
@@ -59,23 +57,16 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({ reload }) => {
   // };
 
   const resetearContraseña = async (clienteId: number) => {
-    //const token = await getAccessTokenSilently();
-    // const nuevaPassword = generarNuevaPassword();
-
     const username = "nombreDeUsuario"; // Ejemplo de nombre de usuario
 
     try {
-      const token = await getAccessTokenSilently();
       const nuevaPassword = "BuenSabor1";
 
-      await actualizarPasswordCliente(
-        {
-          id: clienteId,
-          nuevaPassword: nuevaPassword,
-          username: username,
-        },
-        token
-      );
+      await actualizarPasswordCliente({
+        id: clienteId,
+        nuevaPassword: nuevaPassword,
+        username: username,
+      });
       message.success(`La contraseña fue reseteada con exito: `);
       // Recargar los pedidos para reflejar el cambio de estado
     } catch (error: any) {

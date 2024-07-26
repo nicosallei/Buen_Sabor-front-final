@@ -3,58 +3,48 @@ import ISucursal from "./typeAuth0/ISucursal";
 import BackendClient from "./BackendClient";
 
 export default class SucursalService extends BackendClient<ISucursal> {
-  async postSucursal(
-    url: string,
-    data: FormData,
-    token: string
-  ): Promise<ISucursal> {
+  async postSucursal(url: string, data: FormData): Promise<ISucursal> {
     const path = url;
     const options: RequestInit = {
       method: "POST",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: data,
     };
-    return this.request(path, options, token);
+    return this.request(path, options);
   }
 
-  async getById(baseURL: string, sucursalId: number, token: string) {
+  async getById(baseURL: string, sucursalId: number) {
     const response = await axios.get(`${baseURL}/sucursal/${sucursalId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: {},
     });
     return response.data;
   }
   async putSucursal(
     url: string,
     id: number,
-    data: FormData,
-    token: string
+    data: FormData
   ): Promise<ISucursal> {
     const path = `${url}/update/${id}`;
     const options: RequestInit = {
       method: "PUT",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
       },
       body: data,
     };
-    return this.request(path, options, token);
+    return this.request(path, options);
   }
 
-  async deleteSucursal(url: string, id: number, token: string): Promise<void> {
+  async deleteSucursal(url: string, id: number): Promise<void> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "DELETE",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
       },
     };
-    await this.request(path, options, token);
+    await this.request(path, options);
   }
 }

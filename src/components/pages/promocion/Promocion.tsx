@@ -16,13 +16,11 @@ import {
   //savePromocion,
   eliminacionLogica,
 } from "../../../service/PromocionService";
-import { useAuth0 } from "@auth0/auth0-react";
 import sinImagen from "../../../assets/sin-imagen.jpg";
 
 const { Option } = Select;
 
 const Promociones = () => {
-  const { getAccessTokenSilently } = useAuth0();
   const [empresas, setEmpresas] = useState<Empresas[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
@@ -119,9 +117,6 @@ const Promociones = () => {
 
   const handleSubmitPromocion = async () => {
     try {
-      //const token = await getAccessTokenSilently();
-      //const response = await savePromocion(values, token);
-      //console.log("Promoción guardada con éxito:", response);
       setIsFormVisible(false); // Cierra el formulario si se guarda con éxito
       await handleSucursalChange(selectedSucursalId.toString()); // Recarga las promociones
     } catch (error) {
@@ -134,8 +129,7 @@ const Promociones = () => {
     checked: boolean
   ) => {
     try {
-      const token = await getAccessTokenSilently();
-      const response = await eliminacionLogica(promocionId, token);
+      const response = await eliminacionLogica(promocionId);
       if (response) {
         console.log(
           `Promoción ID: ${promocionId}, Estado: ${

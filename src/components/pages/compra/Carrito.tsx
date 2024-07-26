@@ -71,9 +71,7 @@ interface ImagenArticulo {
   url: string;
 }
 
-interface CarritoProps {}
-
-const Carrito: React.FC<CarritoProps> = () => {
+const Carrito: React.FC = () => {
   const { sucursalId } = useParams<{ sucursalId: string }>();
   const imagenPorDefecto = "http://localhost:8080/images/sin-imagen.jpg";
   const dispatch = useAppDispatch();
@@ -93,7 +91,6 @@ const Carrito: React.FC<CarritoProps> = () => {
   );
   const [promociones, setPromociones] = useState([]);
   const [descuentoTotal, setTotalDescuento] = useState<number>(0);
-  //const { getAccessTokenSilently } = useAuth0();
   const quitarDelCarrito = (productoId: number) => {
     dispatch(removeToCarrito({ id: productoId }));
   };

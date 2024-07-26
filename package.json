@@ -12,6 +12,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
     "@mercadopago/sdk-react": "^0.0.19",
+    "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.2.5",
     "antd": "^5.17.4",
     "axios": "^1.7.2",

@@ -10,7 +10,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import RutasSinSidebar from "./routes/RutasSinSidebar.tsx";
-import { Auth0ProviderWithNavigate } from "./components/auth0/Auth0ProviderWithNavigate.tsx";
 
 const AppContent = () => {
   const location = useLocation();
@@ -29,9 +28,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
       <Router>
-        <Auth0ProviderWithNavigate>
-          <AppContent />
-        </Auth0ProviderWithNavigate>
+        <AppContent />
       </Router>
     </Provider>
   </React.StrictMode>

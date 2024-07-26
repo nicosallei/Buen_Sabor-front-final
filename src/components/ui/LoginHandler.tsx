@@ -7,7 +7,7 @@ import { RolEmpleado } from "../../types/usuario/Usuario";
 import ClienteService from "../../service/auth0Service/ClienteService";
 
 const LoginHandler: React.FC = () => {
-  const { user, isAuthenticated, getAccessTokenSilently, logout } = useAuth0();
+  const { user, isAuthenticated, logout } = useAuth0();
   const navigate = useNavigate();
   const empleadoService = new EmpleadoService();
   const clienteService = new ClienteService();
@@ -19,16 +19,12 @@ const LoginHandler: React.FC = () => {
         try {
           localStorage.removeItem("rol");
           localStorage.removeItem("email");
-          localStorage.removeItem("auth_token");
           localStorage.removeItem("id");
           const sucursalService = new SucursalService();
-          const token = await getAccessTokenSilently();
-          localStorage.setItem("auth_token", token);
 
           const empleado = await empleadoService.getEmpleadoByEmail(
             `${url}`,
-            user.email,
-            token
+            user.email
           );
 
           if (empleado) {
@@ -61,8 +57,7 @@ const LoginHandler: React.FC = () => {
 
               const sucursal = await sucursalService.getById(
                 `${url}`,
-                empleado.sucursal.id,
-                token
+                empleado.sucursal.id
               );
 
               localStorage.setItem("selectedSucursalNombre", sucursal.nombre);
@@ -75,8 +70,7 @@ const LoginHandler: React.FC = () => {
           } else {
             const cliente = await clienteService.getClienteByEmail(
               `${url}`,
-              user.email,
-              token
+              user.email
             );
 
             if (cliente) {
@@ -104,7 +98,7 @@ const LoginHandler: React.FC = () => {
     };
 
     fetchUsuario();
-  }, [isAuthenticated, user, getAccessTokenSilently, navigate, logout]);
+  }, [isAuthenticated, user, navigate, logout]);
 
   return <div>Cargando...</div>;
 };

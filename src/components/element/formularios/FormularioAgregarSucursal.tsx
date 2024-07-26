@@ -19,7 +19,7 @@ import {
 } from "../../../service/ServiceUbicacion";
 
 import { Pais, Provincia, Localidad } from "../../../service/ServiceUbicacion";
-import { useAuth0 } from "@auth0/auth0-react";
+
 const { Option } = Select;
 
 interface FormularioAgregarEmpresaProps {
@@ -45,7 +45,6 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
   const [selectedProvincia, setSelectedProvincia] = useState<number | null>(
     null
   );
-  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     getPais().then((data: Pais[]) => setPaises(data));
@@ -149,8 +148,8 @@ const FormularioAgregarSucursal: React.FC<FormularioAgregarEmpresaProps> = ({
         nombre: values.nombre,
       };
       console.log("Sucursal to create:", sucursal); // Log the sucursal object
-      const token = await getAccessTokenSilently();
-      await crearSucursal(sucursal, token); // Llamar a la función crearSucursal
+
+      await crearSucursal(sucursal); // Llamar a la función crearSucursal
       notification.success({
         message: "Sucursal agregada",
         description: "Sucursal agregada correctamente",
