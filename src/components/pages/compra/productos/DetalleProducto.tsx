@@ -1,4 +1,6 @@
-import { Modal, Button, Image } from "antd";
+import { Modal, Button, Image, Card, List, Typography } from "antd";
+
+const { Text, Title } = Typography;
 
 interface DetalleProductoProps {
   producto: any;
@@ -20,6 +22,11 @@ const DetalleProducto: React.FC<DetalleProductoProps> = ({
       ? "http://localhost:8080/images/" + producto.imagenes[0].url
       : imagenPorDefecto;
 
+  // Formatear el precio de venta
+  const precioFormateado = new Intl.NumberFormat("es-AR").format(
+    producto.precioVenta
+  );
+
   return (
     <Modal
       title={producto.denominacion}
@@ -36,12 +43,33 @@ const DetalleProducto: React.FC<DetalleProductoProps> = ({
         alt="Imagen del producto"
         style={{ marginBottom: "20px" }} // Ajusta el estilo según sea necesario
       />
-      <p>{producto.descripcion}</p>
-      <p>Código: {producto.codigo}</p>
-      <p>Precio de venta: {producto.precioVenta}</p>
-      <p>Categoría: {producto.categoriaId}</p>
-      <p>Sucursal: {producto.sucursalId}</p>
-      {/* Aquí puedes agregar más detalles del producto según sea necesario */}
+      <Card>
+        <List>
+          <List.Item>
+            <List.Item.Meta title="Código" description={producto.codigo} />
+          </List.Item>
+          <List.Item>
+            <List.Item.Meta
+              title="Descripción"
+              description={
+                <Text style={{ fontSize: "16px", color: "#555" }}>
+                  {producto.descripcion}
+                </Text>
+              }
+            />
+          </List.Item>
+          <List.Item>
+            <List.Item.Meta
+              title="Precio de venta"
+              description={
+                <Title level={4} style={{ color: "green" }}>
+                  ${precioFormateado}
+                </Title>
+              }
+            />
+          </List.Item>
+        </List>
+      </Card>
     </Modal>
   );
 };
