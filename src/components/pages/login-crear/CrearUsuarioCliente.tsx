@@ -120,7 +120,13 @@ const RegistroCliente = () => {
                       if (!value) {
                         return Promise.reject();
                       }
-                      const comparisonDate = new Date(2024, 6, 17);
+                      //const comparisonDate = new Date(2024, 7, 30);
+                      const now = new Date();
+                      const comparisonDate = new Date(
+                        now.getFullYear(),
+                        now.getMonth(),
+                        now.getDate()
+                      );
                       const birthDate = new Date(value);
                       let age =
                         comparisonDate.getFullYear() - birthDate.getFullYear();
@@ -133,11 +139,9 @@ const RegistroCliente = () => {
                       ) {
                         age--;
                       }
-                      if (age < 17) {
+                      if (age < 18) {
                         return Promise.reject(
-                          new Error(
-                            "Debes ser mayor de 17 años para el 17 de julio de 2024"
-                          )
+                          new Error("Debes tener al menos 18 años.")
                         );
                       }
                       return Promise.resolve();

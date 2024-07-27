@@ -1,5 +1,4 @@
 import {
-  SettingOutlined,
   LogoutOutlined,
   BankOutlined,
   ShoppingCartOutlined,
