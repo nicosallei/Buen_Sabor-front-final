@@ -50,18 +50,19 @@ function Login() {
         localStorage.removeItem("id");
         localStorage.setItem("rol", user.rol);
         localStorage.setItem("id", String(user.idEmpleado));
-        navigate("/unidadMedida");
+        navigate("/empresas");
       } else if (
         user.rol === Rol.EMPLEADO_COCINA ||
-        user.rol === Rol.EMPLEADO_REPARTIDOR
+        user.rol === Rol.EMPLEADO_REPARTIDOR ||
+        user.rol === Rol.EMPLEADO_CAJA
       ) {
         localStorage.setItem("rol", user.rol);
         localStorage.setItem("sucursal_id", user.idSucursal?.toString() || "");
         localStorage.setItem("id", String(user.idEmpleado));
         localStorage.setItem("empresa_id", user.idEmpresa?.toString() || "");
-        navigate("/insumos");
+        navigate("/pedidos/menu");
       } else {
-        navigate("/default");
+        navigate("/login");
       }
     }
   };

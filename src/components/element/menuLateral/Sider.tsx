@@ -14,11 +14,11 @@ import type { MenuProps } from "antd";
 import { Layout, Menu, theme } from "antd";
 import { Dropdown, Button } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { MenuInfo } from "rc-menu/lib/interface";
 import { Rol, RolEmpleado } from "../../../types/usuario/Usuario";
 
 //import Rutas from "../../../routes/Routes";
 import Rutas from "../../../routes/RoutesSinAuth0";
+import React from "react";
 
 const { Header, Content, Sider } = Layout;
 
@@ -82,26 +82,28 @@ const allItems: MenuItem[] = [
 
 const App: React.FC = () => {
   const navigate = useNavigate();
+  const rol = localStorage.getItem("rol");
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  function handleMenuClick(info: MenuInfo): void {
-    console.log("Menu item clicked:", info.key);
+  React.useEffect(() => {
+    if (!rol) {
+      navigate("/login");
+    }
+  }, [rol, navigate]);
+
+  const handleMenuClick = (info: any) => {
     if (info.key === "logout") {
       localStorage.clear();
-      sessionStorage.clear();
-
       navigate("/login");
     } else if (info.key === "perfil") {
       navigate("/perfil");
     }
-  }
+  };
 
-  let rol = localStorage.getItem("rol");
   if (!rol) {
-    rol = Rol.CLIENTE;
-    localStorage.setItem("rol", rol);
+    navigate("/login");
   }
   const isAdmin = rol === RolEmpleado.ADMINISTRADOR;
   const isCocinero = rol === RolEmpleado.EMPLEADO_COCINA;
@@ -262,9 +264,9 @@ const App: React.FC = () => {
       <Menu.Item key="perfil" icon={<UserOutlined />}>
         Perfil
       </Menu.Item>
-      <Menu.Item key="settings" icon={<SettingOutlined />}>
+      {/* <Menu.Item key="settings" icon={<SettingOutlined />}>
         Ajustes
-      </Menu.Item>
+      </Menu.Item> */}
       <Menu.Item key="logout" icon={<LogoutOutlined />}>
         Cerrar Sesión
       </Menu.Item>

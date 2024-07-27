@@ -11,7 +11,6 @@ const RutasSinSidebar: React.FC = () => {
       <Route path="/registro-cliente" element={<RegistroCliente />} />
       <Route path="/callback" element={<CallbackPage />} />
       <Route path="/" element={<Login />} />
-      {/* <Route path="*" element={<ErrorPage />} /> */}
     </Routes>
   );
 };

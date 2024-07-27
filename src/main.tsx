@@ -2,7 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
-import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./redux/Store";
 import Sider from "./components/element/menuLateral/Sider";
@@ -14,6 +18,11 @@ import RutasSinSidebar from "./routes/RutasSinSidebar.tsx";
 const AppContent = () => {
   const location = useLocation();
   const noSiderRoutes = ["/login", "/registro-cliente", "/callback", "/"];
+
+  // Redirigir de /login/ a /login
+  if (location.pathname === "/login/") {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <>

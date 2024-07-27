@@ -18,7 +18,6 @@ import RegistroCliente from "../components/pages/login-crear/CrearUsuarioCliente
 import Estadistica from "../components/pages/estadistica/Estadistica";
 import RegistroEmpleado from "../components/pages/login-crear/CrearUsuarioEmpleado";
 import CallbackPage from "../components/auth0/CallbackPage";
-import LoginHandler from "../components/ui/LoginHandler";
 import EmpleadoProfileCard from "../components/pages/perfil/EmpleadoProfileCard";
 import Graficos from "../components/pages/estadistica/Graficos";
 import withRoleCheck from "../controlAcceso/withRoleCheck";
@@ -146,14 +145,22 @@ const Rutas: React.FC = () => {
           withRoleCheck(Promocion, ["ADMINISTRADOR", "EMPLEADO_COCINA"])
         )}
       />
-      <Route path="/Pedidos" element={<Pedidos />} />
-      <Route path="*" element={<Login />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/callback" element={<CallbackPage />} />
-      <Route path="/registro-cliente" element={<RegistroCliente />} />
-      <Route path="/registro/empleado" element={<RegistroEmpleado />} />
-      <Route path="/" element={<LoginHandler />} />
-      <Route path="/perfil" element={<EmpleadoProfileCard />} />
+      <Route
+        path="/Pedidos"
+        element={React.createElement(withRoleCheck(Pedidos, ["ADMINISTRADOR"]))}
+      />
+      <Route
+        path="/perfil"
+        element={React.createElement(
+          withRoleCheck(EmpleadoProfileCard, [
+            "ADMINISTRADOR",
+            "EMPLEADO_COCINA",
+            "EMPLEADO_CAJA",
+            "CLIENTE",
+            "EMPLEADO_REPARTIDOR",
+          ])
+        )}
+      />
       <Route
         path="/pedidosCliente"
         element={React.createElement(
@@ -260,6 +267,13 @@ const Rutas: React.FC = () => {
           ])
         )}
       />
+
+      <Route path="*" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/callback" element={<CallbackPage />} />
+      <Route path="/registro-cliente" element={<RegistroCliente />} />
+      <Route path="/registro/empleado" element={<RegistroEmpleado />} />
+      <Route path="/" element={<Login />} />
     </Routes>
   );
 };

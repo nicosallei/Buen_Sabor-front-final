@@ -37,29 +37,27 @@ const Promociones = () => {
   );
   const [isDisabled, setIsDisabled] = useState(false);
 
+  const fetchEmpresas = async () => {
+    const empresasData = await getEmpresas();
+    setEmpresas(empresasData);
+  };
   useEffect(() => {
-    const fetchEmpresas = async () => {
-      const empresasData = await getEmpresas();
-      setEmpresas(empresasData);
-    };
-
     fetchEmpresas();
   }, []);
 
+  const fetchSucursales = async () => {
+    if (selectedEmpresa) {
+      const sucursalesData = await getSucursal(String(selectedEmpresa));
+      setSucursales(sucursalesData);
+    }
+  };
   useEffect(() => {
-    const fetchSucursales = async () => {
-      if (selectedEmpresa) {
-        const sucursalesData = await getSucursal(String(selectedEmpresa));
-        setSucursales(sucursalesData);
-      }
-    };
-
     fetchSucursales();
   }, [selectedEmpresa]);
 
   useEffect(() => {
     const empresaId = Number(localStorage.getItem("empresa_id"));
-    const sucursalId = localStorage.getItem("sucursal_id");
+    const sucursalId = Number(localStorage.getItem("sucursal_id"));
     if (empresaId && sucursalId) {
       setSelectedEmpresa(Number(empresaId));
       setSelectedSucursalId(Number(sucursalId));
@@ -68,15 +66,14 @@ const Promociones = () => {
     }
   }, []);
   useEffect(() => {
-    if (selectedSucursalId !== null) {
-      handleSucursalChange(selectedSucursalId.toString());
+    if (selectedSucursalId !== null || selectedSucursalId !== 0) {
+      handleSucursalChange(selectedSucursalId);
     }
   }, [selectedSucursalId]);
-  const handleSucursalChange = async (value: string) => {
-    const selectedId = Number(value);
-    setSelectedSucursalId(selectedId);
-    if (selectedId !== null) {
-      const promocionesData = await promocionesPorSucursal(selectedId);
+
+  const handleSucursalChange = async (value: number) => {
+    if (value !== null) {
+      const promocionesData = await promocionesPorSucursal(value);
       setPromociones(promocionesData);
     }
   };
@@ -118,7 +115,7 @@ const Promociones = () => {
   const handleSubmitPromocion = async () => {
     try {
       setIsFormVisible(false);
-      await handleSucursalChange(selectedSucursalId.toString());
+      await handleSucursalChange(selectedSucursalId);
     } catch (error) {
       console.error("Error al guardar la promoción:", error);
     }
@@ -154,7 +151,7 @@ const Promociones = () => {
   const handleUpdatePromotion = async () => {
     try {
       setIsUpdateFormVisible(false);
-      handleSucursalChange(selectedSucursalId.toString());
+      handleSucursalChange(selectedSucursalId);
     } catch (error) {
       console.error("Error al actualizar la promoción:", error);
     }
@@ -224,6 +221,7 @@ const Promociones = () => {
               </Option>
             ))}
           </Select>
+
           <Select
             placeholder="Seleccione una sucursal"
             style={{ width: 200 }}
