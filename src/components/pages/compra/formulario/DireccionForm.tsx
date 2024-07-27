@@ -38,7 +38,7 @@ const DireccionForm: React.FC<DireccionFormProps> = ({
         const provinciasFiltradas = data.filter(
           (provincia) =>
             provincia.pais.id ===
-            (selectedPais ? Number(selectedPais) : undefined) // Asegúrate de que ambos sean del mismo tipo
+            (selectedPais ? Number(selectedPais) : undefined)
         );
         setProvincias(provinciasFiltradas);
       });
@@ -61,12 +61,12 @@ const DireccionForm: React.FC<DireccionFormProps> = ({
 
   const handlePaisChange = (paisId: number) => {
     setSelectedPais(paisId);
-    form.setFieldsValue({ provincia: undefined, localidad: undefined }); // Clear provincia and localidad fields
+    form.setFieldsValue({ provincia: undefined, localidad: undefined });
   };
 
   const handleProvinciaChange = (provinciaId: number) => {
     setSelectedProvincia(provinciaId);
-    form.setFieldsValue({ localidad: undefined }); // Clear localidad field
+    form.setFieldsValue({ localidad: undefined });
   };
   const cargarDatos = async () => {
     const paisesData = await getPais();

@@ -4,7 +4,7 @@ import { Button, Form, Input, Modal } from "antd";
 import { actualizarEmpresa } from "../../../service/ServiceEmpresa";
 
 interface FormularioModificarEmpresaProps {
-  empresa: any; // Aquí define la estructura de la empresa que vas a modificar
+  empresa: any;
   onClose: () => void;
   onSubmit: (values: any) => void;
 }
@@ -24,7 +24,7 @@ const FormularioModificarEmpresa: React.FC<FormularioModificarEmpresaProps> = ({
 
   useEffect(() => {
     setNuevaImagenBase64(null);
-    // Asegúrate de que el valor inicial de 'imagen' se establezca correctamente
+
     const imagenInicial = empresa.imagen
       ? `data:image/jpeg;base64,${empresa.imagen}`
       : null;
@@ -65,7 +65,7 @@ const FormularioModificarEmpresa: React.FC<FormularioModificarEmpresaProps> = ({
 
   const handleSubmit = async (values: any) => {
     const formData = {
-      id: empresa.id, // Asegúrate de tener el campo ID de la empresa
+      id: empresa.id,
       nombre: values.nombre,
       razonSocial: values.razonSocial,
       cuil: values.cuil,

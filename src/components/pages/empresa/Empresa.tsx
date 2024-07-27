@@ -62,7 +62,6 @@ const Empresa = () => {
     setSelectedEmpresa(null);
   };
 
-  // Función para manejar el cambio de estado del Switch
   const handleSwitchChange = async (
     checked: boolean,
     id: number | undefined
@@ -74,15 +73,12 @@ const Empresa = () => {
         let response;
 
         if (checked) {
-          // Reactivar la empresa
           response = await eliminarEmpresa(id);
         } else {
-          // Eliminar la empresa
           response = await eliminarEmpresa(id);
         }
 
         if (response.ok) {
-          // Actualiza la lista de empresas después de eliminar o reactivar
           const updatedEmpresas = empresas.map((empresa) =>
             empresa.id === id ? { ...empresa, eliminado: !checked } : empresa
           );
@@ -133,7 +129,7 @@ const Empresa = () => {
   }, [reloadTable]);
 
   const handleFormSubmit = () => {
-    setReloadTable(!reloadTable); // Cambiar el estado para recargar la tabla
+    setReloadTable(!reloadTable);
   };
 
   return (
@@ -145,7 +141,7 @@ const Empresa = () => {
             key={empresa.id}
             style={{
               width: 300,
-              height: "100%", // Ajustar el alto según sea necesario
+              height: "100%",
               margin: "10px",
               opacity: empresa.eliminado ? 0.5 : 1,
             }}
@@ -158,9 +154,9 @@ const Empresa = () => {
                 }
                 style={{
                   cursor: empresa.eliminado ? "default" : "pointer",
-                  width: "100%", // Ajustar al 100% del contenedor
-                  height: "auto", // Mantener la proporción
-                  maxHeight: "200px", // Opcional: limitar la altura máxima
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: "200px",
                 }}
               />
             }

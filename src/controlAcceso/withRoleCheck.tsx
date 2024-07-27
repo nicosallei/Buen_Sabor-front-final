@@ -5,7 +5,6 @@ const withRoleCheck = (WrappedComponen: any, allowedRoles: any) => {
     const userRole = localStorage.getItem("rol");
 
     if (!allowedRoles.includes(userRole)) {
-      // Si el usuario no tiene un rol permitido, redirigir a la página de error o inicio de sesión
       return <Navigate to="/login" />;
     }
 

@@ -19,10 +19,7 @@ import {
   fetchPromocionById,
   actualizarPromocion,
   Promocion,
-  //eliminarDetallesPromocion,
 } from "../../../service/PromocionService";
-
-//const { Option } = Select;
 
 interface Props {
   visible: boolean;
@@ -110,7 +107,7 @@ const FormularioActualizacionPromocion: React.FC<Props> = ({
     } else {
       form.resetFields();
     }
-  }, [promocionId, reloadKey]); // Paso 3: Agregar reloadKey a las dependencias
+  }, [promocionId, reloadKey]);
 
   const handleCantidadChange = (id: string, cantidad: number) => {
     setSelectedArticulosData((prevState) =>
@@ -142,7 +139,7 @@ const FormularioActualizacionPromocion: React.FC<Props> = ({
         horaHasta: formValues.horaHasta.format("HH:mm"),
         descripcionDescuento: formValues.descripcionDescuento,
         precioPromocional: formValues.precioPromocional,
-        imagen: nuevaImagenBase64 || undefined, // Usar la nueva imagen si se cargó, de lo contrario la actual
+        imagen: nuevaImagenBase64 || undefined,
         sucursales: [{ id: selectedSucursalId }],
         promocionDetalles: selectedArticulosData.map((articulo) => ({
           cantidad: articulo.cantidad,
@@ -151,10 +148,10 @@ const FormularioActualizacionPromocion: React.FC<Props> = ({
       };
 
       await actualizarPromocion(promocionId!, promocionData);
-      form.resetFields(); // Limpia los campos del formulario
+      form.resetFields();
       forceReload();
       onCancel();
-      onSubmit(promocionData); // Asegúrate de llamar a onSubmit aquí
+      onSubmit(promocionData);
     } catch (error) {
       console.error("Error al actualizar la promoción:", error);
     }
@@ -205,7 +202,7 @@ const FormularioActualizacionPromocion: React.FC<Props> = ({
   };
 
   const handleCancel = () => {
-    form.resetFields(); // Limpia los campos del formulario
+    form.resetFields();
     forceReload();
     onCancel();
   };
@@ -322,15 +319,6 @@ const FormularioActualizacionPromocion: React.FC<Props> = ({
               <InputNumber style={{ width: "100%" }} min={1} />
             </Form.Item>
 
-            {/* <Form.Item label="Tipo Promoción:" name="tipoPromocion">
-              <Select style={{ width: "100%" }}>
-                {tiposPromocion.map((tipo) => (
-                  <Option key={tipo.value} value={tipo.value}>
-                    {tipo.label}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item> */}
             <Form.Item label="Imagen:">
               {nuevaImagenBase64 && (
                 <img

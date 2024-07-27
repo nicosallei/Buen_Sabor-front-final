@@ -48,7 +48,7 @@ const FormularioEmpleado: React.FC<Props> = ({
 
     formattedValues.sucursal = {
       id: sucursalId,
-      denominacion: "", // You might want to fill this with actual data if available
+      denominacion: "",
     };
     if (values.imagenes) {
       values.imagen = nuevaImagenBase64;

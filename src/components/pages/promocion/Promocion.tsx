@@ -11,7 +11,7 @@ import {
   ArticuloManufacturado,
 } from "../../../service/PromocionService";
 import FormularioPromocion from "./FormularioPromocion";
-import FormularioActualizacionPromocion from "./FormularioActualizacion"; // Importar el formulario de actualización
+import FormularioActualizacionPromocion from "./FormularioActualizacion";
 import {
   //savePromocion,
   eliminacionLogica,
@@ -30,11 +30,11 @@ const Promociones = () => {
     ArticuloManufacturado[]
   >([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [isUpdateFormVisible, setIsUpdateFormVisible] = useState(false); // Estado para la visibilidad del formulario de actualización
+  const [isUpdateFormVisible, setIsUpdateFormVisible] = useState(false);
   const [selectedSucursalId, setSelectedSucursalId] = useState<number>(0);
   const [selectedPromocionId, setSelectedPromocionId] = useState<number | null>(
     null
-  ); // Estado para el ID de la promoción seleccionada
+  );
   const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
@@ -83,7 +83,7 @@ const Promociones = () => {
 
   const handleShowDetail = async (promocionId: number) => {
     const detalle = await PromocionDetalle(promocionId);
-    // Manipular la URL para obtener solo el nombre del archivo y agregar la ruta base
+
     detalle.forEach((item: any) => {
       if (
         item.articuloManufacturadoDto.imagenes &&
@@ -117,8 +117,8 @@ const Promociones = () => {
 
   const handleSubmitPromocion = async () => {
     try {
-      setIsFormVisible(false); // Cierra el formulario si se guarda con éxito
-      await handleSucursalChange(selectedSucursalId.toString()); // Recarga las promociones
+      setIsFormVisible(false);
+      await handleSucursalChange(selectedSucursalId.toString());
     } catch (error) {
       console.error("Error al guardar la promoción:", error);
     }
@@ -147,14 +147,14 @@ const Promociones = () => {
   };
 
   const handleEditPromotion = (promocionId: number) => {
-    setSelectedPromocionId(promocionId); // Establece el ID de la promoción seleccionada
-    setIsUpdateFormVisible(true); // Muestra el formulario de actualización
+    setSelectedPromocionId(promocionId);
+    setIsUpdateFormVisible(true);
   };
 
   const handleUpdatePromotion = async () => {
     try {
-      setIsUpdateFormVisible(false); // Cierra el formulario si se actualiza con éxito
-      handleSucursalChange(selectedSucursalId.toString()); // Recarga las promociones
+      setIsUpdateFormVisible(false);
+      handleSucursalChange(selectedSucursalId.toString());
     } catch (error) {
       console.error("Error al actualizar la promoción:", error);
     }
@@ -257,7 +257,7 @@ const Promociones = () => {
           <Card
             key={promocion.id}
             style={{
-              width: 350, // Aumenta el ancho de la tarjeta según tus necesidades
+              width: 350,
               marginBottom: "10px",
               backgroundColor: promocion.eliminado ? "lightgray" : "white",
               display: "flex",
@@ -289,9 +289,9 @@ const Promociones = () => {
               src={"http://localhost:8080/images/" + promocion.imagen}
               alt={"sin imagen"}
               style={{
-                width: "100%", // Esto asegura que la imagen no sea más ancha que la tarjeta
-                height: "200px", // Esto establece una altura fija para la imagen
-                objectFit: "cover", // Esto asegura que la imagen cubra el espacio disponible sin distorsionarse
+                width: "100%",
+                height: "200px",
+                objectFit: "cover",
               }}
             />
             <p>{promocion.descripcionDescuento}</p>
@@ -343,7 +343,7 @@ const Promociones = () => {
       <FormularioPromocion
         visible={isFormVisible}
         onCancel={() => setIsFormVisible(false)}
-        onSubmit={handleSubmitPromocion} // Aquí pasamos la función handleSubmitPromocion
+        onSubmit={handleSubmitPromocion}
         initialValues={undefined}
         tiposPromocion={[]}
         selectedSucursalId={selectedSucursalId}

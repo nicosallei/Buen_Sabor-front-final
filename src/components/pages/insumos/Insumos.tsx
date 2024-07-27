@@ -55,10 +55,10 @@ const Insumos = () => {
 
   const closeFormularioInsumo = () => {
     setShowFormularioInsumo(false);
-    setUpdateTabla(true); // Actualizar la tabla al cerrar el formulario
+    setUpdateTabla(true);
   };
   const handleFormSubmit = () => {
-    setReloadTable(!reloadTable); // Cambiar el estado para recargar la tabla
+    setReloadTable(!reloadTable);
   };
 
   return (

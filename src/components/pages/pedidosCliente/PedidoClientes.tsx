@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   descargarFactura,
   fetchPedidosClientes,
-} from "../../../service/PedidoService"; // Asegúrate de usar el path correcto
+} from "../../../service/PedidoService";
 import { Select, Spin, Table } from "antd";
 import { FilePdfOutlined } from "@ant-design/icons";
 import { Cliente, getClientes } from "../../../service/ClienteService";
@@ -13,10 +13,10 @@ const PedidosCliente = () => {
   const [pedidos, setPedidos] = useState([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [cargandoClientes, setCargandoClientes] = useState(false);
-  // Obtener el rol y el ID del usuario desde el almacenamiento local
+
   const rolUsuario = localStorage.getItem("rol");
   const idUsuario = localStorage.getItem("id");
-  // Configurar el estado inicial de clienteSeleccionado basado en el rol del usuario
+
   const [clienteSeleccionado, setClienteSeleccionado] = useState(
     rolUsuario === "CLIENTE" ? idUsuario : undefined
   );
@@ -53,7 +53,7 @@ const PedidosCliente = () => {
   }, [clienteSeleccionado]);
 
   const filtrarPedidosPorFechaYAgregarNumero = (pedidos: any) => {
-    const rangoFechas: string | any[] = []; // Asegúrate de definir el rango de fechas correctamente
+    const rangoFechas: string | any[] = [];
     let pedidosFiltrados = pedidos;
     if (rangoFechas.length === 2) {
       const [inicio, fin] = rangoFechas;
@@ -62,17 +62,12 @@ const PedidosCliente = () => {
         return fechaPedido.isBetween(inicio, fin, undefined, "[]");
       });
     }
-    // Añadir el número de pedido basado en el índice del array
+
     return pedidosFiltrados.map((pedido: any, index: any) => ({
       ...pedido,
-      numeroPedido: index + 1, // Añade 1 para empezar la numeración desde 1
+      numeroPedido: index + 1,
     }));
   };
-
-  // const pedidosFiltrados = pedidos.map((pedido: any, index) => ({
-  //   ...pedido,
-  //   numeroPedido: index + 1,
-  // }));
 
   const columns = [
     {
@@ -98,14 +93,12 @@ const PedidosCliente = () => {
           opcionesDeFecha
         );
 
-        // Asumiendo que la hora viene en un formato 'HH:mm:ss' o similar y está en record.hora
         const partesHora = record.hora.split(":");
         const horaFormateada =
           partesHora.length >= 2
             ? `${partesHora[0]}:${partesHora[1]}`
             : record.hora;
 
-        // Combinar fecha y hora con un guion como separador
         return `${fechaFormateada} - ${horaFormateada}`;
       },
     },
@@ -165,7 +158,6 @@ const PedidosCliente = () => {
       {cargandoClientes ? (
         <Spin />
       ) : (
-        // Renderizar el selector de clientes solo si el usuario no es un cliente
         rolUsuario !== "CLIENTE" && (
           <Select
             showSearch

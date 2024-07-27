@@ -138,7 +138,7 @@ export default function Productos() {
             empresaId={String(selectedEmpresa)}
             sucursalId={String(selectedSucursal)}
             reload={reloadTable}
-            onReload={() => setReloadProductos(true)} // Pasar callback
+            onReload={() => setReloadProductos(true)}
           />
         ) : (
           <p>Por favor, seleccione la sucursal para ver los productos.</p>

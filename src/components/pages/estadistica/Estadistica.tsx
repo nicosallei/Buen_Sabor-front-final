@@ -13,7 +13,7 @@ import { DownloadOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
 type IngresoMes = {
-  fecha: string; // "YYYY-MM" format
+  fecha: string;
   ingreso: number;
 };
 type IngresoDia = {
@@ -21,7 +21,7 @@ type IngresoDia = {
   ingreso: number;
 };
 type GananciaMes = {
-  fecha: string; // "YYYY-MM" format
+  fecha: string;
   ganancia: number;
 };
 
@@ -100,10 +100,6 @@ const Estadistica = () => {
       setIsDisabled(true);
     }
   }, []);
-
-  // const handleSucursalChange = async (value: string) => {
-  //   setSelectedSucursalId(Number(value));
-  // };
 
   const handleFetchDias = async () => {
     if (selectedSucursalId) {
@@ -268,7 +264,7 @@ const Estadistica = () => {
           type="primary"
           icon={<DownloadOutlined />}
           onClick={() => handleExportToExcel(ingresosDias, "Ingresos por Dia")}
-          style={{ marginTop: "20px" }} // Añade un margen superior para separarlo de otros elementos si es necesario
+          style={{ marginTop: "20px" }}
         >
           Descargar Excel
         </Button>
@@ -493,7 +489,7 @@ const Estadistica = () => {
           onClick={() =>
             handleExportToExcel(gananciasMeses, "Ganancias por Mes")
           }
-          style={{ marginTop: "20px" }} // Añade un margen superior para separarlo de otros elementos si es necesario
+          style={{ marginTop: "20px" }}
         >
           Descargar Excel
         </Button>

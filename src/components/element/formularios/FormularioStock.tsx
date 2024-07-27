@@ -33,9 +33,8 @@ const FormularioStock: React.FC<FormularioStockProps> = ({
   const [esParaElaborar, setEsParaElaborar] = useState<boolean>(false);
   console.log(insumo);
   useEffect(() => {
-    // Si es un producto para elaborar, bloquear el campo de precio de venta
     if (esParaElaborar) {
-      setNuevoPrecioVenta(precioVentaInicial); // Asegúrate de mantener el valor inicial
+      setNuevoPrecioVenta(precioVentaInicial);
     }
   }, [esParaElaborar, precioVentaInicial]);
 
@@ -44,11 +43,10 @@ const FormularioStock: React.FC<FormularioStockProps> = ({
       try {
         const datosInsumo = await getInsumoXId(id.toString());
         setInsumo(datosInsumo);
-        // Asigna 0 si datosInsumo.precioVenta es null
+
         setNuevoPrecioVenta(datosInsumo.precioVenta || 0);
         setNuevoPrecioCompra(datosInsumo.precioCompra);
         setEsParaElaborar(datosInsumo.esParaElaborar);
-        // Puedes manejar otros datos del insumo aquí si es necesario
       } catch (error) {
         console.error("Error al obtener el insumo:", error);
       }
@@ -60,9 +58,8 @@ const FormularioStock: React.FC<FormularioStockProps> = ({
   }, [id]);
 
   useEffect(() => {
-    // Si es un producto para elaborar, bloquear el campo de precio de venta
     if (esParaElaborar) {
-      setNuevoPrecioVenta(precioVentaInicial); // Asegúrate de mantener el valor inicial
+      setNuevoPrecioVenta(precioVentaInicial);
     }
   }, [esParaElaborar, precioVentaInicial]);
 
@@ -105,7 +102,7 @@ const FormularioStock: React.FC<FormularioStockProps> = ({
             type="number"
             value={nuevoPrecioVenta}
             onChange={(e) => setNuevoPrecioVenta(Number(e.target.value))}
-            disabled={esParaElaborar} // Deshabilita el campo si es para elaborar
+            disabled={esParaElaborar}
           />
         </Form.Item>
 

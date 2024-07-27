@@ -19,7 +19,6 @@ function CheckoutMP({ preferenceId }: Props) {
     }
   }, [preferenceId]);
 
-  //redirectMode es optativo y puede ser self, blank o modal
   return (
     <div>
       <div className={isVisible ? "divVisible" : "divInvisible"}>

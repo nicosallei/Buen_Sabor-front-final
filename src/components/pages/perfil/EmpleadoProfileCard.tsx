@@ -52,7 +52,7 @@ const EmpleadoProfileCard = () => {
   const fetchCliente = async () => {
     try {
       const clienteData = await clienteService.getClienteByEmail(
-        baseURL, // Asegúrate de que esta URL es la correcta para obtener datos del cliente
+        baseURL,
         email
       );
       setCliente(clienteData);
@@ -74,7 +74,6 @@ const EmpleadoProfileCard = () => {
     setIsModalVisible(true);
   };
 
-  // Función para cerrar el modal
   const handleCancel = () => {
     setIsModalVisible(false);
   };
@@ -84,7 +83,7 @@ const EmpleadoProfileCard = () => {
     setCambiandoPassword(true);
 
     const cambioPasswordDto = {
-      username: email, // Asumiendo que 'email' es el username
+      username: email,
       passwordActual,
       nuevaPassword,
       id: Number(id),
@@ -96,7 +95,6 @@ const EmpleadoProfileCard = () => {
         await cambiarPasswordEmpleado(cambioPasswordDto);
       }
       message.success(`La contraseña fue cambiada con exito `);
-      // Resetear los valores de los inputs después de cambiar la contraseña
     } catch (error: any) {
       message.error(error.message);
     } finally {
@@ -184,7 +182,7 @@ const EmpleadoProfileCard = () => {
         title="Cambiar Contraseña"
         visible={isModalVisible}
         onCancel={handleCancel}
-        footer={null} // Remover el footer predeterminado
+        footer={null}
       >
         <Form
           name="changePasswordForm"

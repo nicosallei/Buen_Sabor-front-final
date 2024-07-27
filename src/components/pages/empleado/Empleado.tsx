@@ -15,8 +15,7 @@ const Empleados = () => {
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState<number>(0);
   const [selectedSucursal, setSelectedSucursal] = useState<number>(0);
-  const [reloadTable, setReloadTable] = useState(false); // Estado para controlar la recarga de la tabla
-
+  const [reloadTable, setReloadTable] = useState(false);
   useEffect(() => {
     const fetchEmpresas = async () => {
       const empresasData = await getEmpresas();
@@ -46,7 +45,7 @@ const Empleados = () => {
   const handleFormSubmit = (values: any) => {
     console.log(values);
     closeFormularioEmpleado();
-    setReloadTable(!reloadTable); // Cambiar el estado para recargar la tabla
+    setReloadTable(!reloadTable);
   };
 
   return (

@@ -75,12 +75,11 @@ const Pedidos: React.FC = () => {
       message.success(
         `El pedido cambió su estado a: ${pedidoActualizado.estado}`
       );
-      cargarPedidos(); // Recargar los pedidos para reflejar el cambio de estado
+      cargarPedidos();
     } catch (error: any) {
       message.error(error.message);
       //alert(error.message);
     } finally {
-      // Asegurarse de restablecer el estado del modal y los valores seleccionados, independientemente del resultado de la operación
       setModalVisible(false);
       setSelectedPedidoId(null);
       setNuevoEstado(null);
@@ -131,7 +130,7 @@ const Pedidos: React.FC = () => {
         <Button
           onClick={() => {
             setSelectedPedidoId(record.id);
-            setNuevoEstado(record.estado); // Establecer el estado actual del pedido cuando se abre el modal
+            setNuevoEstado(record.estado);
             setModalVisible(true);
           }}
         >
@@ -223,7 +222,7 @@ const Pedidos: React.FC = () => {
         }}
       >
         <Select
-          value={nuevoEstado || undefined} // Establecer el valor seleccionado
+          value={nuevoEstado || undefined}
           placeholder="Seleccione un nuevo estado"
           style={{ width: "100%" }}
           onChange={(value) => setNuevoEstado(value as Estado)}

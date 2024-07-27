@@ -51,7 +51,6 @@ const FormularioPromocion: React.FC<Props> = ({
     if (typeof value === "string") {
       value = dayjs(value);
     }
-    // Add logic as needed
   };
 
   const handleCantidadChange = (id: string, cantidad: number) => {
@@ -109,7 +108,7 @@ const FormularioPromocion: React.FC<Props> = ({
         horaHasta: formValues.horaHasta.format("HH:mm"),
         descripcionDescuento: formValues.descripcionDescuento,
         precioPromocional: formValues.precioPromocional,
-        imagen: imagenBase64, // Aquí se envía la imagen en base64
+        imagen: imagenBase64,
         sucursales: [{ id: selectedSucursalId }],
         promocionDetalles: selectedArticulosData.map((articulo) => ({
           cantidad: articulo.cantidad,
@@ -118,7 +117,7 @@ const FormularioPromocion: React.FC<Props> = ({
       };
 
       await savePromocion(promocionData);
-      form.resetFields(); // Limpia los campos del formulario
+      form.resetFields();
       setImagenBase64(undefined);
       onCancel();
       setSelectedArticulos([]);
@@ -313,16 +312,6 @@ const FormularioPromocion: React.FC<Props> = ({
               >
                 <InputNumber style={{ width: "100%" }} min={1} />
               </Form.Item>
-
-              {/* <Form.Item label="Tipo Promoción:" name="tipoPromocion">
-                <Select style={{ width: "100%" }}>
-                  {tiposPromocion.map((tipo) => (
-                    <Option key={tipo.value} value={tipo.value}>
-                      {tipo.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item> */}
 
               <Form.Item label="Imagen:" name="imagen">
                 <Input

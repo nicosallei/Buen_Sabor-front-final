@@ -14,15 +14,14 @@ const DetalleProducto: React.FC<DetalleProductoProps> = ({
   if (!producto) {
     return <div>Cargando...</div>;
   }
-  // URL de imagen por defecto
+
   const imagenPorDefecto = "http://localhost:8080/images/sin-imagen.jpg";
-  // Determina la imagen a mostrar
+
   const imagenAMostrar =
     producto.imagenes && producto.imagenes.length > 0
       ? "http://localhost:8080/images/" + producto.imagenes[0].url
       : imagenPorDefecto;
 
-  // Formatear el precio de venta
   const precioFormateado = new Intl.NumberFormat("es-AR").format(
     producto.precioVenta
   );
@@ -41,7 +40,7 @@ const DetalleProducto: React.FC<DetalleProductoProps> = ({
       <Image
         src={imagenAMostrar}
         alt="Imagen del producto"
-        style={{ marginBottom: "20px" }} // Ajusta el estilo según sea necesario
+        style={{ marginBottom: "20px" }}
       />
       <Card>
         <List>

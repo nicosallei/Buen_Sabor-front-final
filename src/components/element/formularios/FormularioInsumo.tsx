@@ -39,7 +39,7 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
 }) => {
   const [form] = Form.useForm();
   const [isModalVisible] = useState(true);
-  const [isParaElaborar, setIsParaElaborar] = useState(false); // Estado para controlar si es para elaborar
+  const [isParaElaborar, setIsParaElaborar] = useState(false);
   const [unidadesMedida, setUnidadesMedida] = useState<unidadMedida[]>([]);
   const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [categorias, setCategorias] = useState<any[]>([]);
@@ -99,7 +99,7 @@ const FormularioInsumo: React.FC<FormularioInsumoProps> = ({
     };
     formattedValues.categoria = {
       id: values.categoria,
-      denominacion: "", // You might want to fill this with actual data if available
+      denominacion: "",
     };
     if (values.imagenes) {
       const files: UploadFile[] = values.imagenes;

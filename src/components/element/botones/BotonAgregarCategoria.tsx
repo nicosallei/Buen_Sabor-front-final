@@ -27,7 +27,7 @@ export default function BotonAgregarCategoria({
       const values = await form.validateFields();
       values.empresaId = selectedEmpresaId;
       await createCategory(values);
-      onCategoryCreated(); // Refresh the parent component
+      onCategoryCreated();
       message.success("Categoría creada exitosamente");
     } catch (error: any) {
       message.error(error.message);
@@ -61,10 +61,8 @@ export default function BotonAgregarCategoria({
     sucursales: { id: string }[];
   }) => {
     try {
-      // Convertir los IDs de sucursales en objetos con un campo "id"
       const sucursalesObj = selectedSucursales.map((id) => ({ id }));
 
-      // Asignar la lista de objetos de sucursales al valor "sucursales"
       values.urlIcono = imagenBase64;
       values.sucursales = sucursalesObj;
 
@@ -80,14 +78,13 @@ export default function BotonAgregarCategoria({
       );
       setImagenBase64(undefined);
       if (!response.ok) {
-        // Si el servidor envía un mensaje de error en el cuerpo de la respuesta
         const errorData = await response.json();
         throw new Error(errorData.message || "Error al crear la categoria");
       }
       return await response.json();
     } catch (error: any) {
       console.error("Error al crear el insumo:", error.message);
-      throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
+      throw error;
     }
   };
 

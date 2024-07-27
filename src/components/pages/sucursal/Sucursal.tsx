@@ -11,8 +11,7 @@ import {
 import imagenSucursal from "../../../util/sucursal.jpg";
 import { useSelector, useDispatch } from "react-redux";
 import { EmpresaSlice } from "../../../redux/slice/EmpresaRedux";
-import FormularioEditarSucursal from "../../element/formularios/FormularioEditarSucursal"; // Import your modal component
-
+import FormularioEditarSucursal from "../../element/formularios/FormularioEditarSucursal";
 const { Meta } = Card;
 const { info } = Modal;
 
@@ -115,7 +114,7 @@ const Sucursal = () => {
   const handleModalClose = async () => {
     setIsModalVisible(false);
     setCurrentSucursal(null);
-    await cargarDatosSucursal(); // Recargar los datos después de cerrar el modal de edición
+    await cargarDatosSucursal();
   };
   useEffect(() => {
     const cargarDatosSucursal = async () => {
@@ -133,9 +132,9 @@ const Sucursal = () => {
   }, [id]);
 
   const imageStyle = {
-    width: "100%", // Ajusta el ancho al 100% del contenedor
-    height: "200px", // Altura fija para todas las imágenes
-    objectFit: "cover", // Asegura que la imagen cubra el espacio sin distorsionarse
+    width: "100%",
+    height: "200px",
+    objectFit: "cover",
   };
 
   return (
@@ -163,7 +162,7 @@ const Sucursal = () => {
                             .replace(/\\/g, "/")
                         : imagenSucursal
                     }
-                    style={imageStyle as React.CSSProperties} // Apply the defined style to the image
+                    style={imageStyle as React.CSSProperties}
                     onClick={() => handleCardClick(sucursal)}
                   />
                 }

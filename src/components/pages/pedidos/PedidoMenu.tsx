@@ -88,7 +88,7 @@ const PedidoMenu = () => {
           hoverable
           style={{
             width: "200px",
-            height: "300px", // Ajusta la altura para acomodar el título y la imagen adecuadamente
+            height: "300px",
             margin: "10px",
             display: "flex",
             flexDirection: "column",
@@ -99,9 +99,9 @@ const PedidoMenu = () => {
               alt={pedido.estado}
               src={pedido.imagen}
               style={{
-                width: "100%", // Ajusta la imagen para que ocupe todo el ancho de la tarjeta
-                height: "200px", // Altura fija para la imagen
-                objectFit: "contain", // Ajusta la imagen proporcionalmente dentro de la tarjeta
+                width: "100%",
+                height: "200px",
+                objectFit: "contain",
               }}
             />
           }

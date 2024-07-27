@@ -12,7 +12,7 @@ import { AppDispatch, RootState } from "../../../../redux/Store";
 import { buscarCategoriaXId } from "../../../../service/ServiceCategoria";
 
 const CompraProductos = () => {
-  const { categoriaId, sucursalId } = useParams();
+  const { categoriaId } = useParams();
   const navigate = useNavigate();
   const [productos, setProductos] = useState<Producto[]>([]);
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(
@@ -33,7 +33,6 @@ const CompraProductos = () => {
       const data = await getProductosPorCategoria(Number(categoriaId));
       setProductos(data);
 
-      // Obtener las categorías únicas de los productos
       const uniqueCategoryIds = Array.from(
         new Set(
           data.map((producto: { categoriaId: number }) => producto.categoriaId)
@@ -163,7 +162,7 @@ const CompraProductos = () => {
           />
         )}
       </div>
-      <Carrito sucursalId={sucursalId} />
+      <Carrito />
     </div>
   );
 };

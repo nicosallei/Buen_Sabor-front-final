@@ -30,7 +30,7 @@ export default function Categorias() {
   const navigate = useNavigate();
 
   const irACategoriasPorSucursal = (_selectedEmpresa: any) => {
-    navigate(`/categorias/porSucursal`); // Asume que quieres usar el ID en la URL
+    navigate(`/categorias/porSucursal`);
   };
 
   return (

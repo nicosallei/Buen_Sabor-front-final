@@ -54,7 +54,7 @@ const FormularioEmpleado: React.FC<Props> = ({
 
     formattedValues.sucursal = {
       id: sucursalId,
-      denominacion: "", // You might want to fill this with actual data if available
+      denominacion: "",
     };
 
     try {
@@ -64,7 +64,6 @@ const FormularioEmpleado: React.FC<Props> = ({
       formattedValues.imagen = imagenBase64;
       formattedValues.password = encryptedPassword;
 
-      // Realizar la petición POST a la API
       const response = await fetch(
         "http://localhost:8080/api/usuario/registro/usuario-empleado",
         {
@@ -100,8 +99,8 @@ const FormularioEmpleado: React.FC<Props> = ({
     }
   };
   const handleClose = () => {
-    form.resetFields(); // Restablece los campos del formulario a initialValues
-    onClose(); // Llama a la función onClose original pasada como prop
+    form.resetFields();
+    onClose();
   };
   const handleFechaNacimientoChange = (_date: any, _dateString: any) => {
     form.validateFields(["fechaNacimiento"]);
@@ -189,10 +188,10 @@ const FormularioEmpleado: React.FC<Props> = ({
                       new Error("Por favor, ingresa tu fecha de nacimiento!")
                     );
                   }
-                  // Crear la fecha de comparación (17 de julio de 2024)
-                  const comparisonDate = new Date(2024, 6, 17); // Los meses son base-0
+
+                  const comparisonDate = new Date(2024, 6, 17);
                   const birthDate = new Date(value);
-                  // Calcular la diferencia en años
+
                   let age =
                     comparisonDate.getFullYear() - birthDate.getFullYear();
                   const m = comparisonDate.getMonth() - birthDate.getMonth();
@@ -202,7 +201,7 @@ const FormularioEmpleado: React.FC<Props> = ({
                   ) {
                     age--;
                   }
-                  // Verificar si la edad es menor a 17
+
                   if (age < 17) {
                     return Promise.reject(
                       new Error(

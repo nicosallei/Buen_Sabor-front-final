@@ -64,7 +64,7 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
         const provinciasFiltradas = data.filter(
           (provincia) =>
             provincia.pais.id ===
-            (selectedPais ? Number(selectedPais) : undefined) // Asegúrate de que ambos sean del mismo tipo
+            (selectedPais ? Number(selectedPais) : undefined)
         );
         setProvincias(provinciasFiltradas);
       });
@@ -86,12 +86,12 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
   }, [selectedProvincia]);
   const handlePaisChange = (paisId: number) => {
     setSelectedPais(paisId);
-    form.setFieldsValue({ provincia: undefined, localidad: undefined }); // Clear provincia and localidad fields
+    form.setFieldsValue({ provincia: undefined, localidad: undefined });
   };
 
   const handleProvinciaChange = (provinciaId: number) => {
     setSelectedProvincia(provinciaId);
-    form.setFieldsValue({ localidad: undefined }); // Clear localidad field
+    form.setFieldsValue({ localidad: undefined });
   };
 
   const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,8 +126,8 @@ const FormularioEditarSucursal: React.FC<FormularioEditarSucursalProps> = ({
 
       form.setFieldsValue({
         nombre: sucursalData.nombre,
-        horaApertura: moment(sucursalData.horaApertura, "HH:mm"), // Convertir a momento
-        horaCierre: moment(sucursalData.horaCierre, "HH:mm"), // Convertir a momento
+        horaApertura: moment(sucursalData.horaApertura, "HH:mm"),
+        horaCierre: moment(sucursalData.horaCierre, "HH:mm"),
         pais: sucursalData.domicilio.localidad.provincia.pais.nombre,
         provincia: sucursalData.domicilio.localidad.provincia.nombre,
         localidad: sucursalData.domicilio.localidad.nombre,

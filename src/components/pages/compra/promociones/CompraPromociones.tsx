@@ -67,7 +67,6 @@ const CompraPromociones = () => {
   );
   const [filtro, setFiltro] = useState("");
 
-  // Access the cart state from Redux
   const carrito = useSelector((state: RootState) => state.cartReducer);
 
   useEffect(() => {
@@ -78,17 +77,14 @@ const CompraPromociones = () => {
           const data = await obtenerPromociones(idNumerico);
 
           const promocionesObtenidas = data.map((promocion: any) => {
-            // Adjust the image URL
             const imagen = promocion.imagen
               ? `http://localhost:8080/images/${promocion.imagen
                   .split("\\")
                   .pop()}`
               : SinImagen;
 
-            // Map through the promotion details
             const promocionDetallesDto = promocion.promocionDetallesDto.map(
               (detalle: any) => {
-                // Find the corresponding articuloManufacturadoCantidad
                 const articuloCantidad =
                   promocion.articulosManufacturadosCantidad.find(
                     (item: any) =>
@@ -96,7 +92,6 @@ const CompraPromociones = () => {
                       detalle.articuloManufacturadoDto.id
                   );
 
-                // Set cantidadMaximaDisponible
                 return {
                   ...detalle,
                   articuloManufacturadoDto: {
@@ -147,13 +142,11 @@ const CompraPromociones = () => {
       return;
     }
 
-    // Map to keep track of the quantities in the cart
     const cartQuantities = new Map<number, number>();
     carrito.forEach((item: any) => {
       cartQuantities.set(item.producto.id, item.cantidad);
     });
 
-    // Check if any product in the promotion exceeds the allowed quantity
     let stockSuficiente = true;
     for (const detalle of promocion.promocionDetallesDto) {
       const producto = detalle.articuloManufacturadoDto;
@@ -170,10 +163,9 @@ const CompraPromociones = () => {
     }
 
     if (!stockSuficiente) {
-      return; // Exit early if stock is not sufficient
+      return;
     }
 
-    // Add the promotion to the cart if stock is sufficient
     promocion.promocionDetallesDto.forEach((detalle) => {
       const producto = detalle.articuloManufacturadoDto;
       dispatch(

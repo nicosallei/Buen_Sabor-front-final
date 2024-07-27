@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
-import { Button, Input, message, Space, Table } from "antd"; // Importa Popconfirm para confirmar la acción de eliminar
+import { Button, Input, message, Space, Table } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
 
@@ -52,12 +52,9 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({ reload }) => {
     clearFilters();
     setSearchText("");
   };
-  // const generarNuevaPassword = () => {
-  //   return "BuenSabor1"; // Ejemplo de contraseña generada
-  // };
 
   const resetearContraseña = async (clienteId: number) => {
-    const username = "nombreDeUsuario"; // Ejemplo de nombre de usuario
+    const username = "nombreDeUsuario";
 
     try {
       const nuevaPassword = "BuenSabor1";
@@ -68,7 +65,6 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({ reload }) => {
         username: username,
       });
       message.success(`La contraseña fue reseteada con exito: `);
-      // Recargar los pedidos para reflejar el cambio de estado
     } catch (error: any) {
       message.error(error.message);
       //alert(error.message);
@@ -151,7 +147,7 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({ reload }) => {
       dataIndex: "imagen",
       key: "imagen",
       render: (text) => {
-        const defaultImage = "http://localhost:8080/images/default.jpg"; // URL de tu imagen por defecto
+        const defaultImage = "http://localhost:8080/images/default.jpg";
         const imageUrl = text
           ? `http://localhost:8080/images/${text.split("\\").pop()}`
           : userImage || defaultImage;

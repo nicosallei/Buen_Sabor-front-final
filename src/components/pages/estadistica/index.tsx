@@ -20,7 +20,7 @@ const VistaPrincipal = () => {
   const hoverStyle = {
     ...cardStyle,
     boxShadow: "0 8px 16px 0 rgba(0,0,0,0.2)",
-    transform: "scale(1.05)", // Aumenta el tamaño de la tarjeta un 5%
+    transform: "scale(1.05)",
   };
 
   return (
@@ -33,7 +33,7 @@ const VistaPrincipal = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "70vh", // Reducido de 100vh a 90vh
+          height: "70vh",
         }}
       >
         <div

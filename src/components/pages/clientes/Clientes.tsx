@@ -3,7 +3,7 @@ import { useState } from "react";
 import TablaCliente from "./TablaCliente";
 
 const Clientes = () => {
-  const [reloadTable] = useState(false); // Estado para controlar la recarga de la tabla
+  const [reloadTable] = useState(false);
 
   return (
     <div>

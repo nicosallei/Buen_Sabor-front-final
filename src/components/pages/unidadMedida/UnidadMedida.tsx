@@ -68,7 +68,6 @@ const UnidadMedida: React.FC = () => {
   const handleToggleActive = async (id: number, checked: boolean) => {
     await toggleActiveUnidadMedida(id);
 
-    // Actualizar unidades después de cambiar el estado
     const updatedUnidades = unidades.map((unidad) =>
       unidad.id === id ? { ...unidad, eliminado: !checked } : unidad
     );

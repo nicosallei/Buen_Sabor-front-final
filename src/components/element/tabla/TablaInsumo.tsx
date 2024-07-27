@@ -12,7 +12,6 @@ import {
 } from "../../../service/ServiceInsumos";
 import FormularioInsumoModificar from "../formularios/FromularioInsumoModificar";
 import FormularioStock from "../formularios/FormularioStock";
-import { useAuth0 } from "@auth0/auth0-react";
 
 type DataIndex = keyof ArticuloInsumo;
 type TablaInsumoProps = {
@@ -39,7 +38,7 @@ const TablaInsumo: React.FC<TablaInsumoProps> = ({
   const [currentRecord, setCurrentRecord] = useState<ArticuloInsumo | null>(
     null
   );
-  const { getAccessTokenSilently } = useAuth0();
+
   useEffect(() => {
     fetchData();
   }, [sucursalId, updateTabla, reload]);
@@ -145,13 +144,12 @@ const TablaInsumo: React.FC<TablaInsumoProps> = ({
     record: ArticuloInsumo
   ) => {
     try {
-      const token = await getAccessTokenSilently();
       if (checked) {
-        await activarInsumoXId(record.id.toString(), token);
+        await activarInsumoXId(record.id.toString());
       } else {
-        await deleteInsumoXId(record.id.toString(), token);
+        await deleteInsumoXId(record.id.toString());
       }
-      // Actualizar los datos después de cambiar el estado
+
       const updatedData = await getInsumoXSucursal(sucursalId);
       setData(updatedData);
     } catch (error) {
@@ -182,7 +180,6 @@ const TablaInsumo: React.FC<TablaInsumoProps> = ({
     setCurrentRecord(null);
 
     try {
-      // Actualizar los datos después de cerrar el formulario de stock
       const updatedData = await getInsumoXSucursal(sucursalId);
       setData(updatedData);
     } catch (error) {
@@ -195,7 +192,6 @@ const TablaInsumo: React.FC<TablaInsumoProps> = ({
     setSelectedInsumo(null);
 
     try {
-      // Actualizar los datos después de cerrar el formulario de edición de insumo
       const updatedData = await getInsumoXSucursal(sucursalId);
       setData(updatedData);
     } catch (error) {

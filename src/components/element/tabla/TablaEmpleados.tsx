@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { SearchOutlined, EditOutlined } from "@ant-design/icons";
 import type { InputRef, TableColumnsType, TableColumnType } from "antd";
-import { Button, Input, Space, Switch, Table, Popconfirm } from "antd"; // Importa Popconfirm para confirmar la acción de eliminar
+import { Button, Input, Space, Switch, Table, Popconfirm } from "antd";
 import type { FilterDropdownProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
 import {
@@ -10,7 +10,7 @@ import {
   getEmpleados,
 } from "../../../service/EmpleadoService";
 import FormularioEmpleadoModificar from "../formularios/FormularioEmpleadoModificar";
-import { useAuth0 } from "@auth0/auth0-react";
+
 import userImage from "../../../assets/user_imagen.jpg";
 
 type DataIndex = keyof Empleado;
@@ -31,7 +31,7 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
     null
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { getAccessTokenSilently } = useAuth0();
+
   useEffect(() => {
     fetchData();
   }, [sucursalId, reload]);
@@ -47,22 +47,16 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
 
   const handleResetPassword = async (empleado: Empleado) => {
     try {
-      const token = await getAccessTokenSilently();
       const username = "admin";
-      const nuevaPassword = "BuenSabor1"; // Considera generar una contraseña segura o pedirla al usuario
-      await actualizarPasswordEmpleado(
-        {
-          id: empleado.id,
-          nuevaPassword: nuevaPassword,
-          username: username,
-        },
-        token
-      );
+      const nuevaPassword = "BuenSabor1";
+      await actualizarPasswordEmpleado({
+        id: empleado.id,
+        nuevaPassword: nuevaPassword,
+        username: username,
+      });
       console.log("Contraseña reseteada con éxito");
-      // Aquí podrías mostrar un mensaje de éxito al usuario
     } catch (error) {
       console.error("Error al resetear la contraseña:", error);
-      // Aquí podrías mostrar un mensaje de error al usuario
     }
   };
   const handleSearch = (
@@ -161,15 +155,12 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
 
   const handleDelete = async (id: string) => {
     try {
-      const token = await getAccessTokenSilently();
-      // Aquí debes hacer la solicitud DELETE a la API
       const response = await fetch(
         `http://localhost:8080/api/empleado/eliminar/${id}`,
         {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -178,7 +169,6 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
         throw new Error("Error al eliminar el empleado");
       }
 
-      // Actualizar los datos después de eliminar el empleado
       const updatedData = await getEmpleados(sucursalId);
       setData(updatedData);
     } catch (error) {
@@ -191,7 +181,6 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
     setSelectedEmpleado(null);
 
     try {
-      // Actualizar los datos después de cerrar el formulario de edición de empleado
       const updatedData = await getEmpleados(sucursalId);
       setData(updatedData);
     } catch (error) {
@@ -205,7 +194,7 @@ const TablaEmpleados: React.FC<TablaEmpleadosProps> = ({
       dataIndex: "imagen",
       key: "imagen",
       render: (text) => {
-        const defaultImage = "http://localhost:8080/images/default.jpg"; // URL de tu imagen por defecto
+        const defaultImage = "http://localhost:8080/images/default.jpg";
         const imageUrl = text
           ? `http://localhost:8080/images/${text.split("\\").pop()}`
           : userImage || defaultImage;

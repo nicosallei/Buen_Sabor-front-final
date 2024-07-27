@@ -121,7 +121,7 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
         )
       );
 
-      setUpdateKey(Date.now()); // Fuerza un re-renderizado
+      setUpdateKey(Date.now());
       handleCancelEdit();
     } catch (error: any) {
       Modal.error({
@@ -144,7 +144,7 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
               : category
           )
         );
-        setUpdateKey(Date.now()); // Fuerza un re-renderizado
+        setUpdateKey(Date.now());
         console.log("Categoría actualizada:", item.eliminado);
       } else {
         const errorData = await response.json();
@@ -152,7 +152,7 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
       }
     } catch (error: any) {
       console.error("Error al eliminar:", error.message);
-      throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
+      throw error;
     }
   };
 
@@ -193,7 +193,7 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
       }
     } catch (error: any) {
       console.error("Error al agregar subcategoria:", error.message);
-      throw error; // Re-lanzar el error para manejarlo en otra parte de tu aplicación
+      throw error;
     }
   };
 
@@ -204,7 +204,6 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
 
   const renderTreeNodes = (data: Category[]): React.ReactNode =>
     data.map((item) => {
-      // Reemplazar la parte de la ruta de la imagen
       const imageUrl = item.urlIcono
         ? item.urlIcono.replace(
             "src\\main\\resources\\images\\",
@@ -216,7 +215,6 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
         <TreeNode
           title={
             <div style={{ display: "flex", alignItems: "center" }}>
-              {/* Usar imageUrl para el src del <img> */}
               <img
                 src={imageUrl}
                 alt="Icono"
@@ -281,14 +279,13 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
             onChange={(e) => setEditCategoryName(e.target.value)}
           />
 
-          {/* Input para seleccionar la imagen */}
           <Input
             type="file"
             onChange={handleImagenChange}
             accept="image/*"
             style={{ marginTop: 20 }}
           />
-          {/* Vista previa de la imagen */}
+
           {imagenBase64 && (
             <div style={{ marginTop: 20 }}>
               <img src={imagenBase64} alt="Preview" style={{ maxWidth: 200 }} />
@@ -310,14 +307,14 @@ const TablaCategoria: React.FC<CategoryInputProps> = ({ selectedEmpresa }) => {
           placeholder="Ingrese la denominación de la subcategoría"
           onChange={(e) => setDenominacion(e.target.value)}
         />
-        {/* Input para seleccionar la imagen */}
+
         <Input
           type="file"
           onChange={handleImagenChange}
           accept="image/*"
           style={{ marginTop: 20 }}
         />
-        {/* Vista previa de la imagen */}
+
         {imagenBase64 && (
           <div style={{ marginTop: 20 }}>
             <img src={imagenBase64} alt="Preview" style={{ maxWidth: 200 }} />

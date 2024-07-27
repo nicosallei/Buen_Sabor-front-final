@@ -145,7 +145,7 @@ function Login() {
     >
       <Card
         style={{
-          width: 350, // Aumenta el ancho de la tarjeta
+          width: 350,
           padding: 20,
           borderRadius: 10,
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
@@ -166,7 +166,7 @@ function Login() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") login();
               }}
-              style={{ width: "100%" }} // Asegura que el input ocupe todo el ancho disponible
+              style={{ width: "100%" }}
             />
           </Form.Item>
           <Form.Item label="Clave" style={{ marginBottom: 20 }}>
@@ -185,7 +185,7 @@ function Login() {
               iconRender={(visible) =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
-              style={{ width: "100%" }} // Asegura que el input ocupe todo el ancho disponible
+              style={{ width: "100%" }}
             />
           </Form.Item>
 

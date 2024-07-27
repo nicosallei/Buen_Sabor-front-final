@@ -11,9 +11,7 @@ const LogoutButton = () => {
       danger
       className="mx-2 my-2"
       size="small"
-      onClick={
-        () => logout({}) // Remove the 'returnTo' property
-      }
+      onClick={() => logout({})}
     >
       <LogoutOutlined />
       Logout

@@ -105,17 +105,13 @@ const Graficos: React.FC = () => {
         );
         setInsumos(insumosData);
         setVendidos(vendidosData);
-        setTopVendidos(topVendidosData.slice(0, 5)); // Mostrar solo los 5 productos más vendidos
+        setTopVendidos(topVendidosData.slice(0, 5));
         setPedidosPorCliente(pedidosData);
       };
 
       fetchData();
     }
   }, [selectedSucursalId, fechaInicio, fechaFin]);
-
-  // const handleSucursalChange = (value: string) => {
-  //   setSelectedSucursalId(Number(value));
-  // };
 
   const exportToExcel = () => {
     const wb = XLSX.utils.book_new();

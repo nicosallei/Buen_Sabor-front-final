@@ -4,9 +4,9 @@ import { Domicilio } from "../../types/compras/interface";
 const initialState: Domicilio = {
   calle: "",
   numero: "",
-  cp: 0, // cp debe ser un número, así que inicialízalo como 0 o cualquier otro valor numérico predeterminado
+  cp: 0,
   localidad: {
-    id: undefined, // Opcional, pero definido explícitamente como undefined para coincidir con la interfaz
+    id: undefined,
     nombre: "",
     provincia: {
       id: undefined,

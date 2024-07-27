@@ -11,7 +11,6 @@ import {
 } from "../../../service/ServiceProducto";
 import { getProductoXSucursal } from "../../../service/ServiceProducto";
 import FormularioActualizarProducto from "../formularios/FormularioProductoActualizar";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface DataType {
   id: number;
@@ -22,7 +21,7 @@ interface DataType {
   descripcion: string;
   tiempoEstimadoCocina: string;
   eliminado: boolean;
-  preparacion: string; // Add this line
+  preparacion: string;
 }
 
 type DataIndex = keyof DataType;
@@ -31,7 +30,7 @@ interface Props {
   empresaId: string;
   sucursalId: string;
   reload: boolean;
-  onReload: () => void; // Agregar el callback onReload
+  onReload: () => void;
 }
 
 const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
@@ -43,7 +42,6 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
     null
   );
   const [showFormularioProducto, setShowFormularioProducto] = useState(false);
-  const { getAccessTokenSilently } = useAuth0();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [preparacion, setPreparacion] = useState<string>("");
   const [nombreProducto, setNombreProducto] = useState("");
@@ -53,9 +51,9 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
   }, [sucursalId, reload]);
 
   const fetchData = async () => {
-    setData([]); // Clear the data before fetching new products
+    setData([]);
     try {
-      const data = await getProductoXSucursal(sucursalId); // Use sucursalId from props
+      const data = await getProductoXSucursal(sucursalId);
       setData(data);
     } catch (error) {
       console.error("Error al obtener los productos por sucursal:", error);
@@ -77,13 +75,12 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
   };
   const handleSwitchChange = async (checked: boolean, record: DataType) => {
     try {
-      const token = await getAccessTokenSilently();
       if (checked) {
-        await activarProductoXId(record.id.toString(), token);
+        await activarProductoXId(record.id.toString());
       } else {
-        await deleteProductoXId(record.id.toString(), token);
+        await deleteProductoXId(record.id.toString());
       }
-      // Actualizar los datos después de cambiar el estado
+
       const updatedData = await getProductoXSucursal(sucursalId);
       setData(updatedData);
     } catch (error) {
@@ -245,15 +242,6 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
       sorter: (a, b) => a.precioVenta - b.precioVenta,
       sortDirections: ["descend", "ascend"],
     },
-
-    // {
-    //   title: "Descripcion",
-    //   dataIndex: "descripcion",
-    //   key: "descripcion",
-    //   ...getColumnSearchProps("descripcion"),
-    //   sorter: (a, b) => a.descripcion.localeCompare(b.descripcion),
-    //   sortDirections: ["descend", "ascend"],
-    // },
     {
       title: "Tiempo Estimado Minutos",
       dataIndex: "tiempoEstimadoCocina",
@@ -305,13 +293,12 @@ const App: React.FC<Props> = ({ sucursalId, onReload, reload }) => {
           visible={showFormularioProducto}
           onClose={() => {
             setShowFormularioProducto(false);
-            onReload(); // Llamar al callback para recargar los productos
+            onReload();
           }}
           onSubmit={(values) => {
-            // Handle the submit action
             console.log("Submitted values:", values);
             setShowFormularioProducto(false);
-            onReload(); // Llamar al callback para recargar los productos
+            onReload();
           }}
           initialValues={selectedProducto}
           sucursalId={sucursalId}

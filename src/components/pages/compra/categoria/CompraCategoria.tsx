@@ -11,7 +11,7 @@ const CompraCategoria = () => {
   const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
   const carritoItems = useSelector((state: RootState) => state.cartReducer);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Paso 2: Estado para controlar la visibilidad del modal
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,16 +30,16 @@ const CompraCategoria = () => {
   };
 
   const mostrarModalSalir = () => {
-    setIsModalVisible(true); // Muestra el modal
+    setIsModalVisible(true);
   };
 
   const confirmarSalida = () => {
     navigate(-1);
-    setIsModalVisible(false); // Oculta el modal después de confirmar
+    setIsModalVisible(false);
   };
 
   const cancelarSalida = () => {
-    setIsModalVisible(false); // Oculta el modal si el usuario cancela
+    setIsModalVisible(false);
   };
   const irAPromociones = () => {
     const idNumerico = Number(sucursalId);
@@ -53,7 +53,7 @@ const CompraCategoria = () => {
         style={{ marginBottom: "16px" }}
         onClick={() => {
           if (carritoItems.length > 0) {
-            mostrarModalSalir(); // Paso 3: Usa el modal en lugar de window.confirm
+            mostrarModalSalir();
           } else {
             navigate(-1);
           }
@@ -62,7 +62,7 @@ const CompraCategoria = () => {
         Salir de la sucursal
       </Button>
       <Modal
-        title="Confirmar salida" // Aquí puedes personalizar el título
+        title="Confirmar salida"
         visible={isModalVisible}
         onOk={confirmarSalida}
         onCancel={cancelarSalida}
@@ -83,7 +83,7 @@ const CompraCategoria = () => {
             <Card
               key={categoria.id}
               onClick={() => handleCategoriaClick(categoria.id)}
-              style={{ width: 300, height: 300 }} // Asegúrate de que el tamaño de la Card sea el deseado
+              style={{ width: 300, height: 300 }}
               cover={
                 <img
                   alt="example"
@@ -93,9 +93,9 @@ const CompraCategoria = () => {
                   )}`}
                   onError={(e) => {
                     e.currentTarget.src =
-                      "http://localhost:8080/images/sin-imagen-categoria.jpeg"; // Ruta de la imagen por defecto
+                      "http://localhost:8080/images/sin-imagen-categoria.jpeg";
                   }}
-                  style={{ width: "100%", height: "200px", objectFit: "cover" }} // Ajusta el height según necesites
+                  style={{ width: "100%", height: "200px", objectFit: "cover" }}
                 />
               }
             >
@@ -105,11 +105,11 @@ const CompraCategoria = () => {
         )}
         <Card
           onClick={irAPromociones}
-          style={{ width: 300, height: 300, cursor: "pointer" }} // Asegúrate de que el tamaño de la Card sea el deseado
+          style={{ width: 300, height: 300, cursor: "pointer" }}
           cover={
             <img
               alt="Promociones"
-              src={ImagenPromocion} // Reemplaza con la URL de tu imagen para promociones
+              src={ImagenPromocion}
               style={{ width: "100%", height: "200px", objectFit: "cover" }}
             />
           }

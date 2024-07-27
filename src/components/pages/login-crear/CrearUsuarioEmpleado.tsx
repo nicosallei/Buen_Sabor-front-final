@@ -1,4 +1,3 @@
-
 import { Form, Input, Button, DatePicker, Select, Card, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import * as CryptoJS from "crypto-js";
@@ -8,7 +7,7 @@ const RegistroEmpleado = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  const handleSubmit = async (values:any) => {
+  const handleSubmit = async (values: any) => {
     const encryptedPassword = CryptoJS.SHA256(values.password).toString();
     const response = await fetch(
       "http://localhost:8080/api/usuario/registro/usuario-empleado",
@@ -27,8 +26,6 @@ const RegistroEmpleado = () => {
             telefono: values.telefono,
             email: values.email,
             fechaNacimiento: values.fechaNacimiento.format("YYYY-MM-DD"),
-            //imagen: values.imagen,
-            // Añade otros campos específicos de empleado si es necesario
           },
         }),
       }
@@ -102,7 +99,7 @@ const RegistroEmpleado = () => {
             >
               <DatePicker />
             </Form.Item>
-           
+
             <Form.Item>
               <Button type="primary" htmlType="submit">
                 Registrar
