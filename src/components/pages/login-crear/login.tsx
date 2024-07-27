@@ -150,7 +150,7 @@ function Login() {
           padding: 20,
           borderRadius: 10,
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-          backgroundColor: "white",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
         }}
       >
         <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
