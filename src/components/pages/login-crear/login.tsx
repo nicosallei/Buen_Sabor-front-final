@@ -6,6 +6,7 @@ import { Form, Input, Button, Card } from "antd";
 import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../../ui/firebaseConfig";
+import ImagenFondo from "../../../assets/fondo-login.jpg";
 
 function Login() {
   const navigate = useNavigate();
@@ -126,6 +127,10 @@ function Login() {
     }
   };
 
+  const handleRegister = () => {
+    navigate("/registro-cliente");
+  };
+
   return (
     <div
       style={{
@@ -133,12 +138,22 @@ function Login() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        backgroundColor: "#f0f2f5",
+        backgroundImage: `url(${ImagenFondo})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
-      <Card style={{ width: 300 }}>
-        <Form>
-          <Form.Item label="Usuario">
+      <Card
+        style={{
+          width: 350, // Aumenta el ancho de la tarjeta
+          padding: 20,
+          borderRadius: 10,
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+          backgroundColor: "white",
+        }}
+      >
+        <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+          <Form.Item label="Usuario" style={{ marginBottom: 20 }}>
             <Input
               placeholder="Ingrese el nombre"
               defaultValue={usuario?.username}
@@ -151,9 +166,10 @@ function Login() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") login();
               }}
+              style={{ width: "100%" }} // Asegura que el input ocupe todo el ancho disponible
             />
           </Form.Item>
-          <Form.Item label="Clave">
+          <Form.Item label="Clave" style={{ marginBottom: 20 }}>
             <Input.Password
               placeholder="Ingrese la clave"
               defaultValue={usuario?.password}
@@ -169,23 +185,66 @@ function Login() {
               iconRender={(visible) =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
+              style={{ width: "100%" }} // Asegura que el input ocupe todo el ancho disponible
             />
           </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" onClick={login}>
-              Ingresar
-            </Button>
+          <Form.Item wrapperCol={{ span: 24 }}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                type="primary"
+                onClick={login}
+                style={{
+                  width: "75%",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                Ingresar
+              </Button>
+            </div>
           </Form.Item>
           {txtValidacion && (
             <p style={{ color: "red", lineHeight: 5, padding: 5 }}>
               {txtValidacion}
             </p>
           )}
-          <Form.Item>
-            <Button type="primary" onClick={handleGoogleLogin}>
-              Iniciar sesión con Google
-            </Button>
+          <Form.Item wrapperCol={{ span: 24 }}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                type="primary"
+                onClick={handleGoogleLogin}
+                style={{
+                  width: "75%",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                Iniciar sesión con Google
+              </Button>
+            </div>
+          </Form.Item>
+          <Form.Item wrapperCol={{ span: 24 }}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                type="default"
+                onClick={handleRegister}
+                style={{
+                  width: "50%",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  backgroundColor: "#f0f0f0",
+                  color: "#000",
+                  border: "1px solid #d9d9d9",
+                  margin: "0 auto",
+                }}
+              >
+                Registrarse
+              </Button>
+            </div>
           </Form.Item>
         </Form>
       </Card>
