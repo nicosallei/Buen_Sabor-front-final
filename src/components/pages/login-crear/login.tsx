@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Rol, Usuario } from "../../../types/usuario/Usuario";
 import * as CryptoJS from "crypto-js";
 import { Form, Input, Button, Card } from "antd";
-import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons"; // Import EyeTwoTone from @ant-design/icons
+import { EyeTwoTone, EyeInvisibleOutlined } from "@ant-design/icons";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../../ui/firebaseConfig";
 
 function Login() {
   const navigate = useNavigate();
@@ -13,21 +15,65 @@ function Login() {
   useEffect(() => {
     localStorage.clear();
     if (usuario.rol !== Rol.DEFAULT) {
-      const usuarioParaAlmacenar = {
-        username: usuario.username,
-        rol: usuario.rol,
-      };
-
-      localStorage.setItem("usuario", JSON.stringify(usuarioParaAlmacenar));
-      navigate("/login", {
-        replace: true,
-        state: {
-          logged: true,
-          usuario: usuarioParaAlmacenar,
-        },
-      });
+      storeUserInLocalStorage(usuario);
+      navigateToRoleBasedPage(usuario);
     }
   }, [usuario, navigate]);
+
+  const storeUserInLocalStorage = (user: Usuario) => {
+    const usuarioParaAlmacenar = {
+      username: user.username,
+      rol: user.rol,
+    };
+    localStorage.setItem("usuario", JSON.stringify(usuarioParaAlmacenar));
+  };
+
+  const navigateToRoleBasedPage = (user: Usuario) => {
+    if (user.rol === Rol.CLIENTE) {
+      localStorage.removeItem("sucursal_id");
+      localStorage.removeItem("selectedSucursalNombre");
+      localStorage.removeItem("empresa_id");
+      localStorage.removeItem("id");
+
+      localStorage.setItem("email", user.username);
+      localStorage.setItem("rol", "CLIENTE");
+      localStorage.setItem("id", String(user.idCliente));
+      navigate("/compra");
+    } else {
+      localStorage.setItem("email", user.username);
+
+      if (user.rol === Rol.ADMINISTRADOR) {
+        localStorage.removeItem("sucursal_id");
+        localStorage.removeItem("selectedSucursalNombre");
+        localStorage.removeItem("empresa_id");
+        localStorage.removeItem("id");
+        localStorage.setItem("rol", user.rol);
+        localStorage.setItem("id", String(user.idEmpleado));
+        navigate("/unidadMedida");
+      } else if (
+        user.rol === Rol.EMPLEADO_COCINA ||
+        user.rol === Rol.EMPLEADO_REPARTIDOR
+      ) {
+        localStorage.setItem("rol", user.rol);
+        localStorage.setItem("sucursal_id", user.idSucursal?.toString() || "");
+        localStorage.setItem("id", String(user.idEmpleado));
+        localStorage.setItem("empresa_id", user.idEmpresa?.toString() || "");
+        navigate("/insumos");
+      } else {
+        navigate("/default");
+      }
+    }
+  };
+
+  const handleLoginResponse = async (response: Response) => {
+    if (response.ok) {
+      const data: Usuario = await response.json();
+      storeUserInLocalStorage(data);
+      navigateToRoleBasedPage(data);
+    } else {
+      setTxtValidacion("Usuario o clave incorrectos");
+    }
+  };
 
   const login = async () => {
     if (!usuario?.username) {
@@ -52,49 +98,31 @@ function Login() {
       }),
     });
 
-    if (response.ok) {
-      const data: Usuario = await response.json();
-      if (data.rol === Rol.CLIENTE) {
-        localStorage.removeItem("sucursal_id");
-        localStorage.removeItem("selectedSucursalNombre");
-        localStorage.removeItem("empresa_id");
-        localStorage.removeItem("id");
+    await handleLoginResponse(response);
+  };
 
-        localStorage.setItem("email", data.username);
-        localStorage.setItem("rol", "CLIENTE");
-        localStorage.setItem("id", String(data.idCliente));
-        navigate("/compra");
-      } else {
-        localStorage.setItem("email", data.username);
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
 
-        if (data.rol === Rol.ADMINISTRADOR) {
-          localStorage.removeItem("sucursal_id");
-          localStorage.removeItem("selectedSucursalNombre");
-          localStorage.removeItem("empresa_id");
-          localStorage.removeItem("id");
-          localStorage.setItem("rol", data.rol);
-          localStorage.setItem("id", String(data.idEmpleado));
-          localStorage.setItem("email", data.username);
-          navigate("/unidadMedida");
-        } else if (
-          data.rol === Rol.EMPLEADO_COCINA ||
-          data.rol === Rol.EMPLEADO_REPARTIDOR
-        ) {
-          localStorage.setItem("rol", data.rol);
-          localStorage.setItem(
-            "sucursal_id",
-            data.idSucursal?.toString() || ""
-          );
-          localStorage.setItem("id", String(data.idEmpleado));
-          localStorage.setItem("empresa_id", data.idEmpresa?.toString() || "");
-          localStorage.setItem("email", data.username);
-          navigate("/insumos");
+      const response = await fetch(
+        `http://localhost:8080/api/usuario/google-login?email=${encodeURIComponent(
+          user.email ?? ""
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
+      );
 
-        navigate("/compra", {});
-      }
-    } else {
-      setTxtValidacion("Usuario o clave incorrectos");
+      await handleLoginResponse(response);
+    } catch (error) {
+      console.error("Error al iniciar sesión con Google:", error);
     }
   };
 
@@ -154,6 +182,11 @@ function Login() {
               {txtValidacion}
             </p>
           )}
+          <Form.Item>
+            <Button type="primary" onClick={handleGoogleLogin}>
+              Iniciar sesión con Google
+            </Button>
+          </Form.Item>
         </Form>
       </Card>
     </div>

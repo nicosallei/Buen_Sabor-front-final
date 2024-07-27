@@ -18,7 +18,7 @@ import RegistroCliente from "../components/pages/login-crear/CrearUsuarioCliente
 import Estadistica from "../components/pages/estadistica/Estadistica";
 import RegistroEmpleado from "../components/pages/login-crear/CrearUsuarioEmpleado";
 import { AuthenticationGuard } from "../components/auth0/AuthenticationGuard";
-import ErrorPage from "../components/User/ErrorPage";
+
 import CallbackPage from "../components/auth0/CallbackPage";
 import LoginHandler from "../components/ui/LoginHandler";
 import EmpleadoProfileCard from "../components/pages/perfil/EmpleadoProfileCard";
@@ -152,7 +152,7 @@ const Rutas: React.FC = () => {
         path="/Pedidos"
         element={<AuthenticationGuard component={Pedidos} />}
       />
-      <Route path="*" element={<ErrorPage />} />
+      <Route path="*" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/callback" element={<CallbackPage />} />
       <Route path="/registro-cliente" element={<RegistroCliente />} />
