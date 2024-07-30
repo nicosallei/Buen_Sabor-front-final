@@ -6,6 +6,7 @@ import {
   Button,
   notification,
   DatePicker,
+  message,
 } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { useState } from "react";
@@ -73,7 +74,15 @@ const FormularioEmpleado: React.FC<Props> = ({
           },
           body: JSON.stringify(formattedValues),
         }
+        
       );
+      if (!response.ok) {
+        // Si el servidor envía un mensaje de error en el cuerpo de la respuesta
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || "Error al crear empleado"
+        );
+      }
 
       if (response.ok) {
         notification.open({
@@ -90,12 +99,9 @@ const FormularioEmpleado: React.FC<Props> = ({
       } else {
         throw new Error("Error en la solicitud");
       }
-    } catch (error) {
-      console.error("Error: ", error);
-      notification.error({
-        message: "Error",
-        description: "Hubo un problema al agregar el empleado.",
-      });
+    } catch (error:any) {
+      console.error("Error al cambiar el estado del pedido:", error.message);
+    message.error(error.message);
     }
   };
   const handleClose = () => {

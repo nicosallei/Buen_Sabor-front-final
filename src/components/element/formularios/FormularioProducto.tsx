@@ -165,6 +165,10 @@ const FormularioProducto: React.FC<Props> = ({
           </span>
         ),
       });
+      form.resetFields();
+setSelectedInsumos([]);
+setSelectedInsumosData([]);
+onClose();
     } catch (error: any) {
       message.error(error.message);
     }
@@ -229,12 +233,20 @@ const FormularioProducto: React.FC<Props> = ({
       prevKeys.filter((key) => key !== articulo.id)
     );
   };
+  const handleCloseModal = () => {
+    form.resetFields();
+    setSelectedInsumos([]);
+    setSelectedInsumosData([]);
+    onClose();
+  };
+  
+  
 
   return (
     <Modal
       visible={visible}
       title="Crear Promoción"
-      onCancel={onClose}
+      onCancel={handleCloseModal}
       footer={null}
       width={1000}
     >
