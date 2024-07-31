@@ -22,7 +22,7 @@ interface Promocion {
   precioPromocional: number;
   imagen: string;
   promocionDetallesDto: IPromocionDetallesDto[];
-  cantidadMaximaDisponible: number;
+  cantidadMaximaCompra: number;
   sucursal: any;
 }
 
@@ -83,31 +83,9 @@ const CompraPromociones = () => {
                   .pop()}`
               : SinImagen;
 
-            const promocionDetallesDto = promocion.promocionDetallesDto.map(
-              (detalle: any) => {
-                const articuloCantidad =
-                  promocion.articulosManufacturadosCantidad.find(
-                    (item: any) =>
-                      item.articuloManufacturadoId ===
-                      detalle.articuloManufacturadoDto.id
-                  );
-
-                return {
-                  ...detalle,
-                  articuloManufacturadoDto: {
-                    ...detalle.articuloManufacturadoDto,
-                    cantidadMaximaCompra: articuloCantidad
-                      ? articuloCantidad.cantidadMaximaDisponible
-                      : 0,
-                  },
-                };
-              }
-            );
-
             return {
               ...promocion,
               imagen,
-              promocionDetallesDto,
             };
           });
 
@@ -171,7 +149,10 @@ const CompraPromociones = () => {
       dispatch(
         addToCarrito({
           id: producto.id,
-          producto,
+          producto: {
+            ...producto,
+            cantidadMaximaCompra: producto.cantidadMaximaCompra, // Asegúrate de que esta propiedad provenga del producto individual
+          },
           cantidad: detalle.cantidad,
         })
       );
